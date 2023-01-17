@@ -1,0 +1,3 @@
+<template>
+    Profil Siswa
+</template>

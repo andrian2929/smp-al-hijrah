@@ -1,0 +1,42 @@
+{
+    "private": true,
+    "scripts": {
+        "dev": "npm run development",
+        "development": "mix",
+        "watch": "mix watch",
+        "watch-poll": "mix watch -- --watch-options-poll=1000",
+        "hot": "mix watch --hot",
+        "prod": "npm run production",
+        "production": "mix --production"
+    },
+    "devDependencies": {
+        "@popperjs/core": "^2.10.2",
+        "axios": "^0.21",
+        "bootstrap": "^5.1.3",
+        "eslint": "^8.22.0",
+        "eslint-config-prettier": "^8.5.0",
+        "eslint-plugin-prettier": "^4.2.1",
+        "laravel-mix": "^6.0.6",
+        "lodash": "^4.17.19",
+        "postcss": "^8.1.14",
+        "prettier": "^2.7.1",
+        "resolve-url-loader": "^3.1.2",
+        "sass": "^1.32.11",
+        "sass-loader": "^11.0.1",
+        "vue-loader": "^17.0.0",
+        "vue-template-compiler": "^2.6.12"
+    },
+    "dependencies": {   
+	"vue": "^3.2.37",
+        "@ant-design/icons-vue": "^6.1.0",
+        "ant-design-vue": "^3.2.11",
+        "vue-router": "^4.1.4",
+        "vuex": "^4.0.2"
+    },
+    "name": "smp_al_hijrah_v2",
+    "version": "1.0.0",
+    "main": "index.js",
+    "repository": "https://github.com/iqbal89co/smp_al_hijrah_v2.git",
+    "author": "AtikhaA <atikhazmila@gmail.com>",
+    "license": "MIT"
+}

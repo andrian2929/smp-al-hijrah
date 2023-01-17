@@ -1,0 +1,61 @@
+import components, {
+    Badge,
+    Button,
+    ButtonGroup,
+    Card,
+    Col,
+    Collapse,
+    Divider,
+    Dropdown,
+    Form,
+    Input,
+    InputPassword,
+    Layout,
+    Menu,
+    MenuItem,
+    Modal,
+    Popconfirm,
+    Popover,
+    Radio,
+    RadioGroup,
+    Row,
+    Select,
+    Spin,
+    Statistic,
+    Table,
+    Tooltip,
+    Tree,
+    TreeSelect
+} from 'ant-design-vue'
+
+export function useLoader(app) {
+    app.use(components)
+    /*app.use(Badge);
+    app.use(Button);
+    app.use(ButtonGroup);
+    app.use(Card);
+    app.use(Col);
+    app.use(Collapse);
+    app.use(Divider);
+    app.use(Dropdown);
+    app.use(Form);
+    app.use(Input);
+    app.use(InputPassword);
+    app.use(Layout);
+    app.use(Menu);
+    app.use(MenuItem);
+    app.use(Modal);
+    app.use(Popconfirm);
+    app.use(Popover);
+    app.use(Radio);
+    app.use(RadioGroup);
+    app.use(Row);
+    app.use(Select);
+    app.use(Spin);
+    app.use(Statistic);
+    app.use(Table);
+    app.use(Tree);
+    app.use(TreeSelect);
+    app.use(Tooltip);
+    */
+}
