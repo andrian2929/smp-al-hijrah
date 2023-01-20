@@ -1,10 +1,14 @@
 <template>
     <a-row type="flex" justify="center" :gutter="[8, 8]">
         <a-col :xs="23" :sm="5">
+         
             <a-card>
-                <template #cover>
-                    <img alt="profile photo" src="/img/no_profile.png" />
+              
+                <template #cover v-if="!loading">
+                    <img alt="profile photo"  :src="models.wali_kelas.image == 'default.png' ? '/img/no_profile.png' : '/img/profile_photo/' + models.wali_kelas.image" />
                 </template>
+              
+                <a-skeleton :loading="loading">
                 <a-card-meta
                     v-if="models.wali_kelas"
                     :title="models.wali_kelas.name"
@@ -13,7 +17,9 @@
                         models.wali_kelas.no_induk
                     }}</template>
                 </a-card-meta>
+            </a-skeleton>
             </a-card>
+    
         </a-col>
         <a-col :xs="23" :sm="18">
             <a-card
@@ -125,6 +131,7 @@ export default {
             filter: { siswa: null },
             modalAdd: false,
             form: { siswa: null },
+            loading : true
           
         }
     },
@@ -132,7 +139,7 @@ export default {
         this.readData()
         this.getSiswa()
         this.getSiswaOptions()
-    
+       
       
       
     },
@@ -146,18 +153,22 @@ export default {
     },
     methods: {
         readData() {
+          
+           
             const vm = this
             vm.loading = true
             const params = {
                 req: 'single',
                 id: vm.$route.params.id
             }
+  
 
             vm.axios
                 .get(vm.url('kelas/read'), { params: params })
                 .then((response) => {
                     console.log(response)
                     vm.models = response.data.models
+                    console.log(vm.models)
                     vm.loading = false
                 })
                 .catch((e) => vm.$onAjaxError(e))

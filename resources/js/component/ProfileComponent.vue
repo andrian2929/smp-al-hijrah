@@ -2,7 +2,7 @@
     <a-row type="flex" justify="center" style="margin: 0" :gutter="[16, 16]">
         <a-col :xs="10" :lg="6" style="margin-bottom: 24px">
             <img
-                style="width: 100%"
+                style="width: 80%"
                 :src="form.image == 'default.png' ? '/img/no_profile.png' : '/img/profile_photo/' + form.image"
                 alt="profile picture"
             />
@@ -270,8 +270,7 @@
                         </a-col>
                         <a-col :xs="24" :lg="12">
                             <h5>Gambar Profil</h5>
-                            Pilih gambar (.jpg/.png)(Maksimum 2MB) Tarik pada
-                            gambar untuk memotong bagian gambar.
+                            Pilih gambar (.jpg/.png)
                             <br />
                             <br />
                             <a-upload
@@ -687,7 +686,6 @@ export default {
                         description: 'Berhasil mengganti foto profil'
                     })
 
-                    // refresh page
                     this.$router.go()
                    
                 })

@@ -1,6 +1,5 @@
 <template>
  
-
   <a-row  type="flex" justify="center">
     <a-col :xs="23">
         <a-card :loading="loading" title="DASHBOARD" style="width: 100%">
@@ -11,11 +10,12 @@
 <div v-if="siswa" style="background-color: #ececec; padding: 20px">
     <a-row :gutter="16">
       <a-col :span="8">
-        <a-card >
+        <a-skeleton :loading="loading">
+          <a-card >
             <div align="center">
                 <img
                     style="width: 50%"
-                    :src="siswa.image == 'default.png' ? '/img/no_profile.png' : '/img/profile_photo/' + siswa.image"
+                    :src="siswa.user.image == 'default.png' ? '/img/no_profile.png' : '/img/profile_photo/' + siswa.user.image"
                     alt="profile picture"
                 />
                 <h3 style="marginTop: 30px; marginBottom: 30px">{{ siswa.name }}</h3>
@@ -25,28 +25,32 @@
                     <strong>NISN</strong>
                   </a-col>
                   <a-col :span="12">
-                    <p>{{ siswa.nip }}</p>
+                    <p>{{ siswa.nisn }}</p>
                   </a-col>
                   <a-col :span="12">
                     <strong>Kelas</strong>
                   </a-col>
                   <a-col :span="12">
-                    <p></p>
+                    <p>{{ siswa.kelas.jenjang }} - {{ siswa.kelas.section }}</p>
                   </a-col>
                   <a-col :span="12">
                     <strong>Beasiswa</strong>
                   </a-col>
                   <a-col :span="12">
-                    <p>Tidak</p>
+                    <p>{{ siswa.is_beasiswa == 0 ? 'Tidak' : 'Ya' }}</p>
                   </a-col>
                   <a-col :span="12">
                     <strong>Tanggal Bergabung</strong>
                   </a-col>
                   <a-col :span="12">
-                   {{ siswa.created_at }}
+                  <span> {{ siswa.created_at }}</span>
+                  <span style="font-size: 12px; display: block;"> <i>{{ siswa.created_at_humanize }}</i> </span>
+                  
                   </a-col>
                 </a-row>
         </a-card>
+    </a-skeleton>
+        
       </a-col>
 
       <a-col :span="16">
@@ -133,6 +137,9 @@ import {
 import { mapState } from 'vuex'
 
 import axios from 'axios';
+import moment from 'moment';
+import 'moment/locale/id';
+
 
   export default defineComponent({
     components: {
@@ -189,6 +196,7 @@ import axios from 'axios';
         siswa : {
           nama : 'Madan'
         },
+        loading : true
 
   
       };
@@ -204,15 +212,28 @@ this.readData()
 
 methods: {
   readData() {
-    console.log(this.siswa);
-    
-    
             const vm = this
             vm.axios
                 .get(vm.url('user'))
                 .then((response) => {
-                  vm.siswa = response.data
-                  console.log(this.siswa);
+                
+                  vm.axios
+                .get(vm.url('siswa/read'), {
+                    params: {
+                        user_id: response.data.id,
+                        req : 'get_siswa_by_user_id'
+                    }
+                })
+                .then((response) => {
+
+                   vm.siswa = response.data.models
+                   moment.locale('id');
+                   vm.siswa.created_at = moment(vm.siswa.created_at).format('DD MMMM YYYY')
+                   vm.siswa.created_at_humanize = moment(vm.siswa.created_at).startOf('day').fromNow();
+                   console.log(vm.siswa);
+                   this.loading = false
+                })
+                .catch((e) => vm.$onAjaxError(e))       
                 
                 })
                 .catch((error) => {

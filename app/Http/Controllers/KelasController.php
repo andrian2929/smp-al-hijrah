@@ -30,7 +30,8 @@ class KelasController extends Controller
             }
         }
         if ($request->req == 'single') {
-            $data = Kelas::select()->with('wali_kelas')->firstOrFail($request->id);
+
+            $data = Kelas::select()->with('wali_kelas')->where('id', $request->id)->firstOrFail();
         }
         if ($request->req == 'get_all_guru') {
             $data = User::select('id', 'name')->whereHas('roles', function ($q) {

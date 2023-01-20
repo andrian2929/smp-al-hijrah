@@ -58,6 +58,7 @@ class SiswaController extends Controller
         } // get siswa by user id at user table
 
         else if ($request->req == 'get_siswa_by_user_id') {
+
             $data = Siswa::where('user_id', $request->user_id)->with('user', 'kelas')->firstOrFail();
         }
         return response()->json([
