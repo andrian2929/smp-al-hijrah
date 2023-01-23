@@ -84,7 +84,7 @@
                                         <strong>Jenis Kelamin</strong>
                                     </a-col>
                                     <a-col :span="16">
-                                        {{ models.jenis_kelamin }}
+                                        {{ models.jenis_kelamin.charAt(0).toUpperCase() + models.jenis_kelamin.slice(1) }}
                                     </a-col>
                                 </a-row>
                             </a-card>
