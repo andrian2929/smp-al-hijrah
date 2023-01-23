@@ -116,7 +116,7 @@
          return roster.map((item, index) => {
           return {
             key : index + 1,
-            waktu : item.waktu,
+            waktu : item.waktu.substring(0, 5),
             matapelajaran : item.mapel.name,
             guru : item.guru.name  
           }
