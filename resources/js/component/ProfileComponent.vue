@@ -1,11 +1,15 @@
 <template>
-    <a-row type="flex" justify="center" style="margin: 0" :gutter="[16, 16]">
+   
+        <a-row type="flex" justify="center" style="margin: 0" :gutter="[16, 16]">
+            <a-skeleton :loading="loading" :avatar="true">
         <a-col :xs="10" :lg="6" style="margin-bottom: 24px">
+        
             <img
                 style="width: 80%"
                 :src="form.image == 'default.png' ? '/img/no_profile.png' : '/img/profile_photo/' + form.image"
                 alt="profile picture"
             />
+    
         </a-col>
         <a-col :xs="13" :lg="17">
             <h1>{{ models.name }}</h1>
@@ -27,7 +31,9 @@
                 {{ models.is_active ? 'aktif' : 'nonaktif' }}
             </a-button>
         </a-col>
+    </a-skeleton>
     </a-row>
+
     <a-row type="flex" justify="center" style="margin: 0">
         <a-col :span="23">
             <a-card
@@ -599,6 +605,7 @@ export default {
                 orangtua: false
             },
             imageNew: null,
+            loading : true
         }
     },
     mounted() {
@@ -669,8 +676,6 @@ export default {
             formData.append('oldImage', this.form.image);
             formData.append('req', 'edit');
      
-       
-          
             this.axios
                 .post(this.url('user/write'), formData, {
                     headers: {
