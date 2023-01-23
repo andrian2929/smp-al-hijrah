@@ -1,5 +1,4 @@
 <template>
- 
   <a-row  type="flex" justify="center">
     <a-col :xs="23">
         <a-card :loading="loading" title="DASHBOARD" style="width: 100%">
@@ -9,9 +8,10 @@
 
 <div v-if="siswa" style="background-color: #ececec; padding: 20px">
     <a-row :gutter="16">
-      <a-col :span="8">
-        <a-skeleton :loading="loading">
+      <a-col :sm="24" :xl="8" :md="12" :lg="8">
+       
           <a-card >
+            <a-skeleton :loading="loading">
             <div align="center">
                 <img
                     style="width: 50%"
@@ -48,14 +48,17 @@
                   
                   </a-col>
                 </a-row>
+              </a-skeleton>
         </a-card>
-    </a-skeleton>
+
         
       </a-col>
 
-      <a-col :span="16">
-        <a-card>
-          <a-table :dataSource="dataSource" :columns="columns" :pagination="false"/>
+      <a-col :sm="24" :lg="16">
+        <a-card :title="`Mata Pelajaran Hari Ini`">
+         <a-skeleton :loading="loading">
+          <a-table :dataSource="dataSource(thisDay)" :columns="columns" :pagination="false"/>
+         </a-skeleton>
         </a-card>
         <a-card style="marginTop: 20px">
           <h4 style="marginBottom: 20px">Kehadiran : </h4>
@@ -134,7 +137,6 @@ import {
   StarFilled,
 } from '@ant-design/icons-vue';
 
-import { mapState } from 'vuex'
 
 import axios from 'axios';
 import moment from 'moment';
@@ -147,45 +149,18 @@ import 'moment/locale/id';
     },
     data() {
       return {
-        dataSource: [
-            {
-            key: '1',
-            matapelajaran: 'PKN',
-            kelas: 'VII',
-            hari: 'Senin',
-            waktu: '8.00 - 9.30'
-          },
-          {
-            key: '2',
-            matapelajaran: 'IPA',
-            kelas: 'VII',
-            hari: 'Senin',
-            waktu: '8.00 - 9.30'
-          },
-          {
-            key: '3',
-            matapelajaran: 'IPS',
-            kelas: 'VII',
-            hari: 'Senin',
-            waktu: '8.00 - 9.30'
-          },
-        ],
 
         columns: [
           {
-            title: 'Mata Pelajaran',
+            title: 'Nama',
             dataIndex: 'matapelajaran',
             key: 'matapelajaran',
           },
+    
           {
-            title: 'Kelas',
-            dataIndex: 'kelas',
-            key: 'kelas',
-          },
-          {
-            title: 'Hari',
-            dataIndex: 'hari',
-            key: 'hari',
+            title: 'Guru',
+            dataIndex: 'guru',
+            key: 'guru',
           },
           {
             title: 'Waktu',
@@ -201,13 +176,15 @@ import 'moment/locale/id';
   
       };
     },
-  
-  mounted() {
-  
-  
-},
+
 created(){
 this.readData()
+},
+
+computed : {
+thisDay(){
+  return moment().format('dddd');
+}
 },
 
 methods: {
@@ -227,11 +204,15 @@ methods: {
                 .then((response) => {
 
                    vm.siswa = response.data.models
-                   moment.locale('id');
                    vm.siswa.created_at = moment(vm.siswa.created_at).format('DD MMMM YYYY')
                    vm.siswa.created_at_humanize = moment(vm.siswa.created_at).startOf('day').fromNow();
                    console.log(vm.siswa);
-                   this.loading = false
+
+                   vm.axios.get(vm.url('kelas/read'), { params : { kelas_id: response.data.models.kelas.id, req: 'get_roster' }}).then((response) => {
+                  vm.siswa = { ...vm.siswa, roster: response.data.models }
+                  console.log(vm.siswa);
+                  vm.loading = false
+                  }).catch((e) => vm.$onAjaxError(e))
                 })
                 .catch((e) => vm.$onAjaxError(e))       
                 
@@ -239,11 +220,21 @@ methods: {
                 .catch((error) => {
                     vm.$onAjaxError(error)
                 })
+        },
+        dataSource(hari){
+          let roster = this.siswa.roster.filter((item) => item.hari == hari.toLowerCase())
+          roster.sort((a, b) => a.waktu.localeCompare(b.waktu))
+         return roster.map((item, index) => {
+          return {
+            key : index + 1,
+            matapelajaran : item.mapel.name,
+            guru: item.guru.name,
+            waktu : `${item.waktu.substring(0,5)}`
+          }
+          })
+        
         }
 },
-    
-
-    
 
   });
 </script>
