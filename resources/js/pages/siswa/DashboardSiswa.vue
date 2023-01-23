@@ -10,11 +10,11 @@
     <a-row :gutter="16">
       <a-col :sm="24" :xl="8" :md="12" :lg="8">
        
-          <a-card >
+          <a-card style=" border-radius: 20px;" >
             <a-skeleton :loading="loading">
             <div align="center">
                 <img
-                    style="width: 50%"
+                    style="width: 50%; border-radius: 10px;"
                     :src="siswa.user.image == 'default.png' ? '/img/no_profile.png' : '/img/profile_photo/' + siswa.user.image"
                     alt="profile picture"
                 />
@@ -55,12 +55,12 @@
       </a-col>
 
       <a-col :sm="24" :lg="16">
-        <a-card :title="`Mata Pelajaran Hari Ini`">
+        <a-card :title="`Mata Pelajaran Hari Ini`" style=" border-radius: 20px;">
          <a-skeleton :loading="loading">
           <a-table :dataSource="dataSource(thisDay)" :columns="columns" :pagination="false"/>
          </a-skeleton>
         </a-card>
-        <a-card style="marginTop: 20px">
+        <a-card  style="marginTop: 20px; border-radius: 20px">
           <h4 style="marginBottom: 20px">Kehadiran : </h4>
           <a-row :gutter="[8, 8]">
                   <a-col :span="6">
