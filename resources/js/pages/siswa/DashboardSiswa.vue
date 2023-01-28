@@ -10,7 +10,7 @@
     <a-row :gutter="16">
       <a-col :sm="24" :xl="8" :md="12" :lg="8">
        
-          <a-card style=" border-radius: 20px;" >
+          <a-card style="border-radius: 20px;" >
             <a-skeleton :loading="loading">
             <div align="center">
                 <img

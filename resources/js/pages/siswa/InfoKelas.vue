@@ -10,9 +10,9 @@
 <div style="background-color: #ececec; padding: 20px">
     <a-row :gutter="16">
         <a-col :span="24">
-            <a-card>
+            <a-card style="border-radius: 20px;">
                <a-skeleton :loading="loading">
-                <a-list size="small" bordered :data-source="data">
+                <a-list size="small" bordered :data-source="data" style="border-radius: 8px;">
                     <a-list-item>
                         <strong>Kelas : {{ kelasData.jenjang }} - {{ kelasData.section  }}</strong>
                     </a-list-item>
@@ -28,8 +28,7 @@
         </a-col>
 
         <a-col :span="24" style="marginTop: 20px">
-            <h3>Roster Kelas</h3>
-            <a-card>
+            <a-card style="border-radius: 20px;" title="Roster Kelas">
              <a-skeleton :loading="loading">
               <div class="schedule-table" v-for="hari in ['senin', 'selasa', 'rabu', 'kamis', 'jumat', 'sabtu']">
                 <strong>

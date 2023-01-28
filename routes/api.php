@@ -9,6 +9,8 @@ use App\Http\Controllers\NilaiController;
 use App\Http\Controllers\OrangtuaController;
 use App\Http\Controllers\SiswaController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\TahfidzSiswaController;
+use App\Http\Controllers\MutabaahYaumiyahController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
@@ -57,3 +59,9 @@ Route::post('/kehadiran/write', [KehadiranController::class, 'write'])->name('la
 
 Route::get('/nilai/read', [NilaiController::class, 'read'])->name('laporan.nilai.read');
 Route::post('/nilai/write', [NilaiController::class, 'write'])->name('laporan.nilai.write');
+
+Route::get('/laporan/tahfidz/read', [TahfidzSiswaController::class, 'read'])->name('laporan.tahfidz.read');
+Route::post('/laporan/tahfidz/write', [TahfidzSiswaController::class, 'write'])->name('laporan.tahfidz.write');
+
+Route::get('/laporan/mutabaah-yaumiyah/read', [MutabaahYaumiyahController::class, 'read'])->name('laporan.mutabaahyaumiyah.read');
+Route::post('/laporan/mutabaah-yaumiyah/write', [MutabaahYaumiyahController::class, 'write'])->name('laporan.mutabaahyaumiyah.write');

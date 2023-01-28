@@ -52,7 +52,7 @@ class KelasController extends Controller
                 ->get();
         }
         if ($request->req == 'get_siswa_options') {
-            return $request->req;
+
             $data = Siswa::select('id', 'siswa_id', 'kelas_id', 'nisn')
                 ->whereNull('kelas_id')
                 ->with('user', function ($q) {
