@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
+use App\Models\Guru;
 use Illuminate\Http\Request;
 
 class GuruController extends Controller
@@ -29,6 +30,11 @@ class GuruController extends Controller
             $data = User::whereHas('roles', function ($q) {
                 $q->where('display_name', 'guru');
             })->count();
+        }
+
+        if ($request->req == 'get_guru_by_user_id') {
+
+            $data = Guru::where('user_id', $request->user_id)->with('user')->firstOrFail();
         }
         return response()->json([
             'models' => $data
