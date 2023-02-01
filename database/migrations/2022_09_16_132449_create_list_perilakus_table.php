@@ -17,7 +17,6 @@ class CreateListPerilakusTable extends Migration
             $table->id();
             $table->string('name');
             $table->enum('type', ['ibadah', 'aqidah', 'akhlak', 'kedisiplinan', 'kebersihan dan kerapian']);
-            $table->string('slug');
             $table->boolean('is_terpuji');
             $table->timestamps();
         });

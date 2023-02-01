@@ -8,9 +8,10 @@ use Illuminate\Http\Request;
 
 class SiswaController extends Controller
 {
-    // public function __construct() {
-    //     $this->middleware(['auth:sanctum']);
-    // }
+    public function __construct()
+    {
+        $this->middleware(['auth:sanctum']);
+    }
     public function read(Request $request)
     {
 
@@ -35,12 +36,6 @@ class SiswaController extends Controller
 
 
 
-
-            // return response()->json([
-            //     'models' => $data
-            // ]);
-
-            // Cek apakah ada request kelas_id
             if ($request->kelas_id) {
                 $data = $data->where('kelas_id', $request->kelas_id);
             }
