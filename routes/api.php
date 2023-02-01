@@ -11,9 +11,12 @@ use App\Http\Controllers\SiswaController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\TahfidzSiswaController;
 use App\Http\Controllers\MutabaahYaumiyahController;
+use App\Http\Controllers\LaporanPerilakuController;
+use App\Models\LaporanPerilaku;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
+
 
 /*
 |--------------------------------------------------------------------------
@@ -65,3 +68,7 @@ Route::post('/laporan/tahfidz/write', [TahfidzSiswaController::class, 'write'])-
 
 Route::get('/laporan/mutabaah-yaumiyah/read', [MutabaahYaumiyahController::class, 'read'])->name('laporan.mutabaahyaumiyah.read');
 Route::post('/laporan/mutabaah-yaumiyah/write', [MutabaahYaumiyahController::class, 'write'])->name('laporan.mutabaahyaumiyah.write');
+
+Route::get('/perilaku/data', [LaporanPerilakuController::class, 'data'])->name('laporan.perilaku.data');
+Route::get('/laporan/perilaku/read', [LaporanPerilakuController::class, 'read'])->name('laporan.perilaku.read');
+Route::post('/laporan/perilaku/write', [LaporanPerilakuController::class, 'write'])->name('laporan.perilaku.write');
