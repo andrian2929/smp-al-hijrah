@@ -137,6 +137,10 @@ export default {
               link: '/admin/laporan_hadir'
             },
             {
+              name: 'Laporan Kehadiran Guru',
+              link: '/admin/laporan_hadir_guru'
+            },
+            {
               name: 'Laporan Nilai Siswa',
               link: '/admin/laporan_nilai'
             },

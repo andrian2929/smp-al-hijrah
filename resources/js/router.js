@@ -17,6 +17,7 @@ import {
     KelolaMapel,
     LaporanHarian,
     LaporanHadir,
+    LaporanHadirGuru,
     LaporanNilai,
     LaporanGuru,
     KelolaKelasDetail,
@@ -87,6 +88,10 @@ const router = createRouter({
                 {
                     path: 'laporan_hadir',
                     component: LaporanHadir
+                },
+                {
+                    path: 'laporan_hadir_guru',
+                    component: LaporanHadirGuru
                 },
                 {
                     path: 'laporan_nilai',
