@@ -7,49 +7,54 @@
     <div style="background-color: #ececec; padding: 20px">
         <a-row :gutter="16">
             <a-col :sm="24" :xl="8" :md="12" :lg="8">
-                <a-card style="border-radius: 20px" :loading="loading">
-                    <div align="center">
-                        <img
-                            style="width: 50%; border-radius: 10px"
-                            :src="
-                                userData.user.image == 'default.png'
-                                    ? '/img/no_profile.png'
-                                    : '/img/profile_photo/' +
-                                      userData.user.image
-                            "
-                            alt="profile picture"
-                        />
-                        <h3 style="margintop: 30px; marginbottom: 30px">
-                            {{ userData.user.name }}
-                        </h3>
-                    </div>
-                    <a-row :gutter="[8, 8]">
-                        <a-col :span="12">
-                            <strong>NIP</strong>
-                        </a-col>
-                        <a-col :span="12">
-                            <p>{{ userData.nip }}</p>
-                        </a-col>
-                        <a-col :span="12">
-                            <strong>Posisi</strong>
-                        </a-col>
-                        <a-col :span="12">
-                            <p>{{ userData.user.roles[0].name }}</p>
-                        </a-col>
-                        <a-col :span="12">
-                            <strong>Gelar</strong>
-                        </a-col>
-                        <a-col :span="12">
-                            <p>{{ userData.gelar }}</p>
-                        </a-col>
+                <a-card style="border-radius: 20px">
+                    <a-skeleton :loading="loading">
+                        <div align="center">
+                            <img
+                                style="
+                                    width: 50%;
+                                    border-radius: 10px;
+                                    margin-bottom: 20px;
+                                "
+                                :src="
+                                    userData.user.image == 'default.png'
+                                        ? '/img/no_profile.png'
+                                        : '/img/profile_photo/' +
+                                          userData.user.image
+                                "
+                            />
+                            <h3 style="margintop: 30px; marginbottom: 30px">
+                                {{ userData.user.name }}
+                            </h3>
+                        </div>
+                        <a-row :gutter="[8, 8]">
+                            <a-col :span="12">
+                                <strong>NIP</strong>
+                            </a-col>
+                            <a-col :span="12">
+                                <p>{{ userData.nip }}</p>
+                            </a-col>
+                            <a-col :span="12">
+                                <strong>Posisi</strong>
+                            </a-col>
+                            <a-col :span="12">
+                                <p>{{ userData.user.roles[0].name }}</p>
+                            </a-col>
+                            <a-col :span="12">
+                                <strong>Gelar</strong>
+                            </a-col>
+                            <a-col :span="12">
+                                <p>{{ userData.gelar }}</p>
+                            </a-col>
 
-                        <a-col :span="12">
-                            <strong>Tanggal Bergabung</strong>
-                        </a-col>
-                        <a-col :span="12">
-                            {{ userData.tanggal_bergabung }}
-                        </a-col>
-                    </a-row>
+                            <a-col :span="12">
+                                <strong>Tanggal Bergabung</strong>
+                            </a-col>
+                            <a-col :span="12">
+                                {{ humanizeDate }}
+                            </a-col>
+                        </a-row>
+                    </a-skeleton>
                 </a-card>
             </a-col>
 
@@ -141,6 +146,9 @@
 </template>
 
 <script>
+import moment from 'moment'
+import 'moment/locale/id'
+
 const scheduleColumn = [
     {
         title: 'Mata Pelajaran',
@@ -211,6 +219,13 @@ export default {
     },
     created() {
         this.readData()
+    },
+    computed: {
+        humanizeDate() {
+            return moment(this.userData.tanggal_bergabung).format(
+                'dddd, DD MMMM YYYY'
+            )
+        }
     },
     methods: {
         readData() {
