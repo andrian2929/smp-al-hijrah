@@ -1191,7 +1191,7 @@ export default {
                     this.loading = false
                 })
             })
-        },
+        },git
         resetFormTahfidz() {
             ;(this.formTahfidz.tanggal = null),
                 (this.formTahfidz.surah = 'Al-Fatihah'),
