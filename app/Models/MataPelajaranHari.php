@@ -8,10 +8,17 @@ use Illuminate\Database\Eloquent\Model;
 class MataPelajaranHari extends Model
 {
     use HasFactory;
-    public function mapel() {
+    public function mapel()
+    {
         return $this->belongsTo(MataPelajaran::class, 'mapel_id', 'id');
     }
-    public function guru() {
+    public function guru()
+    {
         return $this->belongsTo(User::class, 'guru_id', 'id');
+    }
+
+    public function kelas()
+    {
+        return $this->belongsTo(Kelas::class, 'kelas_id', 'id');
     }
 }

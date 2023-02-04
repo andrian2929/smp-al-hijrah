@@ -16,7 +16,7 @@ class CreateListPerilakusTable extends Migration
         Schema::create('list_perilakus', function (Blueprint $table) {
             $table->id();
             $table->string('name');
-            $table->enum('type', ['ibadah', 'aqidah', 'akhlak', 'kedisiplinan', 'kebersihan dan kerapian']);
+            $table->enum('type', ['ibadah', 'akidah', 'akhlak', 'kedisiplinan', 'kebersihandankerapian']);
             $table->boolean('is_terpuji');
             $table->timestamps();
         });

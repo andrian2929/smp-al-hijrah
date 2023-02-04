@@ -4,6 +4,11 @@ namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
+use App\Models\User;
+use App\Models\Siswa;
+use Faker\Factory as Faker;
+
+
 
 class SiswaSeeder extends Seeder
 {
@@ -14,28 +19,17 @@ class SiswaSeeder extends Seeder
      */
     public function run()
     {
-        DB::table('siswas')->truncate();
 
-        $siswa_data = [
-            [
-                'kelas_id' => 1,
-                'user_id' => 300,
-                'nisn' => '2124320',
-                'is_beasiswa' => 0,
-                'asal_sekolah' => 'SMA Negeri 1 Medan',
-                'created_at' => now(),
-                'updated_at' => now(),
-            ],
-            [
-                'kelas_id' => 2,
-                'user_id' => 400,
-                'nisn' => '2124329',
-                'is_beasiswa' => 0,
-                'asal_sekolah' => 'SMA Negeri 2 Medan',
-                'created_at' => now(),
-                'updated_at' => now(),
-            ]
-        ];
-        DB::table('siswas')->insert($siswa_data);
+        for ($i = 1; $i <= 100; $i++) {
+            $user =  User::factory()->create();
+            $siswa = Siswa::factory()->create([
+                'user_id' => $user->id,
+            ]);
+
+            DB::table('role_user')->insert([
+                'role_id' => 3,
+                'user_id' => $user->id,
+            ]);
+        }
     }
 }

@@ -9,6 +9,8 @@ class TahfidzSiswa extends Model
 {
     use HasFactory;
 
+    protected $table = 'tahfidz_siswas';
+
     protected $fillable = [
         'user_id',
         'surah',

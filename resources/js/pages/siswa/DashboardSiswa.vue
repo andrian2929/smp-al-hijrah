@@ -1,7 +1,7 @@
 <template>
     <a-row type="flex" justify="center">
         <a-col :xs="23">
-            <a-card title="DASHBOARD" style="width: 100%"> </a-card>
+            <a-card title="Dashboard" style="width: 100%"> </a-card>
         </a-col>
     </a-row>
 
@@ -9,58 +9,63 @@
         <a-row :gutter="16">
             <a-col :sm="24" :xl="8" :md="12" :lg="8">
                 <a-card title="Biodata" style="border-radius: 20px">
-                    <div align="center">
-                        <img
-                            style="
-                                width: 50%;
-                                border-radius: 10px;
-                                margin-bottom: 20px;
-                            "
-                            :src="
-                                siswa.user.image == 'default.png'
-                                    ? '/img/no_profile.png'
-                                    : '/img/profile_photo/' + siswa.user.image
-                            "
-                            alt="profile picture"
-                        />
-                        <h3 style="margintop: 30px">
-                            {{ siswa.user.name }}
-                        </h3>
-                    </div>
-                    <a-row :gutter="[8, 8]">
-                        <a-col :span="12">
-                            <strong>NISN</strong>
-                        </a-col>
-                        <a-col :span="12">
-                            <p>{{ siswa.nisn }}</p>
-                        </a-col>
-                        <a-col :span="12">
-                            <strong>Kelas</strong>
-                        </a-col>
-                        <a-col :span="12">
-                            <p>
-                                {{ siswa.kelas.jenjang }} -
-                                {{ siswa.kelas.section }}
-                            </p>
-                        </a-col>
-                        <a-col :span="12">
-                            <strong>Beasiswa</strong>
-                        </a-col>
-                        <a-col :span="12">
-                            <p>
-                                {{ siswa.is_beasiswa == 0 ? 'Tidak' : 'Ya' }}
-                            </p>
-                        </a-col>
-                        <a-col :span="12">
-                            <strong>Tanggal Bergabung</strong>
-                        </a-col>
-                        <a-col :span="12">
-                            <span> {{ siswa.created_at }}</span>
-                            <span style="font-size: 12px; display: block">
-                                <i>{{ siswa.created_at_humanize }}</i>
-                            </span>
-                        </a-col>
-                    </a-row>
+                    <a-skeleton :loading="loading">
+                        <div align="center">
+                            <img
+                                style="
+                                    width: 50%;
+                                    border-radius: 10px;
+                                    margin-bottom: 20px;
+                                "
+                                :src="
+                                    siswa.user.image == 'default.png'
+                                        ? '/img/no_profile.png'
+                                        : '/img/profile_photo/' +
+                                          siswa.user.image
+                                "
+                                alt="profile picture"
+                            />
+                            <h3 style="margintop: 30px">
+                                {{ siswa.user.name }}
+                            </h3>
+                        </div>
+                        <a-row :gutter="[8, 8]">
+                            <a-col :span="12">
+                                <strong>NISN</strong>
+                            </a-col>
+                            <a-col :span="12">
+                                <p>{{ siswa.nisn }}</p>
+                            </a-col>
+                            <a-col :span="12">
+                                <strong>Kelas</strong>
+                            </a-col>
+                            <a-col :span="12">
+                                <p>
+                                    {{ siswa.kelas.jenjang }} -
+                                    {{ siswa.kelas.section }}
+                                </p>
+                            </a-col>
+                            <a-col :span="12">
+                                <strong>Beasiswa</strong>
+                            </a-col>
+                            <a-col :span="12">
+                                <p>
+                                    {{
+                                        siswa.is_beasiswa == 0 ? 'Tidak' : 'Ya'
+                                    }}
+                                </p>
+                            </a-col>
+                            <a-col :span="12">
+                                <strong>Tanggal Bergabung</strong>
+                            </a-col>
+                            <a-col :span="12">
+                                <span> {{ siswa.created_at }}</span>
+                                <span style="font-size: 12px; display: block">
+                                    <i>{{ siswa.created_at_humanize }}</i>
+                                </span>
+                            </a-col>
+                        </a-row>
+                    </a-skeleton>
                 </a-card>
             </a-col>
 

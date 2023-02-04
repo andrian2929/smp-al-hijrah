@@ -20,6 +20,7 @@ class CreateTahfidzSiswasTable extends Migration
             $table->integer('ayat_start')->default(1);
             $table->integer('ayat_end');
             $table->boolean('is_tamat')->default(0);
+            $table->date('tanggal');
             $table->timestamps();
         });
     }

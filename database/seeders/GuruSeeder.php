@@ -4,6 +4,8 @@ namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
+use App\Models\Guru;
+use App\Models\User;
 
 class GuruSeeder extends Seeder
 {
@@ -14,16 +16,16 @@ class GuruSeeder extends Seeder
      */
     public function run()
     {
-        $data = [
-            [
-                'id' => 401,
-                'user_id' => 100,
-                'nip' => '20023213',
-                'gelar' => 'S.Pd',
-                'tanggal_bergabung' => '2022-02-03',
+        for ($i = 1; $i <= 10; $i++) {
+            $user =  User::factory()->create();
+            $guru = Guru::factory()->create([
+                'user_id' => $user->id,
+            ]);
 
-            ]
-        ];
-        DB::table('gurus')->insert($data);
+            DB::table('role_user')->insert([
+                'role_id' => 2,
+                'user_id' => $user->id,
+            ]);
+        }
     }
 }

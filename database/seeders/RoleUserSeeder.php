@@ -14,26 +14,26 @@ class RoleUserSeeder extends Seeder
      */
     public function run()
     {
-        DB::table('role_user')->truncate();
-        $data_role_user = [
-            [
-                'role_id' => 2,
-                'user_id' => 100,
-            ],
-            [
-                'role_id' => 1,
-                'user_id' => 200,
-            ],
-            [
-                'role_id' => 3,
-                'user_id' => 300,
-            ],
-            [
-                'role_id' => 3,
-                'user_id' => 400,
-            ]
-        ];
+        //  DB::table('role_user')->truncate();
+        // $data_role_user = [
+        //     [
+        //         'role_id' => 2,
+        //         'user_id' => 100,
+        //     ],
+        //     [
+        //         'role_id' => 1,
+        //         'user_id' => 200,
+        //     ],
+        //     [
+        //         'role_id' => 3,
+        //         'user_id' => 300,
+        //     ],
+        //     [
+        //         'role_id' => 3,
+        //         'user_id' => 400,
+        //     ]
+        // ];
 
-        DB::table('role_user')->insert($data_role_user);
+        // DB::table('role_user')->insert($data_role_user);
     }
 }

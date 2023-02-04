@@ -15,15 +15,15 @@ class KelasSeeder extends Seeder
     public function run()
     {
         $data = [
-            ['jenjang' => 'VII', 'section' => 'A'],
-            ['jenjang' => 'VII', 'section' => 'B'],
-            ['jenjang' => 'VII', 'section' => 'C'],
-            ['jenjang' => 'VIII', 'section' => 'A'],
-            ['jenjang' => 'VIII', 'section' => 'B'],
-            ['jenjang' => 'VIII', 'section' => 'C'],
-            ['jenjang' => 'IX', 'section' => 'A'],
-            ['jenjang' => 'IX', 'section' => 'B'],
-            ['jenjang' => 'IX', 'section' => 'C'],
+            ['id' => 1, 'jenjang' => 'VII', 'section' => 'A'],
+            ['id' => 2, 'jenjang' => 'VII', 'section' => 'B'],
+            ['id' => 3, 'jenjang' => 'VII', 'section' => 'C'],
+            ['id' => 4, 'jenjang' => 'VIII', 'section' => 'A'],
+            ['id' => 5, 'jenjang' => 'VIII', 'section' => 'B'],
+            ['id' => 6, 'jenjang' => 'VIII', 'section' => 'C'],
+            ['id' => 7, 'jenjang' => 'IX', 'section' => 'A'],
+            ['id' => 8, 'jenjang' => 'IX', 'section' => 'B'],
+            ['id' => 9, 'jenjang' => 'IX', 'section' => 'C'],
         ];
         DB::table('kelas')->insert($data);
     }

@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\Models\MataPelajaran;
-use App\Models\MataPelajaranGuru;
 use App\Models\MataPelajaranHari;
 use Illuminate\Http\Request;
 
@@ -36,10 +35,28 @@ class MapelController extends Controller
             $data = MataPelajaran::where('id', $request->id)->firstOrFail();
             $data['gurus_user'] = $data->gurusUser;
         }
-        if ($request->req = '')
-            return response()->json([
-                'models' => $data
-            ]);
+
+        if ($request->req == 'get_mapel_by_guru_id') {
+
+            $mapel = MataPelajaranHari::select('id', 'hari', 'waktu', 'mapel_id', 'guru_id', 'kelas_id')
+                ->where('guru_id', $request->guru_id)
+                ->with('mapel')->with('kelas')
+                ->get();
+            $data = $mapel;
+
+            // $mapel = MataPelajaran::select('id', 'name', 'gurus')->whereHas('hari')->with('hari')->get();
+            // $data = $mapel->filter(function ($item) use ($request) {
+            //     $gurus = json_decode($item->gurus);
+            //     if (!is_array($gurus))
+            //         return false;
+            //     return in_array($request->guru_id, $gurus);
+            // });
+            // $data = array_values($data->toArray());
+
+        }
+        return response()->json([
+            'models' => $data
+        ]);
     }
 
     public function write(Request $request)

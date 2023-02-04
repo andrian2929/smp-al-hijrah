@@ -1,7 +1,8 @@
 <template>
     <a-row type="flex" justify="center">
         <a-col :xs="23">
-            <a-card title="Dashboard" style="width: 100%"> </a-card>
+            <a-card title="Dashboard" style="width: 100%; border-radius: 10px">
+            </a-card>
         </a-col>
     </a-row>
     <div style="background-color: #ececec; padding: 20px">
@@ -23,7 +24,7 @@
                                           userData.user.image
                                 "
                             />
-                            <h3 style="margintop: 30px; marginbottom: 30px">
+                            <h3 style="margintop: 30px; margin-bottom: 30px">
                                 {{ userData.user.name }}
                             </h3>
                         </div>
@@ -59,14 +60,11 @@
             </a-col>
 
             <a-col :sm="24" :lg="16">
-                <a-card
-                    :title="`Mata Pelajaran Hari Ini`"
-                    style="border-radius: 20px"
-                >
+                <a-card :title="`Mata Pelajaran`" style="border-radius: 20px">
                     <a-skeleton :loading="loading">
                         <a-table
-                            :dataSource="dataSource(thisDay)"
-                            :columns="columns"
+                            :dataSource="scheduleDataSource"
+                            :columns="scheduleColumn"
                             :pagination="false"
                         />
                     </a-skeleton>
@@ -151,6 +149,11 @@ import 'moment/locale/id'
 
 const scheduleColumn = [
     {
+        title: 'No',
+        dataIndex: 'key',
+        key: 'key'
+    },
+    {
         title: 'Mata Pelajaran',
         dataIndex: 'matapelajaran',
         key: 'matapelajaran'
@@ -176,43 +179,7 @@ export default {
     data() {
         return {
             scheduleColumn,
-            scheduleDataSource: [
-                {
-                    key: '1',
-                    matapelajaran: 'Bahasa Indonesia',
-                    kelas: 'XII IPA 1',
-                    hari: 'Senin',
-                    waktu: '07.00 - 08.00'
-                },
-                {
-                    key: '2',
-                    matapelajaran: 'Bahasa Indonesia',
-                    kelas: 'XII IPA 1',
-                    hari: 'Selasa',
-                    waktu: '07.00 - 08.00'
-                },
-                {
-                    key: '3',
-                    matapelajaran: 'Bahasa Indonesia',
-                    kelas: 'XII IPA 1',
-                    hari: 'Rabu',
-                    waktu: '07.00 - 08.00'
-                },
-                {
-                    key: '4',
-                    matapelajaran: 'Bahasa Indonesia',
-                    kelas: 'XII IPA 1',
-                    hari: 'Kamis',
-                    waktu: '07.00 - 08.00'
-                },
-                {
-                    key: '5',
-                    matapelajaran: 'Bahasa Indonesia',
-                    kelas: 'XII IPA 1',
-                    hari: 'Jumat',
-                    waktu: '07.00 - 08.00'
-                }
-            ],
+            scheduleDataSource: [],
             userData: null,
             loading: true
         }
@@ -225,22 +192,73 @@ export default {
             return moment(this.userData.tanggal_bergabung).format(
                 'dddd, DD MMMM YYYY'
             )
+        },
+
+        thisDay() {
+            return moment().format('dddd')
         }
     },
     methods: {
         readData() {
             this.axios.get(this.url('user')).then((response) => {
+                const user_id = response.data.id
                 this.axios
                     .get(this.url('guru/read'), {
                         params: {
-                            user_id: response.data.id,
+                            user_id: user_id,
                             req: 'get_guru_by_user_id'
                         }
                     })
                     .then((response) => {
                         this.userData = response.data.models
-                        this.loading = false
                     })
+
+                this.axios
+                    .get(this.url('mapel/read'), {
+                        params: {
+                            guru_id: user_id,
+                            req: 'get_mapel_by_guru_id'
+                        }
+                    })
+                    .then((response) => {
+                        this.loading = false
+                        this.readMapel(response.data.models)
+                    })
+            })
+        },
+        readMapel(response) {
+            const days = [
+                'senin',
+                'selasa',
+                'rabu',
+                'kamis',
+                'jumat',
+                'sabtu',
+                'minggu'
+            ]
+            days.forEach((day, index) => {
+                let arrayTemp = []
+                response.forEach((item, index) => {
+                    if (item.hari === day) {
+                        arrayTemp.push({
+                            key: index + 1,
+                            matapelajaran: item.mapel.name,
+                            kelas:
+                                item.kelas.jenjang + ' - ' + item.kelas.section,
+                            hari: `${item.hari
+                                .charAt(0)
+                                .toUpperCase()}${item.hari.slice(1)}`,
+                            waktu: item.waktu
+                        })
+                    }
+                    arrayTemp.sort((a, b) => {
+                        return a.waktu.localeCompare(b.waktu)
+                    })
+                })
+                this.scheduleDataSource.push(...arrayTemp)
+                this.scheduleDataSource.map((item, index) => {
+                    item.waktu = item.waktu.substring(0, 5)
+                })
             })
         }
     }

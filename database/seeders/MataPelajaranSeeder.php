@@ -15,15 +15,15 @@ class MataPelajaranSeeder extends Seeder
     public function run()
     {
         $data = [
-            ['name' => 'PAI', 'jenjang' => 'VII'],
-            ['name' => 'PPKN', 'jenjang' => 'VII'],
-            ['name' => 'BAHASA INDONESIA', 'jenjang' => 'VII'],
-            ['name' => 'MATEMATIKA', 'jenjang' => 'VII'],
-            ['name' => 'IPA', 'jenjang' => 'VII'],
-            ['name' => 'IPS', 'jenjang' => 'VII'],
-            ['name' => 'BAHASA INGGRIS', 'jenjang' => 'VII'],
-            ['name' => 'SENI BUDAYA', 'jenjang' => 'VII'],
-            ['name' => 'PENJAS', 'jenjang' => 'VII']
+            ['name' => 'Pendidikan Agama Islam', 'jenjang' => 'VII'],
+            ['name' => 'Pendidikan Pancasila dan Kewarganegaraan', 'jenjang' => 'VII'],
+            ['name' => 'Bahasa Indonesia', 'jenjang' => 'VII'],
+            ['name' => 'Matematika', 'jenjang' => 'VII'],
+            ['name' => 'Ilmu Pengetahuan Alam', 'jenjang' => 'VII'],
+            ['name' => 'Ilmu Pengetahuan Sosial', 'jenjang' => 'VII'],
+            ['name' => 'Bahasa Inggris', 'jenjang' => 'VII'],
+            ['name' => 'Seni Budaya', 'jenjang' => 'VII'],
+            ['name' => 'Pendidikan Jasmani', 'jenjang' => 'VII']
         ];
 
         DB::table('mata_pelajarans')->insert($data);

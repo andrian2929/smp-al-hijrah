@@ -214,9 +214,11 @@ export default {
                 req: 'write',
                 ...vm.form
             }
+
             vm.axios
                 .post(vm.url('mapel/write'), params)
-                .then(() => {
+                .then((response) => {
+                    console.log(response)
                     vm.openNotification(vm.notifMsg, 'success')
                     vm.readData()
                     vm.modalShow = false

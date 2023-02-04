@@ -267,8 +267,8 @@
                             </a-space>
 
                             <a-table
-                                :dataSource="dataSource3"
-                                :columns="kolom3"
+                                :dataSource="dataSourceIbadah"
+                                :columns="columnIbadah"
                                 :pagination="false"
                                 style="margin-bottom: 6px"
                                 bordered
@@ -351,13 +351,238 @@
                             </a-table>
 
                             <a-table
-                                :dataSource="dataSource4"
-                                :columns="kolom4"
+                                :dataSource="dataSourceAkidah"
+                                :columns="columnAkidah"
                                 :pagination="false"
+                                style="margin-bottom: 6px"
                                 bordered
                             >
                                 <template #bodyCell="{ column, record }">
-                                    <template v-if="column.key === 'aqidah'">
+                                    <template v-if="column.key === 'akidah'">
+                                        <a>
+                                            {{ record.name }}
+                                        </a>
+                                    </template>
+                                    <template
+                                        v-else-if="column.key === 'point'"
+                                    >
+                                        <a-form-item
+                                            :name="[
+                                                record.name.replace(/\s+/g, ''),
+                                                'nilai'
+                                            ]"
+                                            :rules="[
+                                                {
+                                                    required: true,
+                                                    message:
+                                                        'Poin tidak boleh kosong'
+                                                },
+                                                {
+                                                    pattern: new RegExp(
+                                                        '^[0-9]*$'
+                                                    ),
+                                                    message:
+                                                        'Poin harus berupa angka'
+                                                }
+                                            ]"
+                                        >
+                                            <a-input
+                                                v-model:value="
+                                                    formPerilaku[
+                                                        record.name.replace(
+                                                            /\s+/g,
+                                                            ''
+                                                        )
+                                                    ].nilai
+                                                "
+                                                placeholder="Masukkan poin"
+                                            />
+                                        </a-form-item>
+                                    </template>
+                                    <template
+                                        v-else-if="column.key === 'catatan'"
+                                    >
+                                        <a-form-item
+                                            :name="[
+                                                record.name.replace(/\s+/g, ''),
+                                                'catatan'
+                                            ]"
+                                        >
+                                            <a-input
+                                                v-model:value="
+                                                    formPerilaku[
+                                                        record.name.replace(
+                                                            /\s+/g,
+                                                            ''
+                                                        )
+                                                    ].catatan
+                                                "
+                                                placeholder="Masukkan catatan"
+                                            />
+                                        </a-form-item>
+                                    </template>
+                                </template>
+                            </a-table>
+
+                            <a-table
+                                :dataSource="dataSourceAkhlak"
+                                :columns="columnAkhlak"
+                                :pagination="false"
+                                bordered
+                                style="margin-bottom: 6px"
+                            >
+                                <template #bodyCell="{ column, record }">
+                                    <template v-if="column.key === 'akhlak'">
+                                        <a>
+                                            {{ record.name }}
+                                        </a>
+                                    </template>
+                                    <template
+                                        v-else-if="column.key === 'point'"
+                                    >
+                                        <a-form-item
+                                            :name="[
+                                                record.name.replace(/\s+/g, ''),
+                                                'nilai'
+                                            ]"
+                                            :rules="[
+                                                {
+                                                    required: true,
+                                                    message:
+                                                        'Poin tidak boleh kosong'
+                                                },
+                                                {
+                                                    pattern: new RegExp(
+                                                        '^[0-9]*$'
+                                                    ),
+                                                    message:
+                                                        'Poin harus berupa angka'
+                                                }
+                                            ]"
+                                        >
+                                            <a-input
+                                                v-model:value="
+                                                    formPerilaku[
+                                                        record.name.replace(
+                                                            /\s+/g,
+                                                            ''
+                                                        )
+                                                    ].nilai
+                                                "
+                                                placeholder="Masukkan poin"
+                                            />
+                                        </a-form-item>
+                                    </template>
+                                    <template
+                                        v-else-if="column.key === 'catatan'"
+                                    >
+                                        <a-form-item
+                                            :name="[
+                                                record.name.replace(/\s+/g, ''),
+                                                'catatan'
+                                            ]"
+                                        >
+                                            <a-input
+                                                v-model:value="
+                                                    formPerilaku[
+                                                        record.name.replace(
+                                                            /\s+/g,
+                                                            ''
+                                                        )
+                                                    ].catatan
+                                                "
+                                                placeholder="Masukkan catatan"
+                                            />
+                                        </a-form-item>
+                                    </template>
+                                </template>
+                            </a-table>
+
+                            <a-table
+                                :dataSource="dataSourceKedisplinan"
+                                :columns="columnKedisplinan"
+                                :pagination="false"
+                                bordered
+                                style="margin-bottom: 6px"
+                            >
+                                <template #bodyCell="{ column, record }">
+                                    <template
+                                        v-if="column.key === 'kedisplinan'"
+                                    >
+                                        <a>
+                                            {{ record.name }}
+                                        </a>
+                                    </template>
+                                    <template
+                                        v-else-if="column.key === 'point'"
+                                    >
+                                        <a-form-item
+                                            :name="[
+                                                record.name.replace(/\s+/g, ''),
+                                                'nilai'
+                                            ]"
+                                            :rules="[
+                                                {
+                                                    required: true,
+                                                    message:
+                                                        'Poin tidak boleh kosong'
+                                                },
+                                                {
+                                                    pattern: new RegExp(
+                                                        '^[0-9]*$'
+                                                    ),
+                                                    message:
+                                                        'Poin harus berupa angka'
+                                                }
+                                            ]"
+                                        >
+                                            <a-input
+                                                v-model:value="
+                                                    formPerilaku[
+                                                        record.name.replace(
+                                                            /\s+/g,
+                                                            ''
+                                                        )
+                                                    ].nilai
+                                                "
+                                                placeholder="Masukkan poin"
+                                            />
+                                        </a-form-item>
+                                    </template>
+                                    <template
+                                        v-else-if="column.key === 'catatan'"
+                                    >
+                                        <a-form-item
+                                            :name="[
+                                                record.name.replace(/\s+/g, ''),
+                                                'catatan'
+                                            ]"
+                                        >
+                                            <a-input
+                                                v-model:value="
+                                                    formPerilaku[
+                                                        record.name.replace(
+                                                            /\s+/g,
+                                                            ''
+                                                        )
+                                                    ].catatan
+                                                "
+                                                placeholder="Masukkan catatan"
+                                            />
+                                        </a-form-item>
+                                    </template>
+                                </template>
+                            </a-table>
+
+                            <a-table
+                                :dataSource="dataSourceKerapian"
+                                :columns="columnKerapian"
+                                :pagination="false"
+                                bordered
+                                style="margin-bottom: 6px"
+                            >
+                                <template #bodyCell="{ column, record }">
+                                    <template v-if="column.key === 'kerapian'">
                                         <a>
                                             {{ record.name }}
                                         </a>
@@ -446,6 +671,60 @@
 </template>
 
 <script>
+const dataSource1 = [
+    {
+        key: '1',
+        kegiatanibadah: 'Qiyamul Lail'
+    },
+    {
+        key: '2',
+        kegiatanibadah: 'Dhuha'
+    },
+    {
+        key: '3',
+        kegiatanibadah: 'Tilawah Quran'
+    },
+    {
+        key: '4',
+        kegiatanibadah: 'Membaca Buku'
+    },
+    {
+        key: '5',
+        kegiatanibadah: 'Olahraga'
+    },
+    {
+        key: '6',
+        kegiatanibadah: 'Al Matsurat'
+    },
+    {
+        key: '7',
+        kegiatanibadah: 'Shoum Sunnah'
+    }
+]
+
+const dataSource2 = [
+    {
+        key: '1',
+        shalat: 'Shalat Subuh'
+    },
+    {
+        key: '2',
+        shalat: 'Shalat Dzuhur'
+    },
+    {
+        key: '3',
+        shalat: 'Shalat Ashar'
+    },
+    {
+        key: '4',
+        shalat: 'Shalat Maghrib'
+    },
+    {
+        key: '5',
+        shalat: 'Shalat Isya'
+    }
+]
+
 import { message } from 'ant-design-vue'
 import {
     SearchOutlined,
@@ -492,36 +771,7 @@ const kolom1 = [
         key: 'aksi'
     }
 ]
-const dataSource1 = [
-    {
-        key: '1',
-        kegiatanibadah: 'Qiyamul Lail'
-    },
-    {
-        key: '2',
-        kegiatanibadah: 'Dhuha'
-    },
-    {
-        key: '3',
-        kegiatanibadah: 'Tilawah Quran'
-    },
-    {
-        key: '4',
-        kegiatanibadah: 'Membaca Buku'
-    },
-    {
-        key: '5',
-        kegiatanibadah: 'Olahraga'
-    },
-    {
-        key: '6',
-        kegiatanibadah: 'Al Matsurat'
-    },
-    {
-        key: '7',
-        kegiatanibadah: 'Shoum Sunnah'
-    }
-]
+
 const kolom2 = [
     {
         title: 'Shalat',
@@ -533,29 +783,8 @@ const kolom2 = [
         key: 'aksi'
     }
 ]
-const dataSource2 = [
-    {
-        key: '1',
-        shalat: 'Shalat Subuh'
-    },
-    {
-        key: '2',
-        shalat: 'Shalat Dzuhur'
-    },
-    {
-        key: '3',
-        shalat: 'Shalat Ashar'
-    },
-    {
-        key: '4',
-        shalat: 'Shalat Maghrib'
-    },
-    {
-        key: '5',
-        shalat: 'Shalat Isya'
-    }
-]
-const kolom3 = [
+
+const columnIbadah = [
     {
         title: 'Ibadah',
         dataIndex: 'ibadah',
@@ -571,7 +800,7 @@ const kolom3 = [
     }
 ]
 
-const kolom4 = [
+const columnAkidah = [
     {
         title: 'Aqidah',
         dataIndex: 'aqidah',
@@ -595,10 +824,17 @@ export default {
             kolom1,
             dataSource2,
             kolom2,
-            dataSource3: null,
-            kolom3,
-            dataSource4: null,
-            kolom4,
+            dataSourceIbadah: null,
+            columnIbadah: this.columnPerilaku('ibadah'),
+            dataSourceAkidah: null,
+            columnAkidah: this.columnPerilaku('akidah'),
+            dataSourceAkhlak: null,
+            columnAkhlak: this.columnPerilaku('akhlak'),
+            dataSourceKedisplinan: null,
+            columnKedisplinan: this.columnPerilaku('kedisplinan'),
+            dataSourceKerapian: null,
+            columnKerapian: this.columnPerilaku('kerapian'),
+
             classes: [],
             formTahfidz: {
                 tanggal: moment().format('YYYY-MM-DD'),
@@ -1116,6 +1352,7 @@ export default {
                 .post(this.url('laporan/perilaku/write'), perilaku)
                 .then((res) => {
                     this.readData()
+                    window.scrollTo(0, 0)
                     this.$notification.success({
                         message: 'Berhasil',
                         description: res.data.message
@@ -1168,12 +1405,27 @@ export default {
 
                 this.axios.get(this.url('perilaku/data')).then((res) => {
                     const response = res.data.data
-                    this.dataSource3 = response.filter((item, index) => {
+
+                    this.dataSourceIbadah = response.filter((item, index) => {
                         return item.type === 'ibadah'
                     })
 
-                    this.dataSource4 = response.filter((item, index) => {
+                    this.dataSourceAkhlak = response.filter((item, index) => {
                         return item.type === 'akhlak'
+                    })
+
+                    this.dataSourceAkidah = response.filter((item, index) => {
+                        return item.type === 'akidah'
+                    })
+
+                    this.dataSourceKedisplinan = response.filter(
+                        (item, index) => {
+                            return item.type === 'kedisiplinan'
+                        }
+                    )
+
+                    this.dataSourceKerapian = response.filter((item, index) => {
+                        return item.type === 'kebersihandankerapian'
                     })
 
                     response.forEach((item, index) => {
@@ -1196,12 +1448,13 @@ export default {
             ;(this.formTahfidz.tanggal = null),
                 (this.formTahfidz.surah = 'Al-Fatihah'),
                 (this.formTahfidz.ayat = null)
+            this.formTahfidz.tanggal = moment().format('YYYY-MM-DD')
         },
         tahfizSource() {
             return this.tahfidzData.data.map((item, index) => {
                 return {
                     key: index + 1,
-                    tanggal: moment(item.tanggal).format('DD MMMM YYYY'),
+                    tanggal: moment(item.tanggal).format('dddd, DD MMMM YYYY'),
                     surah: item.surah,
                     ayat: item.ayat_start + ' - ' + item.ayat_end
                 }
@@ -1234,8 +1487,9 @@ export default {
                         message: 'Berhasil',
                         description: res.data.message
                     })
-                    this.resetFormIbadah()
+
                     window.scrollTo(0, 0)
+                    this.resetFormIbadah()
                 })
                 .catch((e) => {
                     this.$notification.error({
@@ -1243,6 +1497,26 @@ export default {
                         description: JSON.stringify(e.response.data.errors)
                     })
                 })
+        },
+        columnPerilaku(title) {
+            return [
+                {
+                    title: `${title.charAt(0).toUpperCase() + title.slice(1)}`,
+                    dataIndex: title,
+                    key: title,
+                    width: '50%'
+                },
+                {
+                    title: 'Poin',
+                    key: 'point',
+                    width: '25%'
+                },
+                {
+                    title: 'Catatan',
+                    key: 'catatan',
+                    width: '25%'
+                }
+            ]
         }
     }
 }

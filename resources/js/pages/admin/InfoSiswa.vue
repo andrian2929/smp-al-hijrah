@@ -54,7 +54,8 @@
                         </template>
                         <template v-if="column.key == 'is_beasiswa'">
                             <span v-if="record.is_beasiswa"
-                                ><close-square-outlined /></span>
+                                ><close-square-outlined
+                            /></span>
                             <span v-else><close-circle-outlined /></span>
                         </template>
                         <template v-if="column.key === 'action'">
@@ -93,35 +94,34 @@
     </a-row>
 </template>
 <script>
+const columns = [
+    {
+        title: 'No',
+        dataIndex: 'number'
+    },
+    {
+        title: 'Nama Siswa',
+        dataIndex: ['user', 'name']
+    },
+    {
+        title: 'Kelas',
+        key: 'kelas'
+    },
+    {
+        title: 'NISN',
+        dataIndex: ['nisn']
+    },
+    {
+        title: 'Beasiswa',
+        key: 'is_beasiswa'
+    },
+    {
+        title: 'Aksi',
+        key: 'action'
+    }
+]
 export default {
     data() {
-        const columns = [
-            {
-                title: 'No',
-                dataIndex: 'number'
-            },
-            {
-                title: 'Nama Siswa',
-                dataIndex: ['user', 'name']
-            },
-            {
-                title: 'Kelas',
-                key: 'kelas'
-            },
-            {
-                title: 'NISN',
-                dataIndex: ['nisn']
-            },
-            {
-                title: 'Beasiswa',
-                key: 'is_beasiswa'
-            },
-            {
-                title: 'Aksi',
-                key: 'action'
-            }
-        ]
-
         return {
             columns,
 
@@ -166,10 +166,9 @@ export default {
                 .then((response) => {
                     vm.loading = false
                     response.data.models.forEach((item, index) => {
-                        item.number = index + 1;
+                        item.number = index + 1
                     })
                     vm.models = response.data.models
-           
 
                     console.log(vm.models)
                 })

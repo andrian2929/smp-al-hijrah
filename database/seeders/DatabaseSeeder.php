@@ -3,9 +3,12 @@
 namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Artisan;
 
 class DatabaseSeeder extends Seeder
 {
+
     /**
      * Seed the application's database.
      *
@@ -13,11 +16,14 @@ class DatabaseSeeder extends Seeder
      */
     public function run()
     {
+        Artisan::call('migrate:fresh');
+
         $this->call([
             RoleSeeder::class,
-            UserSeeder::class,
             KelasSeeder::class,
+            AdminSeeder::class,
             SiswaSeeder::class,
+            GuruSeeder::class,
             RoleUserSeeder::class,
             MataPelajaranSeeder::class,
             ListPerilakuSeeder::class,

@@ -109,9 +109,15 @@
                                 display: flex;
                                 align-items: center;
                                 justify-content: center;
+                                gap: 5px;
                             "
+                            :src="
+                                userData.image == 'default.png'
+                                    ? '/img/no_profile.png'
+                                    : '/img/profile_photo/' + userData.image
+                            "
+                            alt="profile picture"
                         >
-                            <template #icon><UserOutlined /></template>
                         </a-avatar>
                         <span style="font-size: 1rem">{{ userData.name }}</span>
                         <down-outlined />
