@@ -7,6 +7,7 @@ import KelolaKelas from './KelolaKelas.vue'
 import KelolaMapel from './KelolaMapel.vue'
 import LaporanHarian from './LaporanHarian.vue'
 import LaporanHadir from './LaporanHadir.vue'
+import LaporanHadirGuru from './LaporanHadirGuru.vue'
 import LaporanNilai from './LaporanNilai.vue'
 import LaporanGuru from './LaporanGuru.vue'
 import KelolaKelasDetail from './KelolaKelasDetail'
@@ -23,6 +24,7 @@ export {
     KelolaMapel,
     LaporanHarian,
     LaporanHadir,
+    LaporanHadirGuru,
     LaporanNilai,
     LaporanGuru,
     KelolaKelasDetail,
