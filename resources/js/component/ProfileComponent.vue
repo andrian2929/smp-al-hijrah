@@ -498,7 +498,7 @@
     <!-- Modal Orangtua -->
     <a-modal
         v-if="editMode"
-        v-model:visible="modal.contact"
+        v-model:visible="modal.orangtua"
         title="Edit Wali"
         @ok="writeData"
     >
@@ -526,6 +526,89 @@
             </a-form-item>
         </a-form>
     </a-modal>
+    <!-- <a-modal
+        v-if="editMode"
+        v-model:visible="modal.orangtua"
+        title="Edit Wali"
+    >
+        <a-form
+            name="orangtua"
+            :label-col="{ span: 8 }"
+            :wrapper-col="{ span: 16 }"
+            class="login-form"
+            autocomplete="off"
+        >
+            <template v-for="form_ortu in form.orangtua" :key="form_ortu.id">
+                <a-form-item label="" name="type">
+                    <a-select
+                        disabled
+                        v-model:value="form_ortu.type"
+                        style="width: 150%"
+                    >
+                        <a-select-option value="Ayah">Ayah</a-select-option>
+                        <a-select-option value="Ibu">Ibu</a-select-option>
+                        <a-select-option value="Wali">Wali</a-select-option>
+                    </a-select>
+                </a-form-item>
+
+                <a-form-item
+                    label="Status"
+                    name="status"
+                    :class="{
+                        'ant-form-item-has-error': validation.orangtua
+                    }"
+                >
+                    <a-radio-group v-model:value="form_ortu.status">
+                        <a-radio value="kandung">Kandung</a-radio>
+                        <a-radio value="angkat">Angkat</a-radio>
+                    </a-radio-group>
+                </a-form-item>
+
+                <a-form-item
+                    label="Nama Lengkap"
+                    name="name"
+                    :class="{
+                        'ant-form-item-has-error': validation.orangtua
+                    }"
+                >
+                    <a-input v-model:value="form_ortu.name" />
+                </a-form-item>
+
+                <a-form-item
+                    label="Tanggal Lahir"
+                    name="tanggal_lahir"
+                    :class="{
+                        'ant-form-item-has-error': validation.orangtua
+                    }"
+                >
+                    <a-date-picker
+                        v-model:value="form['tanggal_lahir']"
+                        value-format="YYYY-MM-DD"
+                    />
+                </a-form-item>
+
+                <a-form-item
+                    label="Pekerjaan"
+                    name="pekerjaan"
+                    :class="{
+                        'ant-form-item-has-error': validation.orangtua
+                    }"
+                >
+                    <a-input v-model:value="form_ortu.pekerjaan" />
+                </a-form-item>
+
+                <a-form-item
+                    label="Keterangan Lainnya"
+                    name="keterangan"
+                    :class="{
+                        'ant-form-item-has-error': validation.orangtua
+                    }"
+                >
+                    <a-textarea v-model:value="form_ortu.keterangan" />
+                </a-form-item>
+            </template>
+        </a-form>
+    </a-modal> -->
 </template>
 
 <script>
