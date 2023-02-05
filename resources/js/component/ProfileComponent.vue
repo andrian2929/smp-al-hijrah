@@ -205,7 +205,7 @@
                         </a-col>
                         <!-- Orangtua Card -->
                         <a-col :xs="24">
-                            <a-card title="Orangtua" style="width: 100%">
+                            <a-card title="Wali" style="width: 100%">
                                 <template #extra
                                     ><a
                                         @click="
@@ -498,86 +498,32 @@
     <!-- Modal Orangtua -->
     <a-modal
         v-if="editMode"
-        v-model:visible="modal.orangtua"
-        title="Edit Orangtua"
+        v-model:visible="modal.contact"
+        title="Edit Wali"
         @ok="writeData"
     >
         <a-form
-            name="orangtua"
+            name="contact"
             :label-col="{ span: 8 }"
             :wrapper-col="{ span: 16 }"
             class="login-form"
             autocomplete="off"
         >
-            <template v-for="form_ortu in form.orangtua" :key="form_ortu.id">
-                <a-form-item label="" name="type">
-                    <a-select
-                        disabled
-                        v-model:value="form_ortu.type"
-                        style="width: 150%"
-                    >
-                        <a-select-option value="Ayah">Ayah</a-select-option>
-                        <a-select-option value="Ibu">Ibu</a-select-option>
-                        <a-select-option value="Wali">Wali</a-select-option>
-                    </a-select>
-                </a-form-item>
+            <a-form-item
+                label="Nomor Telepon"
+                name="no_telp"
+                :class="{ 'ant-form-item-has-error': validation.no_telp }"
+            >
+                <a-input v-model:value="form.no_telp" />
+            </a-form-item>
 
-                <a-form-item
-                    label="Status"
-                    name="status"
-                    :class="{
-                        'ant-form-item-has-error': validation.orangtua
-                    }"
-                >
-                    <a-radio-group v-model:value="form_ortu.status">
-                        <a-radio value="kandung">Kandung</a-radio>
-                        <a-radio value="angkat">Angkat</a-radio>
-                    </a-radio-group>
-                </a-form-item>
-
-                <a-form-item
-                    label="Nama Lengkap"
-                    name="name"
-                    :class="{
-                        'ant-form-item-has-error': validation.orangtua
-                    }"
-                >
-                    <a-input v-model:value="form_ortu.name" />
-                </a-form-item>
-
-                <a-form-item
-                    label="Tanggal Lahir"
-                    name="tanggal_lahir"
-                    :class="{
-                        'ant-form-item-has-error': validation.orangtua
-                    }"
-                >
-                    <a-date-picker
-                        v-model:value="form['tanggal_lahir']"
-                        value-format="YYYY-MM-DD"
-                    />
-                </a-form-item>
-
-                <a-form-item
-                    label="Pekerjaan"
-                    name="pekerjaan"
-                    :class="{
-                        'ant-form-item-has-error': validation.orangtua
-                    }"
-                >
-                    <a-input v-model:value="form_ortu.pekerjaan" />
-                </a-form-item>
-
-                <a-form-item
-                    label="Keterangan Lainnya"
-                    name="keterangan"
-                    :class="{
-                        'ant-form-item-has-error': validation.orangtua
-                    }"
-                >
-                    <a-textarea v-model:value="form_ortu.keterangan" />
-                </a-form-item>
-            </template>
+            <a-form-item
+                label="Email"
+                name="email"
+                :class="{ 'ant-form-item-has-error': validation.email }"
+            >
+                <a-input v-model:value="form.email" />
+            </a-form-item>
         </a-form>
     </a-modal>
 </template>
@@ -620,13 +566,13 @@ export default {
                 id: _id
             }
             vm.axios
-                .get(vm.url('user/read'), { params: params })
-                .then((response) => {
-                    vm.models = response.data.models
-                    vm.form = response.data.models
-                    this.image = response.data.models.image
-                    vm.loading = false
-                })
+                // .get(vm.url('user/read'), { params: params })
+                // .then((response) => {
+                //     vm.models = response.data.models
+                //     vm.form = response.data.models
+                //     this.image = response.data.models.image
+                //     vm.loading = false
+                // })
                 .catch((error) => {
                     vm.$onAjaxError(error)
                 })
@@ -643,7 +589,7 @@ export default {
                 ...vm.form
             }
             vm.axios
-                .post(vm.url('user/write'), params)
+                // .post(vm.url('user/write'), params)
                 .then(() => {
                     vm.openNotification('Berhasil mengupdate data', 'success')
                     vm.modal = {

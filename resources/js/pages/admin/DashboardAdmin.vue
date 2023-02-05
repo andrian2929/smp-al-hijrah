@@ -7,8 +7,7 @@
                         <a-col :span="8">
                             <a-card
                                 size="small"
-                                style="
-                                    background-color: #fc8989;
+                                style="background-color: #fc8989;
                                     border-radius: 20px;
                                 "
                             >
@@ -18,76 +17,32 @@
                                 <h5 style="color: #ffffff; margin: 0">Guru</h5>
                             </a-card>
                         </a-col>
-
                         <a-col :span="8">
                             <a-card
                                 size="small"
-                                style="background-color: #89a9fc"
+                                style="
+                                    background-color: #89a9fc;
+                                    border-radius: 20px;
+                                "
                             >
-                                <h1
-                                    style="
-                                        color: #ffffff;
-
-                                        margin: 0;
-
-                                        margintop: -12px;
-                                    "
-                                >
+                                <h1 style="color: #ffffff; margin: 0">
                                     {{ siswaCount }}
                                 </h1>
                                 <h5 style="color: #ffffff; margin: 0">Siswa</h5>
-                                <p
-                                    style="
-                                        background-color: #3e74ff;
-                                        color: #ffffff;
-                                        margin: 0 -12px -12px -12px;
-                                    "
-                                    align="center"
-                                >
-                                    More Info
-                                    <caret-right-outlined
-                                        style="verticalalign: middle"
-                                    />
-                                </p>
                             </a-card>
                         </a-col>
                         <a-col :span="8">
                             <a-card
                                 size="small"
-                                style="background-color: #7ae378"
+                                style="
+                                    background-color: #7ae378;
+                                    border-radius: 20px;
+                                "
                             >
-                                <h1
-                                    style="
-                                        color: #ffffff;
-
-                                        margin: 0;
-
-                                        margintop: -12px;
-                                    "
-                                >
+                                <h1 style="color: #ffffff; margin: 0">
                                     0
                                 </h1>
-
-                                <h5 style="color: #ffffff; margin: 0">
-                                    Online User
-                                </h5>
-
-                                <p
-                                    style="
-                                        background-color: #56c530;
-
-                                        color: #ffffff;
-
-                                        margin: 0 -12px -12px -12px;
-                                    "
-                                    align="center"
-                                >
-                                    More Info
-
-                                    <caret-right-outlined
-                                        style="verticalalign: middle"
-                                    />
-                                </p>
+                                <h5 style="color: #ffffff; margin: 0">Online User</h5>
                             </a-card>
                         </a-col>
                     </a-row>
