@@ -1,232 +1,340 @@
 <template>
     <h1 style="margin-left: 30px">Laporan Kehadiran Guru</h1>
+
     <a-row type="flex" justify="center">
-      <a-col :xs="23">
-        <a-card
-          :loading="loading"
-          title="Pilih Kriteria"
-          style="width: 100%; margin-bottom: 20px"
-        >
-          <a-space
-            style="
-              display: flex;
-              justify-content: flex-container;
-              flex-wrap: wrap;
-              margin-bottom: 20px;
-            "
-          >
-            <a-select
-              v-model:value="filter.kelas_id"
-              style="width: 345px"
-              placeholder="Kelas"
+        <a-col :xs="23">
+            <a-card
+                :loading="loading"
+                title="Pilih Kriteria"
+                style="width: 100%; margin-bottom: 20px"
             >
-              <a-select-option
-                v-for="cls in classes"
-                :key="cls.id"
-                :value="cls.id"
-                >{{ cls.jenjang }} - {{ cls.section }}</a-select-option
-              >
-            </a-select>
-            <a-date-picker
-              v-model:value="filter.tanggal"
-              style="width: 345px"
-              placeholder="Tanggal"
-            />
-          </a-space>
-          <a-space
-            direction="horizontal"
-            style="display: flex; justify-content: flex-end"
-          >
-            <a-button
-              type="primary"
-              style="display: inline-flex; align-items: center"
-              @click.prevent="readData"
-            >
-              <template #icon><SearchOutlined /></template>
-              Cari
-            </a-button>
-          </a-space>
-        </a-card>
-        <a-card
-          v-if="dataReady"
-          :loading="fetching"
-          title="Daftar Siswa"
-          style="width: 100%"
-        >
-          <a-space
-            direction="horizontal"
-            style="display: flex; justify-content: flex-end; margin-bottom: 20px"
-          >
-            <a-button
-              type="primary"
-              style="display: inline-flex; align-items: center"
-              @click="writeData"
-            >
-              <template #icon><save-outlined /></template>Simpan Kehadiran
-            </a-button>
-          </a-space>
-          <a-table :columns="columns" :data-source="models" style="margin: 15px">
-            <template #bodyCell="{ column, record }">
-              <template v-if="column.key === 'nama'">
-                <a>
-                  {{ record.nama }}
-                </a>
-              </template>
-              <template v-else-if="column.key === 'kehadiran'">
-                <div>
-                  <a-radio-group
-                    v-model:value="form[`siswa-${record.id}-`].status"
-                  >
-                    <a-radio value="hadir">Hadir</a-radio>
-                    <a-radio value="absen">Absen</a-radio>
-                    <a-radio value="telat">Telat</a-radio>
-                    <a-radio value="izin">Izin</a-radio>
-                  </a-radio-group>
-                </div>
-              </template>
-              <template v-else-if="column.key === 'description'">
-                <a-input
-                  v-model:value="form[`siswa-${record.id}-`].description"
-                  placeholder="keterangan"
-                />
-              </template>
-            </template>
-          </a-table>
-        </a-card>
-      </a-col>
+                <a-form
+                    :model="filter"
+                    @finish="onFinishFilter"
+                    @finishFailed="onFinishFailedFilter"
+                    ref="filter"
+                >
+                    <a-space
+                        style="
+                            display: flex;
+                            justify-content: flex-container;
+                            flex-wrap: wrap;
+                        "
+                    >
+                        <a-form-item
+                            name="user_id"
+                            :rules="[
+                                {
+                                    required: true,
+                                    message: 'Pilih kelas terlebih dahulu'
+                                }
+                            ]"
+                        >
+                            <a-select
+                                v-model:value="filter.user_id"
+                                style="width: 345px"
+                                placeholder="Pilih kelas"
+                            >
+                                <a-select-option key="all" value="all">
+                                    Semua guru
+                                </a-select-option>
+                                <a-select-option
+                                    v-for="_guru in guru"
+                                    :key="_guru.id"
+                                    :value="_guru.id"
+                                    >{{ _guru.name }}
+                                </a-select-option>
+                            </a-select>
+                        </a-form-item>
+                        <a-form-item
+                            name="tanggal"
+                            :rules="[
+                                {
+                                    required: true,
+                                    message: 'Pilih tanggal terlebih dahulu'
+                                }
+                            ]"
+                        >
+                            <a-date-picker
+                                v-model:value="filter.tanggal"
+                                style="width: 345px"
+                                placeholder="Pilih tanggal"
+                                value-format="YYYY-MM-DD"
+                            />
+                        </a-form-item>
+
+                        <a-form-item>
+                            <a-button
+                                type="primary"
+                                style="
+                                    display: inline-flex;
+                                    align-items: center;
+                                "
+                                html-type="submit"
+                            >
+                                <template #icon><SearchOutlined /></template>
+                                Cari
+                            </a-button>
+                        </a-form-item>
+                    </a-space>
+                </a-form>
+                <a-space
+                    direction="horizontal"
+                    style="display: flex; justify-content: flex-end"
+                >
+                </a-space>
+            </a-card>
+            <a-card title="Daftar Siswa" style="width: 100%" v-if="dataReady">
+                <a-form
+                    :model="formKehadiran"
+                    @finish="onFinishKehadiran"
+                    @finishFailed="onFinishFailedKehadiran"
+                    ref="formKehadiran"
+                >
+                    <a-space
+                        direction="horizontal"
+                        style="
+                            display: flex;
+                            justify-content: space-between;
+                            margin-bottom: 20px;
+                        "
+                    >
+                        <div style="align-items: center">
+                            <h3 style="margin-left: 35px">
+                                {{ dateInTable }}
+                            </h3>
+                        </div>
+
+                        <div style="align-items: center">
+                            <a-button type="primary" html-type="submit">
+                                <template #icon><save-outlined /></template
+                                >Simpan Kehadiran
+                            </a-button>
+                        </div>
+                    </a-space>
+
+                    <a-table
+                        :columns="columns"
+                        :data-source="dataSourceKehadiran"
+                        style="margin: 15px"
+                        :pagination="false"
+                        :loading="dataSourceKehadiran.length === 0"
+                    >
+                        <template #bodyCell="{ column, record }">
+                            <template v-if="column.key === 'id'">
+                                <a>
+                                    {{ record.key }}
+                                </a>
+                            </template>
+
+                            <template v-if="column.key === 'nip'">
+                                <a>
+                                    {{ record.nip }}
+                                </a>
+                            </template>
+
+                            <template v-if="column.key === 'nama'">
+                                <a>
+                                    {{ record.nama }}
+                                </a>
+                            </template>
+
+                            <template v-else-if="column.key === 'kehadiran'">
+                                <div>
+                                    <a-form-item
+                                        :name="[
+                                            `siswa_${record.id}`,
+                                            'kehadiran'
+                                        ]"
+                                        :rules="[
+                                            {
+                                                required: true,
+                                                message:
+                                                    'Pilih kehadiran terlebih dahulu'
+                                            }
+                                        ]"
+                                    >
+                                        <a-radio-group
+                                            v-model:value="
+                                                formKehadiran[
+                                                    `siswa_${record.id}`
+                                                ].kehadiran
+                                            "
+                                        >
+                                            <a-radio value="hadir"
+                                                >Hadir</a-radio
+                                            >
+                                            <a-radio value="absen"
+                                                >Absen</a-radio
+                                            >
+                                            <a-radio value="telat"
+                                                >Telat</a-radio
+                                            >
+                                            <a-radio value="izin">Izin</a-radio>
+                                        </a-radio-group>
+                                    </a-form-item>
+                                </div>
+                            </template>
+                            <template v-else-if="column.key === 'keterangan'">
+                                <a-form-item>
+                                    <a-input
+                                        v-model:value="
+                                            formKehadiran[`siswa_${record.id}`]
+                                                .keterangan
+                                        "
+                                        placeholder="Keterangan"
+                                    />
+                                </a-form-item>
+                            </template>
+                        </template>
+                    </a-table>
+                </a-form>
+            </a-card>
+        </a-col>
     </a-row>
-  </template>
-  
-  <script>
-  const columns = [
+</template>
+
+<script>
+import moment from 'moment'
+import 'moment/locale/id'
+
+const columns = [
     {
-      title: 'ID',
-      dataIndex: 'id'
+        title: 'ID',
+        dataIndex: 'id',
+        key: 'id'
     },
     {
-      title: 'NIS',
-      dataIndex: ['user', 'no_induk']
+        title: 'NIP',
+        dataIndex: ['user', 'no_induk'],
+        key: 'nip'
     },
     {
-      title: 'Nama Siswa',
-      dataIndex: ['user', 'name']
+        title: 'Nama Siswa',
+        dataIndex: ['user', 'name'],
+        key: 'nama'
     },
     {
-      title: 'Kehadiran',
-      key: 'kehadiran'
+        title: 'Kehadiran',
+        dataIndex: 'kehadiran',
+        key: 'kehadiran'
     },
     {
-      title: '',
-      key: 'description'
+        title: 'Keterangan',
+        dataIndex: 'keterangan',
+        key: 'keterangan'
     }
-  ]
-  const data = [
-    {
-      key: '1',
-      nis: 2910398212,
-      nama: 'Muhammad Farhan Syahreza'
-    },
-    {
-      key: '2',
-      nis: 2910398212,
-      nama: 'Muhammad Farhan Syahreza'
-    },
-    {
-      key: '3',
-      nis: 2910398212,
-      nama: 'Muhammad Farhan Syahreza'
-    }
-  ]
-  export default {
+]
+
+export default {
     data() {
-      return {
-        data,
-        models: [],
-        form: {},
-        columns,
-        classes: [],
-        filter: {
-          kelas_id: null,
-          tanggal: null
-        },
-        dataReady: false,
-        fetching: false
-      }
+        return {
+            dataSourceKehadiran: [],
+            dateInTable: null,
+            models: [],
+            formKehadiran: {
+                tanggal: null
+            },
+            columns,
+            guru: [],
+            filter: {
+                user_id: null,
+                tanggal: moment().format('YYYY-MM-DD')
+            },
+            dataReady: false
+        }
     },
     mounted() {
-      this.getAllKelas()
+        this.getAllGuru()
     },
     methods: {
-      getAllKelas() {
-        const vm = this
-        vm.loading = true
-        const params = {
-          req: 'all'
+        getAllGuru() {
+            const vm = this
+            vm.loading = true
+            const params = {
+                req: 'all'
+            }
+            vm.axios
+                .get(vm.url('guru/read'), { params })
+                .then((response) => {
+                    vm.loading = false
+                    vm.guru = response.data.models
+                })
+                .catch((e) => vm.$onAjaxError(e))
+        },
+
+        readData() {},
+        onFinishFilter() {
+            console.log(this.filter)
+            this.readKehadiran()
+        },
+        onFinishKehadiran() {
+            const data = Object.values(this.formKehadiran)
+            data.shift()
+
+            this.axios
+                .post(this.url('kehadiran/write'), {
+                    model: data
+                })
+                .then((response) => {
+                    console.log(response)
+                    this.$message.success(response.data.message)
+                    this.readKehadiran()
+                })
+                .catch((e) => {
+                    this.$notification.error({
+                        message: e.response.data.message,
+                        description: JSON.stringify(e.response.data.errors)
+                    })
+                })
+        },
+        readKehadiran() {
+            this.dataReady = true
+            this.dataSourceKehadiran = []
+            this.formKehadiran = {}
+            this.dateInTable = moment(this.filter.tanggal).format(
+                'dddd, DD MMMM YYYY'
+            )
+            this.formKehadiran.tanggal = this.filter.tanggal
+            this.axios
+                .get(this.url('kehadiran/read'), {
+                    params: {
+                        req: 'by_guru',
+                        guru_id: this.filter.user_id,
+                        tanggal: this.filter.tanggal
+                    }
+                })
+                .then((response) => {
+                    this.models = response.data.models
+                    this.models.forEach((model, index) => {
+                        this.dataSourceKehadiran = [
+                            ...this.dataSourceKehadiran,
+                            {
+                                key: index + 1,
+                                id: model.user_id,
+                                nip: model.nip,
+                                nama: model.user.name
+                            }
+                        ]
+
+                        this.formKehadiran = {
+                            ...this.formKehadiran,
+                            [`siswa_${model.user_id}`]: {
+                                user_id: model.user_id,
+                                kehadiran:
+                                    Object.keys(model.kehadiran).length === 0
+                                        ? null
+                                        : model.kehadiran[0].kehadiran,
+                                keterangan:
+                                    Object.keys(model.kehadiran).length === 0
+                                        ? null
+                                        : model.kehadiran[0].keterangan,
+                                tanggal: this.filter.tanggal
+                            }
+                        }
+                    })
+                })
         }
-        vm.axios
-          .get(vm.url('kelas/read'), { params })
-          .then((response) => {
-            vm.loading = false
-            vm.classes = response.data.models
-          })
-          .catch((e) => vm.$onAjaxError(e))
-      },
-      readData() {
-        const vm = this
-        vm.fetching = true
-        vm.dataReady = false
-        const params = {
-          req: 'daily',
-          kelas_id: vm.filter.kelas_id,
-          tanggal: vm.getDate(vm.filter.tanggal)
-        }
-        vm.axios
-          .get(vm.url('kehadiran/read'), { params })
-          .then((response) => {
-            vm.fetching = false
-            console.log(response.data.models)
-            vm.models = response.data.models
-            vm.models.forEach((kehadiran) => {
-              console.log(kehadiran)
-              vm.form[`siswa-${kehadiran.id}-`] = {
-                status: kehadiran.kehadiran
-                  ? kehadiran.kehadiran.kehadiran
-                  : null,
-                description: kehadiran.kehadiran
-                  ? kehadiran.kehadiran.keterangan
-                  : null
-              }
-            })
-          })
-          .then(() => (vm.dataReady = true))
-          .catch((e) => {
-            vm.$onAjaxError(e)
-            vm.dataReady = false
-          })
-      },
-      writeData() {
-        const vm = this
-        const params = {
-          req: 'write',
-          kehadiran: vm.form,
-          ...vm.filter
-        }
-        vm.axios
-          .post(vm.url('kehadiran/write'), params)
-          .then(() => {
-            vm.readData()
-            vm.openNotification('berhasil update data', 'success')
-          })
-          .catch((e) => (vm.validation = vm.$onAjaxError(e)))
-      },
-      getDate(date) {
-        let tanggal = new Date(date)
-        var dd = String(tanggal.getDate()).padStart(2, '0')
-        var mm = String(tanggal.getMonth() + 1).padStart(2, '0') //January is 0!
-        var yyyy = tanggal.getFullYear()
-        return yyyy + '-' + mm + '-' + dd
-      }
     }
-  }
-  </script>
-  
+}
+</script>

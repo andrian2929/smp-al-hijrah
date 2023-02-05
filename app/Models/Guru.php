@@ -14,4 +14,9 @@ class Guru extends Model
     {
         return $this->belongsTo(User::class, 'user_id', 'id')->with('roles');
     }
+
+    public function kehadiran()
+    {
+        return $this->hasMany(KehadiranSiswa::class, 'user_id', 'user_id');
+    }
 }
