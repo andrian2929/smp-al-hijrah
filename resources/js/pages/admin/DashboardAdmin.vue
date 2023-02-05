@@ -7,33 +7,18 @@
                         <a-col :span="8">
                             <a-card
                                 size="small"
-                                style="background-color: #fc8989"
+                                style="
+                                    background-color: #fc8989;
+                                    border-radius: 20px;
+                                "
                             >
-                                <h1
-                                    style="
-                                        color: #ffffff;
-                                        margin: 0;
-                                        margintop: -12px;
-                                    "
-                                >
+                                <h1 style="color: #ffffff; margin: 0">
                                     {{ guruCount }}
                                 </h1>
                                 <h5 style="color: #ffffff; margin: 0">Guru</h5>
-                                <p
-                                    style="
-                                        background-color: #ff3e3e;
-                                        color: #ffffff;
-                                        margin: 0 -12px -12px -12px;
-                                    "
-                                    align="center"
-                                >
-                                    More Info
-                                    <caret-right-outlined
-                                        style="verticalalign: middle"
-                                    />
-                                </p>
                             </a-card>
                         </a-col>
+
                         <a-col :span="8">
                             <a-card
                                 size="small"
@@ -42,7 +27,9 @@
                                 <h1
                                     style="
                                         color: #ffffff;
+
                                         margin: 0;
+
                                         margintop: -12px;
                                     "
                                 >
@@ -72,24 +59,31 @@
                                 <h1
                                     style="
                                         color: #ffffff;
+
                                         margin: 0;
+
                                         margintop: -12px;
                                     "
                                 >
                                     0
                                 </h1>
+
                                 <h5 style="color: #ffffff; margin: 0">
                                     Online User
                                 </h5>
+
                                 <p
                                     style="
                                         background-color: #56c530;
+
                                         color: #ffffff;
+
                                         margin: 0 -12px -12px -12px;
                                     "
                                     align="center"
                                 >
                                     More Info
+
                                     <caret-right-outlined
                                         style="verticalalign: middle"
                                     />
@@ -110,6 +104,7 @@
                     <pie-chart-outlined style="fontsize: 1000%; align: end" />
                 </a-card>
             </a-col>
+
             <a-col :span="12">
                 <a-card :bordered="false">
                     <h3>Data Siswa</h3>
@@ -130,10 +125,12 @@ export default {
             loading: false
         }
     },
+
     created() {
         this.getSiswaCount()
         this.getGuruCount()
     },
+
     methods: {
         getSiswaCount() {
             axios
@@ -142,6 +139,7 @@ export default {
                     this.siswaCount = res.data.models
                 })
         },
+
         getGuruCount() {
             axios
                 .get(this.url('guru/read'), { params: { req: 'count' } })

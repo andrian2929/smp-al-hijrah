@@ -1,5 +1,5 @@
 <template>
-    <h1 style="margin-left: 30px">Laporan Harian Siswa</h1>
+    <h1 style="margin-left: 30px">Laporan Harian Guru</h1>
     <a-row type="flex" justify="center">
         <a-col :xs="23">
             <a-tabs v-model:activeKey="activeKey">

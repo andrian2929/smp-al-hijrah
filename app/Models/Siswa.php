@@ -17,14 +17,19 @@ class Siswa extends Model
     {
         return $this->belongsTo(User::class, 'user_id', 'id');
     }
+
     public function kehadiran()
+
     {
-        return $this->hasOne(KehadiranSiswa::class, 'siswa_id', 'id');
+
+        return $this->hasMany(KehadiranSiswa::class, 'user_id', 'user_id');
     }
+
     public function nilai()
     {
         return $this->hasMany(NilaiSiswa::class, 'siswa_id', 'id');
     }
+
     public function nilai_mapel()
     {
         return $this->hasOne(NilaiSiswa::class, 'siswa_id', 'id');
