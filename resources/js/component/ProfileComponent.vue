@@ -1,37 +1,41 @@
 <template>
-   
-        <a-row type="flex" justify="center" style="margin: 0" :gutter="[16, 16]">
-            <a-skeleton :loading="loading" :avatar="true">
-        <a-col :xs="10" :lg="6" style="margin-bottom: 24px">
-        
-            <img
-                style="width: 80%"
-                :src="form.image == 'default.png' ? '/img/no_profile.png' : '/img/profile_photo/' + form.image"
-                alt="profile picture"
-            />
-    
-        </a-col>
-        <a-col :xs="13" :lg="17">
-            <h1>{{ models.name }}</h1>
-            <a-button class="btn btn-dark"
-                ><span
-                    v-if="
-                        models.roles && models.roles[0].display_name == 'siswa'
+    <a-row type="flex" justify="center" style="margin: 0" :gutter="[16, 16]">
+        <a-skeleton :loading="loading" :avatar="true">
+            <a-col :xs="10" :lg="6" style="margin-bottom: 24px">
+                <img
+                    style="width: 80%"
+                    :src="
+                        form.image == 'default.png'
+                            ? '/img/no_profile.png'
+                            : '/img/profile_photo/' + form.image
                     "
-                    >NIS:</span
-                ><span v-else>NIP</span>&nbsp;
-                {{ `  ${models.no_induk}` }}</a-button
-            >
-            <h5 style="padding-top: 8px">
-                {{ models.roles && models.roles[0].name }}
-            </h5>
-            <a-button
-                :class="`btn ${models.is_active ? 'btn-green' : 'btn-grey'}`"
-            >
-                {{ models.is_active ? 'aktif' : 'nonaktif' }}
-            </a-button>
-        </a-col>
-    </a-skeleton>
+                    alt="profile picture"
+                />
+            </a-col>
+            <a-col :xs="13" :lg="17">
+                <h1>{{ models.name }}</h1>
+                <a-button class="btn btn-dark"
+                    ><span
+                        v-if="
+                            models.roles &&
+                            models.roles[0].display_name == 'siswa'
+                        "
+                        >NIS:</span
+                    ><span v-else>NIP</span>&nbsp;
+                    {{ `  ${models.no_induk}` }}</a-button
+                >
+                <h5 style="padding-top: 8px">
+                    {{ models.roles && models.roles[0].name }}
+                </h5>
+                <a-button
+                    :class="`btn ${
+                        models.is_active ? 'btn-green' : 'btn-grey'
+                    }`"
+                >
+                    {{ models.is_active ? 'aktif' : 'nonaktif' }}
+                </a-button>
+            </a-col>
+        </a-skeleton>
     </a-row>
 
     <a-row type="flex" justify="center" style="margin: 0">
@@ -84,7 +88,12 @@
                                         <strong>Jenis Kelamin</strong>
                                     </a-col>
                                     <a-col :span="16">
-                                        {{ models.jenis_kelamin.charAt(0).toUpperCase() + models.jenis_kelamin.slice(1) }}
+                                        {{
+                                            models.jenis_kelamin
+                                                .charAt(0)
+                                                .toUpperCase() +
+                                            models.jenis_kelamin.slice(1)
+                                        }}
                                     </a-col>
                                 </a-row>
                             </a-card>
@@ -205,7 +214,7 @@
                         </a-col>
                         <!-- Orangtua Card -->
                         <a-col :xs="24">
-                            <a-card title="Orangtua" style="width: 100%">
+                            <a-card title="Wali" style="width: 100%">
                                 <template #extra
                                     ><a
                                         @click="
@@ -280,12 +289,11 @@
                             <br />
                             <br />
                             <a-upload
-                            v-model = "imageNew"
+                                v-model="imageNew"
                                 name="file"
                                 multiple="false"
                                 :before-upload="beforeUpload"
                                 @remove="handleRemove"
-
                             >
                                 <a-button>
                                     <upload-outlined></upload-outlined>
@@ -499,8 +507,37 @@
     <a-modal
         v-if="editMode"
         v-model:visible="modal.orangtua"
-        title="Edit Orangtua"
+        title="Edit Wali"
         @ok="writeData"
+    >
+        <a-form
+            name="contact"
+            :label-col="{ span: 8 }"
+            :wrapper-col="{ span: 16 }"
+            class="login-form"
+            autocomplete="off"
+        >
+            <a-form-item
+                label="Nomor Telepon"
+                name="no_telp"
+                :class="{ 'ant-form-item-has-error': validation.no_telp }"
+            >
+                <a-input v-model:value="form.no_telp" />
+            </a-form-item>
+
+            <a-form-item
+                label="Email"
+                name="email"
+                :class="{ 'ant-form-item-has-error': validation.email }"
+            >
+                <a-input v-model:value="form.email" />
+            </a-form-item>
+        </a-form>
+    </a-modal>
+    <!-- <a-modal
+        v-if="editMode"
+        v-model:visible="modal.orangtua"
+        title="Edit Wali"
     >
         <a-form
             name="orangtua"
@@ -579,7 +616,7 @@
                 </a-form-item>
             </template>
         </a-form>
-    </a-modal>
+    </a-modal> -->
 </template>
 
 <script>
@@ -605,7 +642,7 @@ export default {
                 orangtua: false
             },
             imageNew: null,
-            loading : true
+            loading: true
         }
     },
     mounted() {
@@ -658,24 +695,22 @@ export default {
                 .catch((e) => (vm.validation = vm.$onAjaxError(e)))
         },
         beforeUpload(file) {
-           this.imageNew = file
+            this.imageNew = file
             return false
         },
         handleRemove(file) {
             this.imageNew = null
-           
         },
-        uploadImage(){
-          
-          this.editPart = 'upload_profile';
-          let formData = new FormData();
-            formData.append('image', this.imageNew);
-            formData.append('id', this.$props.userId);
-            formData.append('editPart', this.editPart);
-            formData.append('name', this.form.name);
-            formData.append('oldImage', this.form.image);
-            formData.append('req', 'edit');
-     
+        uploadImage() {
+            this.editPart = 'upload_profile'
+            let formData = new FormData()
+            formData.append('image', this.imageNew)
+            formData.append('id', this.$props.userId)
+            formData.append('editPart', this.editPart)
+            formData.append('name', this.form.name)
+            formData.append('oldImage', this.form.image)
+            formData.append('req', 'edit')
+
             this.axios
                 .post(this.url('user/write'), formData, {
                     headers: {
@@ -685,25 +720,21 @@ export default {
                 .then((response) => {
                     console.log(response)
                     this.readSingleData(this.$props.userId)
-                
-                  this.$notification.success({
+
+                    this.$notification.success({
                         message: 'Berhasil',
                         description: 'Berhasil mengganti foto profil'
                     })
 
                     this.$router.go()
-                   
                 })
                 .catch((e) => {
-                 
                     this.$notification.error({
                         message: e.response.data.message,
                         description: JSON.stringify(e.response.data.errors)
                     })
                 })
-        
         }
-
     }
 }
 </script>

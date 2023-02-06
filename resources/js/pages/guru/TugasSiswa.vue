@@ -58,7 +58,6 @@
         </a-space>
       </a-card>
       <a-card
-        v-if="dataReady"
         :loading="fetching"
         title="Status Tugas Siswa"
         style="width: 100%"
@@ -69,7 +68,7 @@
         >
           <a-button
             style="display: inline-flex; align-items: center"
-            type="button"
+            type="primary"
             @click="showModal = true"
           >
             <template #icon><plus-outlined /></template>Tambah
@@ -214,20 +213,20 @@ const data = [
     tanggalpengumpulan : '2022-12-12',
   }
 ]
-export default defineComponent({
+export default {
   setup() {
     const value2 = ref('');
     const showModal = ref(false);
-    const handleChange = info => {
-      if (info.file.status !== 'uploading') {
-        console.log(info.file, info.fileList);
-      }
-      if (info.file.status === 'done') {
-        message.success(`${info.file.name} file uploaded successfully`);
-      } else if (info.file.status === 'error') {
-        message.error(`${info.file.name} file upload failed.`);
-      }
-    };
+    // const handleChange = info => {
+    //   if (info.file.status !== 'uploading') {
+    //     console.log(info.file, info.fileList);
+    //   }
+    //   if (info.file.status === 'done') {
+    //     message.success(`${info.file.name} file uploaded successfully`);
+    //   } else if (info.file.status === 'error') {
+    //     message.error(`${info.file.name} file upload failed.`);
+    //   }
+    // };
     const fileList = ref([]);
     return {
       value2,
@@ -283,25 +282,25 @@ export default defineComponent({
       vm.dataReady = false
       const params = {
         req: 'daily',
-        kelas_id: vm.filter.kelas_id,
-        tanggal: vm.getDate(vm.filter.tanggal)
+        // kelas_id: vm.filter.kelas_id,
+        // tanggal: vm.getDate(vm.filter.tanggal)
       }
       vm.axios
-        .get(vm.url('kehadiran/read'), { params })
+        // .get(vm.url('kehadiran/read'), { params })
         .then((response) => {
           vm.fetching = false
           console.log(response.data.models)
           vm.models = response.data.models
           vm.models.forEach((kehadiran) => {
             console.log(kehadiran)
-            vm.form[`siswa-${kehadiran.id}-`] = {
-              status: kehadiran.kehadiran
-                ? kehadiran.kehadiran.kehadiran
-                : null,
-              description: kehadiran.kehadiran
-                ? kehadiran.kehadiran.keterangan
-                : null
-            }
+            // vm.form[`siswa-${kehadiran.id}-`] = {
+            //   status: kehadiran.kehadiran
+            //     ? kehadiran.kehadiran.kehadiran
+            //     : null,
+            //   description: kehadiran.kehadiran
+            //     ? kehadiran.kehadiran.keterangan
+            //     : null
+            // }
           })
         })
         .then(() => (vm.dataReady = true))
@@ -317,13 +316,13 @@ export default defineComponent({
         kehadiran: vm.form,
         ...vm.filter
       }
-      vm.axios
-        .post(vm.url('kehadiran/write'), params)
-        .then(() => {
-          vm.readData()
-          vm.openNotification('berhasil update data', 'success')
-        })
-        .catch((e) => (vm.validation = vm.$onAjaxError(e)))
+      // vm.axios
+        // .post(vm.url('kehadiran/write'), params)
+        // .then(() => {
+        //   vm.readData()
+        //   vm.openNotification('berhasil update data', 'success')
+        // })
+        // .catch((e) => (vm.validation = vm.$onAjaxError(e)))
     },
     getDate(date) {
       let tanggal = new Date(date)
@@ -333,5 +332,5 @@ export default defineComponent({
       return yyyy + '-' + mm + '-' + dd
     }
   }
-})
+}
 </script>

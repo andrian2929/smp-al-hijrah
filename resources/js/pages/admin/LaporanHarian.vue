@@ -59,65 +59,17 @@
                         {{ record.nama }}
                     </a>
                 </template>
-                <template v-else-if="column.key === 'kegiatan'">
-                        <a-checkbox-group v-model:value="value" style="width: 100%">
-                        <a-row>
-                            <a-col :span="8">
-                                <a-checkbox :value="1">Qiyamul Lail</a-checkbox>
-                            </a-col>
-                            <a-col :span="8">
-                                <a-checkbox :value="2">Tilawah Qur'an</a-checkbox>
-                            </a-col>
-                            <a-col :span="8">
-                                <a-checkbox :value="3">Olahraga</a-checkbox>
-                            </a-col>
-                            <a-col :span="8">
-                                <a-checkbox :value="4">Puasa Sunnah</a-checkbox>
-                            </a-col>
-                            <a-col :span="8">
-                                <a-checkbox :value="5">Sholat Dhuha</a-checkbox>
-                            </a-col>
-                            <a-col :span="8">
-                                <a-checkbox :value="6">Membaca Buku</a-checkbox>
-                            </a-col>
-                            <a-col :span="8">
-                                <a-checkbox :value="7">Al-Matsurat</a-checkbox>
-                            </a-col>
-                        </a-row>
-                        </a-checkbox-group>
-                </template>
-                <template v-else-if="column.key === 'solat'">
-                    <a-checkbox-group v-model:value="value" style="width: 100%">
-                        <a-row>
-                            <a-col :span="12">
-                                <a-checkbox :value="1">Subuh</a-checkbox>
-                            </a-col>
-                            <a-col :span="12">
-                                <a-checkbox :value="2">Zuhur</a-checkbox>
-                            </a-col>
-                            <a-col :span="12">
-                                <a-checkbox :value="3">Ashar</a-checkbox>
-                            </a-col>
-                            <a-col :span="12">
-                                <a-checkbox :value="4">Maghrib</a-checkbox>
-                            </a-col>
-                            <a-col :span="12">
-                                <a-checkbox :value="5">Isya</a-checkbox>
-                            </a-col>
-                        </a-row>
-                        </a-checkbox-group>
-                </template>
                 <template v-else-if="column.key === 'action'">
                         <a-button 
-                        type="button"
+                        type="primary"
                         @click="showModal1 = true"
-                        style="margin-bottom: 4px">Tahfidz</a-button>
+                        style="margin-bottom: 4px; margin-right: 6px">Tahfidz</a-button>
                         <a-button 
-                        type="button"
+                        type="primary"
                         @click="showModal2 = true"
-                        style="margin-bottom: 4px">Ibadah Harian</a-button>
+                        style="margin-bottom: 4px; margin-right: 6px">Ibadah Harian</a-button>
                         <a-button 
-                        type="button"
+                        type="primary"
                         @click="showModal3 = true">Perilaku Harian</a-button>
                 </template>
             </template>
@@ -374,14 +326,6 @@ const columns = [
     title: 'Nama Siswa',
     dataIndex: 'nama',
     key: 'nama'
-  },
-  {
-    title: 'Kegiatan',
-    key: 'kegiatan'
-  },
-  {
-    title: 'Solat',
-    key: 'solat'
   },
   {
     title: 'Aksi',

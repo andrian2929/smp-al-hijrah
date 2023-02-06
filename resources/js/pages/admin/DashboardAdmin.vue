@@ -23,7 +23,6 @@
                                 </a-card>
                             </a-spin>
                         </a-col>
-
                         <a-col :span="8">
                             <a-spin :spinning="loading">
                                 <a-card
