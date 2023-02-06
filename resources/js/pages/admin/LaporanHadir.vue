@@ -1,13 +1,20 @@
 <template>
-    <h1 style="margin-left: 30px">Laporan Kehadiran Siswa</h1>
-
-    <a-row type="flex" justify="center">
-        <a-col :xs="23">
-            <a-card
-                :loading="loading"
-                title="Pilih Kriteria"
-                style="width: 100%; margin-bottom: 20px"
-            >
+  <h1 style="margin-left: 30px">Laporan Kehadiran Siswa</h1>
+  <a-row type="flex" justify="center">
+    <a-col :xs="23">
+      <a-card
+        :loading="loading"
+        title="Pilih Kriteria"
+        style="width: 100%; margin-bottom: 20px"
+      >
+        <a-space
+          style="
+            display: flex;
+            justify-content: flex-container;
+            flex-wrap: wrap;
+            margin-bottom: 20px;
+          "
+        >
                 <a-form
                     :model="filter"
                     @finish="onFinishFilter"
@@ -80,6 +87,7 @@
                     direction="horizontal"
                     style="display: flex; justify-content: flex-end"
                 >
+                </a-space>
                 </a-space>
             </a-card>
             <a-card title="Daftar Siswa" style="width: 100%" v-if="dataReady">

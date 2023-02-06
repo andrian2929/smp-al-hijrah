@@ -32,7 +32,8 @@
         "moment": "^2.29.4",
         "vue": "^3.2.37",
         "vue-router": "^4.1.4",
-        "vuex": "^4.0.2"
+        "vuex": "^4.0.2",
+        "yarn": "^1.22.19"
     },
     "name": "smp_al_hijrah_v2",
     "version": "1.0.0",
