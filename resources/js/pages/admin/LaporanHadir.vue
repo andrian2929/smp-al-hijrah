@@ -115,7 +115,7 @@
                         :columns="columns"
                         :data-source="dataSourceKehadiran"
                         style="margin: 15px"
-                        :pagination="false"
+                        :pagination="true"
                         :loading="dataSourceKehadiran.length === 0"
                     >
                         <template #bodyCell="{ column, record }">
