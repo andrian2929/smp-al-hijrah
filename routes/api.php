@@ -65,6 +65,7 @@ Route::post('/nilai/write', [NilaiController::class, 'write'])->name('laporan.ni
 
 Route::get('/laporan/tahfidz/read', [TahfidzSiswaController::class, 'read'])->name('laporan.tahfidz.read');
 Route::post('/laporan/tahfidz/write', [TahfidzSiswaController::class, 'write'])->name('laporan.tahfidz.write');
+Route::delete('/laporan/tahfidz/delete/{tahfidz}', [TahfidzSiswaController::class, 'delete'])->name('laporan.tahfidz.delete');
 
 Route::get('/laporan/mutabaah-yaumiyah/read', [MutabaahYaumiyahController::class, 'read'])->name('laporan.mutabaahyaumiyah.read');
 Route::post('/laporan/mutabaah-yaumiyah/write', [MutabaahYaumiyahController::class, 'write'])->name('laporan.mutabaahyaumiyah.write');
