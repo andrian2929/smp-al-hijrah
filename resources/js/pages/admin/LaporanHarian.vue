@@ -1,5 +1,4 @@
 <template>
-    {{ selectedTahfidz }}
     <h1 style="margin-left: 30px">Laporan Harian Siswa</h1>
     <a-row type="flex" justify="center">
         <a-col :xs="23">
@@ -116,11 +115,13 @@
                             >
                             <a-button
                                 type="primary"
-                                @click="showModal2 = true"
+                                @click="loadFormMutabaahYaumiyah(record.id)"
                                 style="margin-bottom: 4px; margin-right: 6px"
                                 >Ibadah Harian</a-button
                             >
-                            <a-button type="primary" @click="showModal3 = true"
+                            <a-button
+                                type="primary"
+                                @click="loadFormPerilakuData(record.id)"
                                 >Perilaku Harian</a-button
                             >
                         </template>
@@ -129,7 +130,6 @@
             </a-card>
         </a-col>
     </a-row>
-    <!-- modal bagian tahfidz -->
     <a-modal v-model:visible="showModal1" title="Posting Laporan Tahfidz">
         <template #footer>
             <a-button key="back" @click="handleCancel">Return</a-button>
@@ -230,18 +230,13 @@
     <a-modal
         v-model:visible="showModal2"
         title="Posting Mutaba'ah Ibadah"
-        @ok="showModal2 = false"
+        @ok="saveMutabaahYaumiah"
     >
-        <a-date-picker
-            v-model:value="filter.tanggal"
-            style="width: 345px"
-            placeholder="Tanggal Posting"
-        />
         <a-table
             :dataSource="dataSource1"
             :columns="kolom1"
-            :scroll="{ y: 300 }"
             :pagination="false"
+            :loading="loadingFormMutabaahYaumiyah"
         >
             <template #bodyCell="{ column, record }">
                 <template v-if="column.key === 'kegiatanibadah'">
@@ -250,7 +245,13 @@
                     </a>
                 </template>
                 <template v-else-if="column.key === 'aksi'">
-                    <a-checkbox :value="1"></a-checkbox>
+                    <a-checkbox
+                        v-model:checked="
+                            formMutabaahYaumiyah[
+                                `${record.kegiatanibadah.replace(' ', '')}`
+                            ]
+                        "
+                    ></a-checkbox>
                 </template>
             </template>
         </a-table>
@@ -258,6 +259,7 @@
             :dataSource="dataSource2"
             :columns="kolom2"
             :pagination="false"
+            :loading="loadingFormMutabaahYaumiyah"
         >
             <template #bodyCell="{ column, record }">
                 <template v-if="column.key === 'shalat'">
@@ -266,72 +268,320 @@
                     </a>
                 </template>
                 <template v-else-if="column.key === 'aksi'">
-                    <a-checkbox :value="1"></a-checkbox>
+                    <a-checkbox
+                        v-model:checked="
+                            formMutabaahYaumiyah[
+                                `${record.shalat.replace(' ', '')}`
+                            ]
+                        "
+                    ></a-checkbox>
                 </template>
             </template>
         </a-table>
     </a-modal>
-    <!-- modal bagian perilaku harian -->
+
     <a-modal
         v-model:visible="showModal3"
         title="Posting Laporan Perilaku Harian Siswa"
-        @ok="showModal3 = false"
         width="1000px"
     >
-        <a-date-picker
-            v-model:value="filter.tanggal"
-            style="width: 345px; margin-bottom: 6px"
-            placeholder="Tanggal Posting"
-        />
-        <!-- perilaku terpuji  -->
-        <a-table
-            :dataSource="dataSource3"
-            :columns="kolom3"
-            :scroll="{ y: 300 }"
-            :pagination="false"
-            style="margin-bottom: 6px"
-            bordered
+        <a-form
+            :model="formPerilaku"
+            @finish="onFinishPerilaku"
+            @finishFailed="onFinishFailed"
+            ref="formPerilaku"
         >
-            <template #bodyCell="{ column, record }">
-                <template v-if="column.key === 'ibadah'">
-                    <a>
-                        {{ record.ibadah }}
-                    </a>
-                </template>
-                <template v-else-if="column.key === 'point'">
-                    <a-input
-                        v-model:value="value"
-                        placeholder="Input Nilai Point"
-                    />
-                </template>
-                <template v-else-if="column.key === 'catatan'">
-                    <a-input v-model:value="value" placeholder="Catatan" />
-                </template>
+            <template #footer>
+                <a-button key="back" @click="showModal3 = false"
+                    >Cancel</a-button
+                >
             </template>
-        </a-table>
+            <a-table
+                :dataSource="dataSourceIbadah"
+                :columns="columnIbadah"
+                :pagination="false"
+                style="margin-bottom: 6px"
+                :loading="loadingFormPerilaku"
+                bordered
+            >
+                <template #bodyCell="{ column, record }">
+                    <div v-if="record.type === 'ibadah'">
+                        <template v-if="column.key === 'ibadah'">
+                            <a>
+                                {{ record.name }}
+                            </a>
+                        </template>
+                        <template v-else-if="column.key === 'point'">
+                            <a-form-item
+                                :name="[
+                                    record.name.replace(/\s+/g, ''),
+                                    'nilai'
+                                ]"
+                                :rules="[
+                                    {
+                                        required: true,
+                                        message: 'Poin tidak boleh kosong'
+                                    },
+                                    {
+                                        pattern: new RegExp('^[0-9]*$'),
+                                        message: 'Poin harus berupa angka'
+                                    }
+                                ]"
+                            >
+                                <a-input
+                                    v-model:value="
+                                        formPerilaku[
+                                            record.name.replace(/\s+/g, '')
+                                        ].nilai
+                                    "
+                                    placeholder="Masukkan poin"
+                                />
+                            </a-form-item>
+                        </template>
+                        <template v-else-if="column.key === 'catatan'">
+                            <a-form-item
+                                :name="[
+                                    record.name.replace(/\s+/g, ''),
+                                    'catatan'
+                                ]"
+                            >
+                                <a-input
+                                    v-model:value="
+                                        formPerilaku[
+                                            record.name.replace(/\s+/g, '')
+                                        ].catatan
+                                    "
+                                    placeholder="Masukkan catatan"
+                                />
+                            </a-form-item>
+                        </template>
+                    </div>
+                </template>
+            </a-table>
 
-        <!-- perilaku tidak terpuji  -->
-        <a-table
-            :dataSource="dataSource4"
-            :columns="kolom4"
-            :scroll="{ y: 300 }"
-            :pagination="false"
-            bordered
-        >
-            <template #bodyCell="{ column, record }">
-                <template v-if="column.key === 'aqidah'">
-                    <a>
-                        {{ record.aqidah }}
-                    </a>
+            <a-table
+                :dataSource="dataSourceAkidah"
+                :columns="columnAkidah"
+                :pagination="false"
+                style="margin-bottom: 6px"
+                bordered
+                :loading="loadingFormPerilaku"
+            >
+                <template #bodyCell="{ column, record }">
+                    <template v-if="column.key === 'akidah'">
+                        <a>
+                            {{ record.name }}
+                        </a>
+                    </template>
+                    <template v-else-if="column.key === 'point'">
+                        <a-form-item
+                            :name="[record.name.replace(/\s+/g, ''), 'nilai']"
+                            :rules="[
+                                {
+                                    required: true,
+                                    message: 'Poin tidak boleh kosong'
+                                },
+                                {
+                                    pattern: new RegExp('^[0-9]*$'),
+                                    message: 'Poin harus berupa angka'
+                                }
+                            ]"
+                        >
+                            <a-input
+                                v-model:value="
+                                    formPerilaku[
+                                        record.name.replace(/\s+/g, '')
+                                    ].nilai
+                                "
+                                placeholder="Masukkan poin"
+                            />
+                        </a-form-item>
+                    </template>
+                    <template v-else-if="column.key === 'catatan'">
+                        <a-form-item
+                            :name="[record.name.replace(/\s+/g, ''), 'catatan']"
+                        >
+                            <a-input
+                                v-model:value="
+                                    formPerilaku[
+                                        record.name.replace(/\s+/g, '')
+                                    ].catatan
+                                "
+                                placeholder="Masukkan catatan"
+                            />
+                        </a-form-item>
+                    </template>
                 </template>
-                <template v-else-if="column.key === 'point'">
-                    <a-input :value="isi" placeholder="Input Nilai Point" />
+            </a-table>
+
+            <a-table
+                :dataSource="dataSourceAkhlak"
+                :columns="columnAkhlak"
+                :pagination="false"
+                bordered
+                style="margin-bottom: 6px"
+                :loading="loadingFormPerilaku"
+            >
+                <template #bodyCell="{ column, record }">
+                    <template v-if="column.key === 'akhlak'">
+                        <a>
+                            {{ record.name }}
+                        </a>
+                    </template>
+                    <template v-else-if="column.key === 'point'">
+                        <a-form-item
+                            :name="[record.name.replace(/\s+/g, ''), 'nilai']"
+                            :rules="[
+                                {
+                                    required: true,
+                                    message: 'Poin tidak boleh kosong'
+                                },
+                                {
+                                    pattern: new RegExp('^[0-9]*$'),
+                                    message: 'Poin harus berupa angka'
+                                }
+                            ]"
+                        >
+                            <a-input
+                                v-model:value="
+                                    formPerilaku[
+                                        record.name.replace(/\s+/g, '')
+                                    ].nilai
+                                "
+                                placeholder="Masukkan poin"
+                            />
+                        </a-form-item>
+                    </template>
+                    <template v-else-if="column.key === 'catatan'">
+                        <a-form-item
+                            :name="[record.name.replace(/\s+/g, ''), 'catatan']"
+                        >
+                            <a-input
+                                v-model:value="
+                                    formPerilaku[
+                                        record.name.replace(/\s+/g, '')
+                                    ].catatan
+                                "
+                                placeholder="Masukkan catatan"
+                            />
+                        </a-form-item>
+                    </template>
                 </template>
-                <template v-else-if="column.key === 'catatan'">
-                    <a-input :value="isi" placeholder="Catatan" />
+            </a-table>
+
+            <a-table
+                :dataSource="dataSourceKedisplinan"
+                :columns="columnKedisplinan"
+                :pagination="false"
+                bordered
+                style="margin-bottom: 6px"
+                :loading="loadingFormPerilaku"
+            >
+                <template #bodyCell="{ column, record }">
+                    <template v-if="column.key === 'kedisplinan'">
+                        <a>
+                            {{ record.name }}
+                        </a>
+                    </template>
+                    <template v-else-if="column.key === 'point'">
+                        <a-form-item
+                            :name="[record.name.replace(/\s+/g, ''), 'nilai']"
+                            :rules="[
+                                {
+                                    required: true,
+                                    message: 'Poin tidak boleh kosong'
+                                },
+                                {
+                                    pattern: new RegExp('^[0-9]*$'),
+                                    message: 'Poin harus berupa angka'
+                                }
+                            ]"
+                        >
+                            <a-input
+                                v-model:value="
+                                    formPerilaku[
+                                        record.name.replace(/\s+/g, '')
+                                    ].nilai
+                                "
+                                placeholder="Masukkan poin"
+                            />
+                        </a-form-item>
+                    </template>
+                    <template v-else-if="column.key === 'catatan'">
+                        <a-form-item
+                            :name="[record.name.replace(/\s+/g, ''), 'catatan']"
+                        >
+                            <a-input
+                                v-model:value="
+                                    formPerilaku[
+                                        record.name.replace(/\s+/g, '')
+                                    ].catatan
+                                "
+                                placeholder="Masukkan catatan"
+                            />
+                        </a-form-item>
+                    </template>
                 </template>
-            </template>
-        </a-table>
+            </a-table>
+
+            <a-table
+                :dataSource="dataSourceKerapian"
+                :columns="columnKerapian"
+                :pagination="false"
+                bordered
+                style="margin-bottom: 6px"
+                :loading="loadingFormPerilaku"
+            >
+                <template #bodyCell="{ column, record }">
+                    <template v-if="column.key === 'kerapian'">
+                        <a>
+                            {{ record.name }}
+                        </a>
+                    </template>
+                    <template v-else-if="column.key === 'point'">
+                        <a-form-item
+                            :name="[record.name.replace(/\s+/g, ''), 'nilai']"
+                            :rules="[
+                                {
+                                    required: true,
+                                    message: 'Poin tidak boleh kosong'
+                                },
+                                {
+                                    pattern: new RegExp('^[0-9]*$'),
+                                    message: 'Poin harus berupa angka'
+                                }
+                            ]"
+                        >
+                            <a-input
+                                v-model:value="
+                                    formPerilaku[
+                                        record.name.replace(/\s+/g, '')
+                                    ].nilai
+                                "
+                                placeholder="Masukkan poin"
+                            />
+                        </a-form-item>
+                    </template>
+                    <template v-else-if="column.key === 'catatan'">
+                        <a-form-item
+                            :name="[record.name.replace(/\s+/g, ''), 'catatan']"
+                        >
+                            <a-input
+                                v-model:value="
+                                    formPerilaku[
+                                        record.name.replace(/\s+/g, '')
+                                    ].catatan
+                                "
+                                placeholder="Masukkan catatan"
+                            />
+                        </a-form-item>
+                    </template>
+                </template>
+            </a-table>
+            <a-form-item>
+                <a-button html-type="submit" type="primary"> Simpan </a-button>
+            </a-form-item>
+        </a-form>
     </a-modal>
 </template>
 
@@ -370,7 +620,8 @@ const kolom1 = [
     {
         title: 'Kegiatan',
         dataIndex: 'kegiatanibadah',
-        key: 'kegiatanibadah'
+        key: 'kegiatanibadah',
+        width: 300
     },
     {
         title: 'Aksi',
@@ -382,7 +633,8 @@ const kolom2 = [
     {
         title: 'Shalat',
         dataIndex: 'shalat',
-        key: 'shalat'
+        key: 'shalat',
+        width: 300
     },
     {
         title: 'Aksi',
@@ -592,7 +844,37 @@ export default {
             tanggal: null,
             selectedTahfidz: null,
             clickUserid: null,
-            loadingFormTahfiz: false
+            loadingFormTahfiz: false,
+            formMutabaahYaumiyah: {
+                QiyamulLail: false,
+                Dhuha: false,
+                TilawahQuran: false,
+                MembacaBuku: false,
+                Olahraga: false,
+                AlMatsurat: false,
+                ShoumSunnah: false,
+                ShalatSubuh: false,
+                ShalatDzuhur: false,
+                ShalatAshar: false,
+                ShalatMaghrib: false,
+                ShalatIsya: false,
+                Tanggal: moment().format('YYYY-MM-DD')
+            },
+            loadingFormMutabaahYaumiyah: false,
+            dataSourceIbadah: null,
+            columnIbadah: this.columnPerilaku('ibadah'),
+            dataSourceAkidah: null,
+            columnAkidah: this.columnPerilaku('akidah'),
+            dataSourceAkhlak: null,
+            columnAkhlak: this.columnPerilaku('akhlak'),
+            dataSourceKedisplinan: null,
+            columnKedisplinan: this.columnPerilaku('kedisplinan'),
+            dataSourceKerapian: null,
+            columnKerapian: this.columnPerilaku('kerapian'),
+            formPerilaku: {
+                tanggal: moment().format('YYYY-MM-DD')
+            },
+            loadingFormPerilaku: false
         }
     },
     created() {
@@ -644,6 +926,35 @@ export default {
         },
         onFinishFilter() {
             this.getAllSiswa()
+        },
+        onFinishPerilaku() {
+            const tanggal = this.formPerilaku.tanggal
+            let perilaku = Object.values(this.formPerilaku)
+            perilaku.shift()
+            perilaku = perilaku.map((item) => {
+                return {
+                    tanggal: tanggal,
+                    ...item
+                }
+            })
+
+            this.axios
+                .post(this.url('laporan/perilaku/write'), perilaku)
+                .then((res) => {
+                    this.showModal3 = false
+                    this.$notification.success({
+                        message: 'Berhasil',
+                        description: res.data.message
+                    })
+                })
+                .catch((e) => {
+                    this.$notification.error({
+                        message: 'Kesalahan',
+                        description: JSON.stringify(e.response.data.errors)
+                    })
+                })
+
+            console.log(this.formPerilaku)
         },
         loadFormTahfiz(userId) {
             this.showModal1 = true
@@ -718,6 +1029,129 @@ export default {
                     })
                 })
         },
+        loadFormMutabaahYaumiyah(userId) {
+            this.showModal2 = true
+            this.loadingFormMutabaahYaumiyah = true
+            this.clickUserid = userId
+            this.formMutabaahYaumiyah = {
+                QiyamulLail: false,
+                Dhuha: false,
+                TilawahQuran: false,
+                MembacaBuku: false,
+                Olahraga: false,
+                AlMatsurat: false,
+                ShoumSunnah: false,
+                ShalatSubuh: false,
+                ShalatDzuhur: false,
+                ShalatAshar: false,
+                ShalatMaghrib: false,
+                ShalatIsya: false,
+                Tanggal: this.tanggal
+            }
+            const vm = this
+            vm.loading = true
+            const params = {
+                req: 'get_mutabaahyaumiyah_by_user_id_and_date',
+                user_id: userId,
+                tanggal: this.tanggal
+            }
+            vm.axios
+                .get(vm.url('laporan/mutabaah-yaumiyah/read'), { params })
+                .then((response) => {
+                    console.log(response)
+                    vm.loading = false
+                    vm.loadingFormMutabaahYaumiyah = false
+                    const data = response.data.data
+                    if (data) {
+                        console.log(data)
+                        this.formMutabaahYaumiyah = {
+                            QiyamulLail: data.qiyamul_lail,
+                            Dhuha: data.dhuha,
+                            TilawahQuran: data.tilawah_quran,
+                            MembacaBuku: data.membaca_buku,
+                            Olahraga: data.olahraga,
+                            AlMatsurat: data.al_matsurat,
+                            ShoumSunnah: data.shoum_sunnah,
+                            ShalatSubuh: data.shalat_subuh,
+                            ShalatDzuhur: data.shalat_dzuhur,
+                            ShalatAshar: data.shalat_ashar,
+                            ShalatMaghrib: data.shalat_maghrib,
+                            ShalatIsya: data.shalat_isya,
+                            Tanggal: data.tanggal
+                        }
+                    }
+                })
+                .catch((e) => vm.$onAjaxError(e))
+        },
+        loadFormPerilakuData(userId) {
+            this.showModal3 = true
+            this.clickUserid = userId
+            this.loadingFormPerilaku = true
+            this.axios.get(this.url('laporan/perilaku/data')).then((res) => {
+                console.log(res)
+                const response = res.data.data
+
+                this.dataSourceIbadah = response.filter((item, index) => {
+                    return item.type === 'ibadah'
+                })
+
+                this.dataSourceAkhlak = response.filter((item, index) => {
+                    return item.type === 'akhlak'
+                })
+
+                this.dataSourceAkidah = response.filter((item, index) => {
+                    return item.type === 'akidah'
+                })
+
+                this.dataSourceKedisplinan = response.filter((item, index) => {
+                    return item.type === 'kedisiplinan'
+                })
+
+                this.dataSourceKerapian = response.filter((item, index) => {
+                    return item.type === 'kebersihandankerapian'
+                })
+
+                response.forEach((item, index) => {
+                    this.formPerilaku = {
+                        ...this.formPerilaku,
+                        [item.name.replace(/\s+/g, '')]: {
+                            perilaku_id: item.id,
+                            user_id: userId,
+                            nilai: null,
+                            catatan: null
+                        }
+                    }
+                })
+
+                this.axios
+                    .get(this.url('laporan/perilaku/data'), {
+                        params: {
+                            user_id: userId,
+                            tanggal: this.tanggal,
+                            req: 'get_perilaku_by_user_id_and_date'
+                        }
+                    })
+                    .then((res) => {
+                        this.loading = false
+                        const response = res.data.data
+                        response.forEach((item, index) => {
+                            this.formPerilaku = {
+                                ...this.formPerilaku,
+                                [item.list_perilaku.name.replace(/\s+/g, '')]: {
+                                    perilaku_id: item.list_perilaku.id,
+                                    user_id: userId,
+                                    nilai: item.nilai,
+                                    catatan: item.catatan
+                                }
+                            }
+                        })
+                        this.loadingFormPerilaku = false
+                    })
+                    .catch((e) => {
+                        console.log(e)
+                    })
+            })
+        },
         deleteTahfidz(id) {
             console.log(id)
             this.axios
@@ -743,6 +1177,49 @@ export default {
                         description: JSON.stringify(e.response.data)
                     })
                 })
+        },
+        saveMutabaahYaumiah() {
+            this.axios
+                .post(this.url('laporan/mutabaah-yaumiyah/write'), {
+                    req: 'write_mutabaahyaumiyah_by_user_id_and_date',
+                    user_id: this.clickUserid,
+                    tanggal: this.tanggal,
+                    ...this.formMutabaahYaumiyah
+                })
+                .then((res) => {
+                    console.log(res)
+                    this.$notification.success({
+                        message: 'Berhasil',
+                        description: 'Data berhasil disimpan'
+                    })
+                    this.showModal2 = false
+                })
+                .catch((e) => {
+                    this.$notification.error({
+                        message: 'Kesalahan',
+                        description: JSON.stringify(e.response.data)
+                    })
+                })
+        },
+        columnPerilaku(title) {
+            return [
+                {
+                    title: `${title.charAt(0).toUpperCase() + title.slice(1)}`,
+                    dataIndex: title,
+                    key: title,
+                    width: '50%'
+                },
+                {
+                    title: 'Poin',
+                    key: 'point',
+                    width: '25%'
+                },
+                {
+                    title: 'Catatan',
+                    key: 'catatan',
+                    width: '25%'
+                }
+            ]
         }
     }
 }

@@ -19,4 +19,9 @@ class Guru extends Model
     {
         return $this->hasMany(KehadiranSiswa::class, 'user_id', 'user_id');
     }
+
+    public function laporan_tahfidz()
+    {
+        return $this->hasMany(TahfidzSiswa::class, 'user_id', 'user_id');
+    }
 }

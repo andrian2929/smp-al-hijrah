@@ -1347,7 +1347,7 @@ export default {
                     ...item
                 }
             })
-            console.log(perilaku)
+
             this.axios
                 .post(this.url('laporan/perilaku/write'), perilaku)
                 .then((res) => {
@@ -1403,45 +1403,55 @@ export default {
                         this.tahfidzData = res.data
                     })
 
-                this.axios.get(this.url('perilaku/data')).then((res) => {
-                    const response = res.data.data
+                this.axios
+                    .get(this.url('laporan/perilaku/data'))
+                    .then((res) => {
+                        const response = res.data.data
 
-                    this.dataSourceIbadah = response.filter((item, index) => {
-                        return item.type === 'ibadah'
-                    })
-
-                    this.dataSourceAkhlak = response.filter((item, index) => {
-                        return item.type === 'akhlak'
-                    })
-
-                    this.dataSourceAkidah = response.filter((item, index) => {
-                        return item.type === 'akidah'
-                    })
-
-                    this.dataSourceKedisplinan = response.filter(
-                        (item, index) => {
-                            return item.type === 'kedisiplinan'
-                        }
-                    )
-
-                    this.dataSourceKerapian = response.filter((item, index) => {
-                        return item.type === 'kebersihandankerapian'
-                    })
-
-                    response.forEach((item, index) => {
-                        this.formPerilaku = {
-                            ...this.formPerilaku,
-                            [item.name.replace(/\s+/g, '')]: {
-                                perilaku_id: item.id,
-                                user_id: this.userData.id,
-                                nilai: null,
-                                catatan: null
+                        this.dataSourceIbadah = response.filter(
+                            (item, index) => {
+                                return item.type === 'ibadah'
                             }
-                        }
-                    })
+                        )
 
-                    this.loading = false
-                })
+                        this.dataSourceAkhlak = response.filter(
+                            (item, index) => {
+                                return item.type === 'akhlak'
+                            }
+                        )
+
+                        this.dataSourceAkidah = response.filter(
+                            (item, index) => {
+                                return item.type === 'akidah'
+                            }
+                        )
+
+                        this.dataSourceKedisplinan = response.filter(
+                            (item, index) => {
+                                return item.type === 'kedisiplinan'
+                            }
+                        )
+
+                        this.dataSourceKerapian = response.filter(
+                            (item, index) => {
+                                return item.type === 'kebersihandankerapian'
+                            }
+                        )
+
+                        response.forEach((item, index) => {
+                            this.formPerilaku = {
+                                ...this.formPerilaku,
+                                [item.name.replace(/\s+/g, '')]: {
+                                    perilaku_id: item.id,
+                                    user_id: this.userData.id,
+                                    nilai: null,
+                                    catatan: null
+                                }
+                            }
+                        })
+
+                        this.loading = false
+                    })
             })
         },
         resetFormTahfidz() {

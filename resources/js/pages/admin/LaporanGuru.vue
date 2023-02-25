@@ -3,53 +3,81 @@
     <a-row type="flex" justify="center">
         <a-col :xs="23">
             <a-card
-                :loading="loading"
                 title="Pilih Kriteria"
                 style="width: 100%; margin-bottom: 20px"
             >
-                <a-space
-                    style="
-                        display: flex;
-                        justify-content: flex-container;
-                        flex-wrap: wrap;
-                        margin-bottom: 20px;
-                    "
+                <a-form
+                    :model="filter"
+                    @finish="onFinishFilter"
+                    @finishFailed="onFinishFailedFilter"
+                    ref="filter"
                 >
-                    <a-select
-                        v-model:value="filter.class"
-                        style="width: 345px"
-                        placeholder="Kelas"
-                        @change="(e) => (filter.class = e.value)"
+                    <a-space
+                        style="
+                            display: flex;
+                            justify-content: flex-container;
+                            flex-wrap: wrap;
+                            margin-bottom: 20px;
+                        "
                     >
-                        <a-select-option value="VII">VII</a-select-option>
-                        <a-select-option value="VIII">VIII</a-select-option>
-                        <a-select-option value="IX">IX</a-select-option>
-                    </a-select>
-                    <a-date-picker
-                        v-model:value="filter.tanggal"
-                        style="width: 345px"
-                        placeholder="Tanggal Dari"
-                    />
-                    <a-date-picker
-                        v-model:value="filter.tanggal"
-                        style="width: 345px"
-                        placeholder="Tanggal Sampai"
-                    />
-                </a-space>
-                <a-space
-                    direction="horizontal"
-                    style="display: flex; justify-content: flex-end"
-                >
-                    <a-button
-                        type="primary"
-                        style="display: inline-flex; align-items: center"
-                    >
-                        <template #icon><SearchOutlined /></template>
-                        Cari
-                    </a-button>
-                </a-space>
+                        <a-form-item
+                            name="user_id"
+                            :rules="[
+                                {
+                                    required: true,
+                                    message: 'Pilih guru terlebih dahulu'
+                                }
+                            ]"
+                        >
+                            <a-select
+                                v-model:value="filter.user_id"
+                                style="width: 345px"
+                                placeholder="Pilih guru"
+                            >
+                                <a-select-option key="all" value="all">
+                                    Semua guru
+                                </a-select-option>
+                                <a-select-option
+                                    v-for="_guru in guru"
+                                    :key="_guru.id"
+                                    :value="_guru.id"
+                                    >{{ _guru.name }}
+                                </a-select-option>
+                            </a-select>
+                        </a-form-item>
+                        <a-form-item
+                            name="tanggal"
+                            :rules="[
+                                {
+                                    required: true,
+                                    message: 'Pilih tanggal terlebih dahulu'
+                                }
+                            ]"
+                        >
+                            <a-date-picker
+                                v-model:value="filter.tanggal"
+                                style="width: 345px"
+                                placeholder="Tanggal Dari"
+                                value-format="YYYY-MM-DD"
+                            />
+                        </a-form-item>
+                        <a-form-item>
+                            <a-button
+                                type="primary"
+                                style="
+                                    display: inline-flex;
+                                    align-items: center;
+                                "
+                                html-type="submit"
+                            >
+                                <template #icon><SearchOutlined /></template>
+                                Cari
+                            </a-button>
+                        </a-form-item>
+                    </a-space>
+                </a-form>
             </a-card>
-            <a-card :loading="loading" title="Daftar Guru" style="width: 100%">
+            <a-card v-if="dataReady" title="Daftar Siswa" style="width: 100%">
                 <a-space
                     direction="horizontal"
                     style="
@@ -60,7 +88,7 @@
                 >
                     <a-input-search
                         v-model:value="filter.search"
-                        placeholder="Cari Guru"
+                        placeholder="Cari guru"
                         style="width: 200px"
                         @search="readData"
                     />
@@ -70,8 +98,9 @@
                 </a-space>
                 <a-table
                     :columns="columns"
-                    :data-source="data"
+                    :data-source="DataSourceGuru"
                     style="margin: 15px"
+                    :loading="loadingGuruData"
                 >
                     <template #bodyCell="{ column, record }">
                         <template v-if="column.key === 'nama'">
@@ -80,194 +109,136 @@
                             </a>
                         </template>
                         <template v-else-if="column.key === 'action'">
-                            <a-button 
-                            type="primary"
-                            @click="showModal1 = true"
-                            style="margin-bottom: 4px; margin-right: 6px">Tahfidz</a-button>
-                            <a-button 
-                            type="primary"
-                            @click="showModal2 = true"
-                            style="margin-bottom: 4px; margin-right: 6px">Ibadah Harian</a-button>
-                            <a-button 
-                            type="primary"
-                            @click="showModal3 = true">Perilaku Harian</a-button>
+                            <a-button
+                                type="primary"
+                                @click="loadFormTahfiz(record.id)"
+                                style="margin-bottom: 4px; margin-right: 6px"
+                                >Tahfidz</a-button
+                            >
+                            <a-button
+                                type="primary"
+                                @click="loadFormMutabaahYaumiyah(record.id)"
+                                style="margin-bottom: 4px; margin-right: 6px"
+                                >Ibadah Harian</a-button
+                            >
+                            <a-button
+                                type="primary"
+                                @click="loadFormPerilakuData(record.id)"
+                                >Perilaku Harian</a-button
+                            >
                         </template>
                     </template>
                 </a-table>
             </a-card>
         </a-col>
     </a-row>
-    <!-- modal bagian tahfidz -->
-    <a-modal
-        v-model:visible="showModal1"
-        title="Posting Laporan Tahfidz"
-        @ok="showModal1 = false"
-    >
-        <a-select
-            v-model:value="filter.surah"
-            style="width: 345px"
-            placeholder="Nama Surah"
-            @change="(e) => (filter.surah = e.value)"
-        >
-            <a-select-option value="1">Al-Fatihah</a-select-option>
-            <a-select-option value="2">Al-Baqarah</a-select-option>
-            <a-select-option value="3">Ali Imran</a-select-option>
-            <a-select-option value="4">An-Nisa</a-select-option>
-            <a-select-option value="5">Al-Ma'idah</a-select-option>
-            <a-select-option value="6">Al-An'am</a-select-option>
-            <a-select-option value="7">Al-A'raf</a-select-option>
-            <a-select-option value="8">Al-Anfal</a-select-option>
-            <a-select-option value="9">At-Taubah</a-select-option>
-            <a-select-option value="10">Yunus</a-select-option>
-            <a-select-option value="11">Hud</a-select-option>
-            <a-select-option value="12">Yusuf</a-select-option>
-            <a-select-option value="13">Ar-Ra'd</a-select-option>
-            <a-select-option value="14">Ibrahim</a-select-option>
-            <a-select-option value="15">Al-Hijr</a-select-option>
-            <a-select-option value="16">An-Nahl</a-select-option>
-            <a-select-option value="17">Al-Isra</a-select-option>
-            <a-select-option value="18">Al-Kahf</a-select-option>
-            <a-select-option value="19">Maryam</a-select-option>
-            <a-select-option value="20">Taha</a-select-option>
-            <a-select-option value="21">Al-Anbiya</a-select-option>
-            <a-select-option value="22">Al-Hajj</a-select-option>
-            <a-select-option value="23">Al-Mu'minun</a-select-option>
-            <a-select-option value="24">An-Nur</a-select-option>
-            <a-select-option value="25">Al-Furqan</a-select-option>
-            <a-select-option value="26">Asy-Syu'ara</a-select-option>
-            <a-select-option value="27">An-Naml</a-select-option>
-            <a-select-option value="28">Al-Qasas</a-select-option>
-            <a-select-option value="29">Al-Ankabut</a-select-option>
-            <a-select-option value="30">Ar-Rum</a-select-option>
-            <a-select-option value="31">Luqman</a-select-option>
-            <a-select-option value="32">As-Sajdah</a-select-option>
-            <a-select-option value="33">Al-Ahzab</a-select-option>
-            <a-select-option value="34">Saba'</a-select-option>
-            <a-select-option value="35">Fatir</a-select-option>
-            <a-select-option value="36">Yasin</a-select-option>
-            <a-select-option value="37">As-Saffat</a-select-option>
-            <a-select-option value="38">Sad</a-select-option>
-            <a-select-option value="39">Az-Zumar</a-select-option>
-            <a-select-option value="40">Gafir</a-select-option>
-            <a-select-option value="41">Fussilat</a-select-option>
-            <a-select-option value="42">Asy-Syura</a-select-option>
-            <a-select-option value="43">Az-Zukhruf</a-select-option>
-            <a-select-option value="44">Ad-Dukhan</a-select-option>
-            <a-select-option value="45">Al-Jasiyah</a-select-option>
-            <a-select-option value="46">Al-Ahqaf</a-select-option>
-            <a-select-option value="47">Muhammad</a-select-option>
-            <a-select-option value="48">Al-Fath</a-select-option>
-            <a-select-option value="49">Al-Hujarat</a-select-option>
-            <a-select-option value="50">Qaf</a-select-option>
-            <a-select-option value="51">Az-Zariyat</a-select-option>
-            <a-select-option value="52">At-Tur</a-select-option>
-            <a-select-option value="53">An-Najm</a-select-option>
-            <a-select-option value="54">Al-Qamar</a-select-option>
-            <a-select-option value="55">Ar-Rahman</a-select-option>
-            <a-select-option value="56">Al-Waqi'ah</a-select-option>
-            <a-select-option value="57">Al-Hadid</a-select-option>
-            <a-select-option value="58">Al-Mujadalah</a-select-option>
-            <a-select-option value="59">Al-Hasyr</a-select-option>
-            <a-select-option value="60">Al-Mumtahanah</a-select-option>
-            <a-select-option value="61">Ash-Shaff</a-select-option>
-            <a-select-option value="62">Al-Jumu'ah</a-select-option>
-            <a-select-option value="63">Al-Munafiqun</a-select-option>
-            <a-select-option value="64">At-Taghabun</a-select-option>
-            <a-select-option value="65">Ath-Thalaq </a-select-option>
-            <a-select-option value="66">At-Tahrim</a-select-option>
-            <a-select-option value="67">Al-Mulk</a-select-option>
-            <a-select-option value="68">Al-Qalam</a-select-option>
-            <a-select-option value="69">Al-Haqqah</a-select-option>
-            <a-select-option value="70">Al-Ma'arij</a-select-option>
-            <a-select-option value="71">Nuh</a-select-option>
-            <a-select-option value="72">Al-Jin</a-select-option>
-            <a-select-option value="73">Al-Muzammil</a-select-option>
-            <a-select-option value="74">Al-Muddatsir</a-select-option>
-            <a-select-option value="75">Al-Qiyamah</a-select-option>
-            <a-select-option value="76">Al-Insan</a-select-option>
-            <a-select-option value="77">Al-Mursalat</a-select-option>
-            <a-select-option value="78">An-Naba</a-select-option>
-            <a-select-option value="79">An-Nazi'at</a-select-option>
-            <a-select-option value="80">'Abasa</a-select-option>
-            <a-select-option value="81">At-Takwir</a-select-option>
-            <a-select-option value="82">Al-Infithar</a-select-option>
-            <a-select-option value="83">Al-Muthaffifin</a-select-option>
-            <a-select-option value="84">Al-Insyiqaq </a-select-option>
-            <a-select-option value="85">Al-Buruj</a-select-option>
-            <a-select-option value="86">Ath-Thariq</a-select-option>
-            <a-select-option value="87">Al-A'la</a-select-option>
-            <a-select-option value="88">Al-Ghasyiyah</a-select-option>
-            <a-select-option value="89">Al-Fajr</a-select-option>
-            <a-select-option value="90">Al-Balad</a-select-option>
-            <a-select-option value="91">Asy-Syams</a-select-option>
-            <a-select-option value="92">Al-Lail</a-select-option>
-            <a-select-option value="93">Adh-Dhuha</a-select-option>
-            <a-select-option value="94">Al-Insyirah</a-select-option>
-            <a-select-option value="95">At-Tin</a-select-option>
-            <a-select-option value="96">Al-'Alaq</a-select-option>
-            <a-select-option value="97">Al-Qadr</a-select-option>
-            <a-select-option value="98">Al-Bayyinah</a-select-option>
-            <a-select-option value="99">Az-Zalzalah</a-select-option>
-            <a-select-option value="100">Al-'Adiyat</a-select-option>
-            <a-select-option value="101">Al-Qari'ah</a-select-option>
-            <a-select-option value="102">At-Takatsur</a-select-option>
-            <a-select-option value="103">Al-'Ashr</a-select-option>
-            <a-select-option value="104">Al-Humazah</a-select-option>
-            <a-select-option value="105">Al-Fil</a-select-option>
-            <a-select-option value="106">Quraisy</a-select-option>
-            <a-select-option value="107">Al-Ma'un</a-select-option>
-            <a-select-option value="108">Al-Kautsar</a-select-option>
-            <a-select-option value="109">Al-Kafirun</a-select-option>
-            <a-select-option value="110">An-Nashr</a-select-option>
-            <a-select-option value="111">Al-Masad</a-select-option>
-            <a-select-option value="112">Al-Ikhlash</a-select-option>
-            <a-select-option value="113">Al-Falaq</a-select-option>
-            <a-select-option value="114">An-Nas</a-select-option>
-        </a-select>
-        <p>Nama Surah</p>
-        <a-date-picker
-            v-model:value="filter.tanggal"
-            style="width: 345px"
-            placeholder="Tanggal Posting"
-        />
-        <p>Tanggal Posting</p>
-        <a-input-search
-            v-model:value="filter.search"
-            placeholder="Contoh : Ayat 1-5"
-            style="width: 200px"
-            @search="readData"
-        />
-        <p>Keterangan Ayat Surah</p>
-        <a-upload
-            v-model:file-list="fileList"
-            name="file"
-            action="https://www.mocky.io/v2/5cc8019d300000980a055e76"
-            :headers="headers"
-            @change="handleChange"
-        >
-            <a-button>
-                <upload-outlined></upload-outlined>
-                Click to Upload
-            </a-button>
-        </a-upload>
-        <p>Lampiran / Foto</p>
+    <a-modal v-model:visible="showModal1" title="Posting Laporan Tahfidz">
+        <template #footer>
+            <a-button key="back" @click="handleCancel">Return</a-button>
+            <a-button key="submit" type="primary" @click="handleOk"
+                >Submit</a-button
+            >
+        </template>
+
+        <a-spin :spinning="loadingFormTahfiz">
+            <div
+                style="margin-bottom: 20px; max-width: 100%"
+                v-if="formTahfidz.length != []"
+            >
+                <a-button
+                    shape="round"
+                    size="small"
+                    @click="loadFormTahfizSingle()"
+                    :type="selectedTahfidz == null ? 'primary' : 'default'"
+                    style="margin: 3px"
+                >
+                    Tambah
+                </a-button>
+
+                <a-button
+                    v-for="item in formTahfidz"
+                    :key="item.id"
+                    shape="round"
+                    size="small"
+                    @click="loadFormTahfizSingle(item.id)"
+                    :type="selectedTahfidz == item.id ? 'primary' : 'default'"
+                    style="margin: 3px"
+                >
+                    {{ item.surah }}
+                </a-button>
+            </div>
+
+            <a-form
+                :model="formTahfidzSingle"
+                @finish="onFinishTahfidzSingle"
+                @finishFailed="onFinishFailed"
+                ref="formTahfidzSingle"
+            >
+                <p>Nama Surah</p>
+                <a-form-item>
+                    <a-select
+                        v-model:value="formTahfidzSingle.surah"
+                        style="max-width;: 345px"
+                        placeholder="Nama Surah"
+                    >
+                        <a-select-option
+                            v-for="_surah in surah"
+                            :key="_surah.key"
+                            :value="_surah.surah"
+                        >
+                            {{ _surah.surah }}
+                        </a-select-option>
+                    </a-select>
+                </a-form-item>
+
+                <p>Ayat Surah</p>
+                <a-form-item
+                    :rules="[
+                        {
+                            required: true,
+                            message: 'Keterangan ayat surah tidak boleh kosong'
+                        },
+                        {
+                            pattern: /^[0-9]+-[0-9]+$/,
+                            message: 'Format ayat surah salah'
+                        }
+                    ]"
+                    name="ayat"
+                >
+                    <a-input
+                        placeholder="Contoh : 1-5"
+                        style="max-width;: 345px"
+                        v-model:value="formTahfidzSingle.ayat"
+                    />
+                </a-form-item>
+                <a-form-item>
+                    <a-space>
+                        <a-button type="primary" html-type="submit">
+                            Simpan
+                        </a-button>
+                        <a-button
+                            type="danger"
+                            @click="alert(selectedTahfidz, deleteTahfidz)"
+                            v-if="selectedTahfidz != null"
+                        >
+                            Hapus
+                        </a-button>
+                    </a-space>
+                </a-form-item>
+            </a-form>
+        </a-spin>
     </a-modal>
     <!-- modal bagian ibadah harian -->
     <a-modal
         v-model:visible="showModal2"
         title="Posting Mutaba'ah Ibadah"
-        @ok="showModal2 = false"
+        @ok="saveMutabaahYaumiah"
     >
-        <a-date-picker
-            v-model:value="filter.tanggal"
-            style="width: 345px"
-            placeholder="Tanggal Posting"
-        />
         <a-table
             :dataSource="dataSource1"
             :columns="kolom1"
-            :scroll="{ y: 300 }"
             :pagination="false"
+            :loading="loadingFormMutabaahYaumiyah"
         >
             <template #bodyCell="{ column, record }">
                 <template v-if="column.key === 'kegiatanibadah'">
@@ -276,7 +247,13 @@
                     </a>
                 </template>
                 <template v-else-if="column.key === 'aksi'">
-                    <a-checkbox :value="1"></a-checkbox>
+                    <a-checkbox
+                        v-model:checked="
+                            formMutabaahYaumiyah[
+                                `${record.kegiatanibadah.replace(' ', '')}`
+                            ]
+                        "
+                    ></a-checkbox>
                 </template>
             </template>
         </a-table>
@@ -284,6 +261,7 @@
             :dataSource="dataSource2"
             :columns="kolom2"
             :pagination="false"
+            :loading="loadingFormMutabaahYaumiyah"
         >
             <template #bodyCell="{ column, record }">
                 <template v-if="column.key === 'shalat'">
@@ -292,83 +270,332 @@
                     </a>
                 </template>
                 <template v-else-if="column.key === 'aksi'">
-                    <a-checkbox :value="1"></a-checkbox>
+                    <a-checkbox
+                        v-model:checked="
+                            formMutabaahYaumiyah[
+                                `${record.shalat.replace(' ', '')}`
+                            ]
+                        "
+                    ></a-checkbox>
                 </template>
             </template>
         </a-table>
     </a-modal>
-    <!-- modal bagian perilaku harian -->
+
     <a-modal
         v-model:visible="showModal3"
         title="Posting Laporan Perilaku Harian Guru"
-        @ok="showModal3 = false"
         width="1000px"
     >
-        <a-date-picker
-            v-model:value="filter.tanggal"
-            style="width: 345px; margin-bottom: 6px"
-            placeholder="Tanggal Posting"
-        />
-        <!-- perilaku terpuji  -->
-        <a-table
-            :dataSource="dataSource3"
-            :columns="kolom3"
-            :scroll="{ y: 300 }"
-            :pagination="false"
-            style="margin-bottom: 6px"
-            bordered
+        <a-form
+            :model="formPerilaku"
+            @finish="onFinishPerilaku"
+            @finishFailed="onFinishFailed"
+            ref="formPerilaku"
         >
-            <template #bodyCell="{ column, record }">
-                <template v-if="column.key === 'ibadah'">
-                    <a>
-                        {{ record.ibadah }}
-                    </a>
-                </template>
-                <template v-else-if="column.key === 'point'">
-                    <a-input
-                        v-model:value="value"
-                        placeholder="Input Nilai Point"
-                    />
-                </template>
-                <template v-else-if="column.key === 'catatan'">
-                    <a-input v-model:value="value" placeholder="Catatan" />
-                </template>
+            <template #footer>
+                <a-button key="back" @click="showModal3 = false"
+                    >Cancel</a-button
+                >
             </template>
-        </a-table>
+            <a-table
+                :dataSource="dataSourceIbadah"
+                :columns="columnIbadah"
+                :pagination="false"
+                style="margin-bottom: 6px"
+                :loading="loadingFormPerilaku"
+                bordered
+            >
+                <template #bodyCell="{ column, record }">
+                    <div v-if="record.type === 'ibadah'">
+                        <template v-if="column.key === 'ibadah'">
+                            <a>
+                                {{ record.name }}
+                            </a>
+                        </template>
+                        <template v-else-if="column.key === 'point'">
+                            <a-form-item
+                                :name="[
+                                    record.name.replace(/\s+/g, ''),
+                                    'nilai'
+                                ]"
+                                :rules="[
+                                    {
+                                        required: true,
+                                        message: 'Poin tidak boleh kosong'
+                                    },
+                                    {
+                                        pattern: new RegExp('^[0-9]*$'),
+                                        message: 'Poin harus berupa angka'
+                                    }
+                                ]"
+                            >
+                                <a-input
+                                    v-model:value="
+                                        formPerilaku[
+                                            record.name.replace(/\s+/g, '')
+                                        ].nilai
+                                    "
+                                    placeholder="Masukkan poin"
+                                />
+                            </a-form-item>
+                        </template>
+                        <template v-else-if="column.key === 'catatan'">
+                            <a-form-item
+                                :name="[
+                                    record.name.replace(/\s+/g, ''),
+                                    'catatan'
+                                ]"
+                            >
+                                <a-input
+                                    v-model:value="
+                                        formPerilaku[
+                                            record.name.replace(/\s+/g, '')
+                                        ].catatan
+                                    "
+                                    placeholder="Masukkan catatan"
+                                />
+                            </a-form-item>
+                        </template>
+                    </div>
+                </template>
+            </a-table>
 
-        <!-- perilaku tidak terpuji  -->
-        <a-table
-            :dataSource="dataSource4"
-            :columns="kolom4"
-            :scroll="{ y: 300 }"
-            :pagination="false"
-            bordered
-        >
-            <template #bodyCell="{ column, record }">
-                <template v-if="column.key === 'aqidah'">
-                    <a>
-                        {{ record.aqidah }}
-                    </a>
+            <a-table
+                :dataSource="dataSourceAkidah"
+                :columns="columnAkidah"
+                :pagination="false"
+                style="margin-bottom: 6px"
+                bordered
+                :loading="loadingFormPerilaku"
+            >
+                <template #bodyCell="{ column, record }">
+                    <template v-if="column.key === 'akidah'">
+                        <a>
+                            {{ record.name }}
+                        </a>
+                    </template>
+                    <template v-else-if="column.key === 'point'">
+                        <a-form-item
+                            :name="[record.name.replace(/\s+/g, ''), 'nilai']"
+                            :rules="[
+                                {
+                                    required: true,
+                                    message: 'Poin tidak boleh kosong'
+                                },
+                                {
+                                    pattern: new RegExp('^[0-9]*$'),
+                                    message: 'Poin harus berupa angka'
+                                }
+                            ]"
+                        >
+                            <a-input
+                                v-model:value="
+                                    formPerilaku[
+                                        record.name.replace(/\s+/g, '')
+                                    ].nilai
+                                "
+                                placeholder="Masukkan poin"
+                            />
+                        </a-form-item>
+                    </template>
+                    <template v-else-if="column.key === 'catatan'">
+                        <a-form-item
+                            :name="[record.name.replace(/\s+/g, ''), 'catatan']"
+                        >
+                            <a-input
+                                v-model:value="
+                                    formPerilaku[
+                                        record.name.replace(/\s+/g, '')
+                                    ].catatan
+                                "
+                                placeholder="Masukkan catatan"
+                            />
+                        </a-form-item>
+                    </template>
                 </template>
-                <template v-else-if="column.key === 'point'">
-                    <a-input :value="isi" placeholder="Input Nilai Point" />
+            </a-table>
+
+            <a-table
+                :dataSource="dataSourceAkhlak"
+                :columns="columnAkhlak"
+                :pagination="false"
+                bordered
+                style="margin-bottom: 6px"
+                :loading="loadingFormPerilaku"
+            >
+                <template #bodyCell="{ column, record }">
+                    <template v-if="column.key === 'akhlak'">
+                        <a>
+                            {{ record.name }}
+                        </a>
+                    </template>
+                    <template v-else-if="column.key === 'point'">
+                        <a-form-item
+                            :name="[record.name.replace(/\s+/g, ''), 'nilai']"
+                            :rules="[
+                                {
+                                    required: true,
+                                    message: 'Poin tidak boleh kosong'
+                                },
+                                {
+                                    pattern: new RegExp('^[0-9]*$'),
+                                    message: 'Poin harus berupa angka'
+                                }
+                            ]"
+                        >
+                            <a-input
+                                v-model:value="
+                                    formPerilaku[
+                                        record.name.replace(/\s+/g, '')
+                                    ].nilai
+                                "
+                                placeholder="Masukkan poin"
+                            />
+                        </a-form-item>
+                    </template>
+                    <template v-else-if="column.key === 'catatan'">
+                        <a-form-item
+                            :name="[record.name.replace(/\s+/g, ''), 'catatan']"
+                        >
+                            <a-input
+                                v-model:value="
+                                    formPerilaku[
+                                        record.name.replace(/\s+/g, '')
+                                    ].catatan
+                                "
+                                placeholder="Masukkan catatan"
+                            />
+                        </a-form-item>
+                    </template>
                 </template>
-                <template v-else-if="column.key === 'catatan'">
-                    <a-input :value="isi" placeholder="Catatan" />
+            </a-table>
+
+            <a-table
+                :dataSource="dataSourceKedisplinan"
+                :columns="columnKedisplinan"
+                :pagination="false"
+                bordered
+                style="margin-bottom: 6px"
+                :loading="loadingFormPerilaku"
+            >
+                <template #bodyCell="{ column, record }">
+                    <template v-if="column.key === 'kedisplinan'">
+                        <a>
+                            {{ record.name }}
+                        </a>
+                    </template>
+                    <template v-else-if="column.key === 'point'">
+                        <a-form-item
+                            :name="[record.name.replace(/\s+/g, ''), 'nilai']"
+                            :rules="[
+                                {
+                                    required: true,
+                                    message: 'Poin tidak boleh kosong'
+                                },
+                                {
+                                    pattern: new RegExp('^[0-9]*$'),
+                                    message: 'Poin harus berupa angka'
+                                }
+                            ]"
+                        >
+                            <a-input
+                                v-model:value="
+                                    formPerilaku[
+                                        record.name.replace(/\s+/g, '')
+                                    ].nilai
+                                "
+                                placeholder="Masukkan poin"
+                            />
+                        </a-form-item>
+                    </template>
+                    <template v-else-if="column.key === 'catatan'">
+                        <a-form-item
+                            :name="[record.name.replace(/\s+/g, ''), 'catatan']"
+                        >
+                            <a-input
+                                v-model:value="
+                                    formPerilaku[
+                                        record.name.replace(/\s+/g, '')
+                                    ].catatan
+                                "
+                                placeholder="Masukkan catatan"
+                            />
+                        </a-form-item>
+                    </template>
                 </template>
-            </template>
-        </a-table>
+            </a-table>
+
+            <a-table
+                :dataSource="dataSourceKerapian"
+                :columns="columnKerapian"
+                :pagination="false"
+                bordered
+                style="margin-bottom: 6px"
+                :loading="loadingFormPerilaku"
+            >
+                <template #bodyCell="{ column, record }">
+                    <template v-if="column.key === 'kerapian'">
+                        <a>
+                            {{ record.name }}
+                        </a>
+                    </template>
+                    <template v-else-if="column.key === 'point'">
+                        <a-form-item
+                            :name="[record.name.replace(/\s+/g, ''), 'nilai']"
+                            :rules="[
+                                {
+                                    required: true,
+                                    message: 'Poin tidak boleh kosong'
+                                },
+                                {
+                                    pattern: new RegExp('^[0-9]*$'),
+                                    message: 'Poin harus berupa angka'
+                                }
+                            ]"
+                        >
+                            <a-input
+                                v-model:value="
+                                    formPerilaku[
+                                        record.name.replace(/\s+/g, '')
+                                    ].nilai
+                                "
+                                placeholder="Masukkan poin"
+                            />
+                        </a-form-item>
+                    </template>
+                    <template v-else-if="column.key === 'catatan'">
+                        <a-form-item
+                            :name="[record.name.replace(/\s+/g, ''), 'catatan']"
+                        >
+                            <a-input
+                                v-model:value="
+                                    formPerilaku[
+                                        record.name.replace(/\s+/g, '')
+                                    ].catatan
+                                "
+                                placeholder="Masukkan catatan"
+                            />
+                        </a-form-item>
+                    </template>
+                </template>
+            </a-table>
+            <a-form-item>
+                <a-button html-type="submit" type="primary"> Simpan </a-button>
+            </a-form-item>
+        </a-form>
     </a-modal>
 </template>
 
 <script>
-import { message } from 'ant-design-vue'
+import { surah, kegiatan, sholat } from '../../module/laporanHarian'
+import moment from 'moment'
+import 'moment/locale/id'
 import {
     SearchOutlined,
     DownloadOutlined,
     UploadOutlined
 } from '@ant-design/icons-vue'
-import { defineComponent, ref } from 'vue'
 const columns = [
     {
         title: 'No.',
@@ -381,7 +608,7 @@ const columns = [
         key: 'nip'
     },
     {
-        title: 'Nama Guru',
+        title: 'Nama Siswa',
         dataIndex: 'nama',
         key: 'nama'
     },
@@ -390,97 +617,33 @@ const columns = [
         key: 'action'
     }
 ]
-const data = [
-    {
-        key: '1',
-        nip: 2910398212,
-        nama: 'Muhammad Farhan Syahreza'
-    },
-    {
-        key: '2',
-        nip: 2910398212,
-        nama: 'Muhammad Farhan Syahreza'
-    },
-    {
-        key: '3',
-        nip: 2910398212,
-        nama: 'Muhammad Farhan Syahreza'
-    }
-]
+
 const kolom1 = [
     {
         title: 'Kegiatan',
         dataIndex: 'kegiatanibadah',
-        key: 'kegiatanibadah'
+        key: 'kegiatanibadah',
+        width: 300
     },
     {
         title: 'Aksi',
         key: 'aksi'
     }
 ]
-const dataSource1 = [
-    {
-        key: '1',
-        kegiatanibadah: 'Qiyamul Lail'
-    },
-    {
-        key: '2',
-        kegiatanibadah: 'Dhuha'
-    },
-    {
-        key: '3',
-        kegiatanibadah: 'Tilawah Quran'
-    },
-    {
-        key: '4',
-        kegiatanibadah: 'Membaca Buku'
-    },
-    {
-        key: '5',
-        kegiatanibadah: 'Olahraga'
-    },
-    {
-        key: '6',
-        kegiatanibadah: 'Al-Matsurat'
-    },
-    {
-        key: '7',
-        kegiatanibadah: 'Shoum Sunnah'
-    }
-]
+
 const kolom2 = [
     {
         title: 'Shalat',
         dataIndex: 'shalat',
-        key: 'shalat'
+        key: 'shalat',
+        width: 300
     },
     {
         title: 'Aksi',
         key: 'aksi'
     }
 ]
-const dataSource2 = [
-    {
-        key: '1',
-        shalat: 'Shalat Subuh'
-    },
-    {
-        key: '2',
-        shalat: 'Shalat Dzuhur'
-    },
-    {
-        key: '3',
-        shalat: 'Shalat Ashar'
-    },
-    {
-        key: '4',
-        shalat: 'Shalat Maghrib'
-    },
-    {
-        key: '5',
-        shalat: 'Shalat Isya'
-    }
-]
+
 const kolom3 = [
     {
         title: 'Ibadah',
@@ -647,58 +810,431 @@ const dataSource4 = [
         aqidah: 'Membuang Sampah tidak pada tempatnya'
     }
 ]
-export default defineComponent({
-    setup() {
-        const value = ref('')
-        const showModal1 = ref(false)
-        const showModal2 = ref(false)
-        const showModal3 = ref(false)
-        const handleChange = (info) => {
-            if (info.file.status !== 'uploading') {
-                console.log(info.file, info.fileList)
-            }
-            if (info.file.status === 'done') {
-                message.success(`${info.file.name} file uploaded successfully`)
-            } else if (info.file.status === 'error') {
-                message.error(`${info.file.name} file upload failed.`)
-            }
-        }
-        const fileList = ref([])
-        return {
-            showModal1,
-            showModal2,
-            showModal3,
-            value,
-            fileList,
-            headers: {
-                authorization: 'authorization-text'
-            },
-            handleChange
-        }
-    },
-    components: {
-        SearchOutlined,
-        DownloadOutlined,
-        UploadOutlined
-    },
+export default {
     data() {
         return {
-            data,
+            formTahfidz: {},
+            formTahfidzSingle: {
+                surah: 'Al-Fatihah',
+                ayat: null,
+                tanggal: null,
+                user_id: null
+            },
+            siswaTable: [],
+            showModal1: false,
+            showModal2: false,
+            showModal3: false,
+            showModal4: false,
+            showModal5: false,
+            DataSourceGuru: [],
             columns,
-            dataSource1,
+            dataSource1: kegiatan,
             kolom1,
-            dataSource2,
+            dataSource2: sholat,
             kolom2,
             dataSource3,
             kolom3,
             dataSource4,
             kolom4,
-            classes: [],
+            guru: [],
             filter: {
-                class: null,
-                tanggal: null
+                user_id: null,
+                tanggal: moment().format('YYYY-MM-DD')
+            },
+            surah,
+            dataReady: false,
+            tanggal: null,
+            selectedTahfidz: null,
+            clickUserid: null,
+            loadingFormTahfiz: false,
+            formMutabaahYaumiyah: {
+                QiyamulLail: false,
+                Dhuha: false,
+                TilawahQuran: false,
+                MembacaBuku: false,
+                Olahraga: false,
+                AlMatsurat: false,
+                ShoumSunnah: false,
+                ShalatSubuh: false,
+                ShalatDzuhur: false,
+                ShalatAshar: false,
+                ShalatMaghrib: false,
+                ShalatIsya: false,
+                Tanggal: moment().format('YYYY-MM-DD')
+            },
+            loadingFormMutabaahYaumiyah: false,
+            dataSourceIbadah: null,
+            columnIbadah: this.columnPerilaku('ibadah'),
+            dataSourceAkidah: null,
+            columnAkidah: this.columnPerilaku('akidah'),
+            dataSourceAkhlak: null,
+            columnAkhlak: this.columnPerilaku('akhlak'),
+            dataSourceKedisplinan: null,
+            columnKedisplinan: this.columnPerilaku('kedisplinan'),
+            dataSourceKerapian: null,
+            columnKerapian: this.columnPerilaku('kerapian'),
+            formPerilaku: {
+                tanggal: moment().format('YYYY-MM-DD')
+            },
+            loadingFormPerilaku: false,
+            loadingGuruData: true
+        }
+    },
+    created() {},
+    mounted() {
+        this.getAllGuru()
+    },
+
+    methods: {
+        getAllGuru() {
+            const vm = this
+            vm.loading = true
+            const params = {
+                req: 'all'
             }
+            vm.axios
+                .get(vm.url('guru/read'), { params })
+                .then((response) => {
+                    vm.loading = false
+                    vm.guru = response.data.models
+                })
+                .catch((e) => vm.$onAjaxError(e))
+        },
+        getGuruData() {
+            console.log('cari is pressed')
+            this.tanggal = this.filter.tanggal
+            this.dataReady = true
+            this.loadingGuruData = true
+            this.DataSourceGuru = []
+            const vm = this
+            vm.loading = true
+            const params = {
+                req: 'table',
+                user_id: vm.filter.user_id
+            }
+            vm.axios
+                .get(vm.url('guru/read'), { params })
+                .then((response) => {
+                    vm.loading = false
+                    const data = response.data.models
+
+                    console.log(data)
+
+                    data.forEach((item, index) => {
+                        this.DataSourceGuru.push({
+                            id: item.id,
+                            key: index + 1,
+                            nip: item.guru.nip,
+                            nama: item.name
+                        })
+                    })
+
+                    this.loadingGuruData = false
+                    console.log(this.loadingGuruData)
+                })
+                .catch((e) => vm.$onAjaxError(e))
+        },
+        onFinishFilter() {
+            this.getGuruData()
+        },
+        onFinishPerilaku() {
+            const tanggal = this.formPerilaku.tanggal
+            let perilaku = Object.values(this.formPerilaku)
+            perilaku.shift()
+            perilaku = perilaku.map((item) => {
+                return {
+                    tanggal: tanggal,
+                    ...item
+                }
+            })
+
+            this.axios
+                .post(this.url('laporan/perilaku/write'), perilaku)
+                .then((res) => {
+                    this.showModal3 = false
+                    this.$notification.success({
+                        message: 'Berhasil',
+                        description: res.data.message
+                    })
+                })
+                .catch((e) => {
+                    this.$notification.error({
+                        message: 'Kesalahan',
+                        description: JSON.stringify(e.response.data.errors)
+                    })
+                })
+
+            console.log(this.formPerilaku)
+        },
+        loadFormTahfiz(userId) {
+            this.showModal1 = true
+            this.formTahfidz = []
+            this.formTahfidzSingle.tanggal = this.tanggal
+            this.loadingFormTahfiz = true
+            this.formTahfidzSingle.user_id = userId
+            this.clickUserid = userId
+            this.formTahfidzSingle.ayat = null
+            const vm = this
+            vm.loading = true
+            const params = {
+                req: 'get_tahfidz_guru',
+                user_id: userId,
+                tanggal: this.tanggal
+            }
+            console.log(params)
+
+            vm.axios
+                .get(vm.url('guru/read'), { params })
+                .then((response) => {
+                    console.log(response)
+                    vm.loading = false
+                    const data = response.data.models
+                    console.log(data)
+                    data[0].laporan_tahfidz.forEach((item, index) => {
+                        this.formTahfidz.push({
+                            id: item.id,
+                            user_id: item.user_id,
+                            surah: item.surah,
+                            ayat: `${item.ayat_start}-${item.ayat_end}`
+                        })
+                    })
+
+                    this.loadingFormTahfiz = false
+                })
+                .catch((e) => vm.$onAjaxError(e))
+        },
+        loadFormTahfizSingle(tahfidzId) {
+            this.selectedTahfidz = tahfidzId
+            console.log(this.formTahfidz)
+            if (tahfidzId) {
+                this.formTahfidz.filter((item) => {
+                    if (item.id == tahfidzId) {
+                        this.formTahfidzSingle = item
+                    }
+
+                    console.log(this.formTahfidzSingle)
+                })
+            } else {
+                this.formTahfidzSingle = {
+                    surah: 'Al-Fatihah',
+                    ayat: null,
+                    user_id: this.clickUserid,
+                    tanggal: this.tanggal
+                }
+            }
+        },
+        onFinishTahfidzSingle() {
+            console.log(this.formTahfidzSingle)
+            this.axios
+                .post(this.url('laporan/tahfidz/write'), this.formTahfidzSingle)
+                .then((res) => {
+                    this.selectedTahfidz = null
+                    this.loadFormTahfiz(this.clickUserid)
+                    this.$notification.success({
+                        message: 'Berhasil',
+                        description: 'Data berhasil disimpan'
+                    })
+                })
+                .catch((e) => {
+                    this.$notification.error({
+                        message: 'Kesalahan',
+                        description: JSON.stringify(e.response.data)
+                    })
+                })
+        },
+        loadFormMutabaahYaumiyah(userId) {
+            this.showModal2 = true
+            this.loadingFormMutabaahYaumiyah = true
+            this.clickUserid = userId
+            this.formMutabaahYaumiyah = {
+                QiyamulLail: false,
+                Dhuha: false,
+                TilawahQuran: false,
+                MembacaBuku: false,
+                Olahraga: false,
+                AlMatsurat: false,
+                ShoumSunnah: false,
+                ShalatSubuh: false,
+                ShalatDzuhur: false,
+                ShalatAshar: false,
+                ShalatMaghrib: false,
+                ShalatIsya: false,
+                Tanggal: this.tanggal
+            }
+            const vm = this
+            vm.loading = true
+            const params = {
+                req: 'get_mutabaahyaumiyah_by_user_id_and_date',
+                user_id: userId,
+                tanggal: this.tanggal
+            }
+            vm.axios
+                .get(vm.url('laporan/mutabaah-yaumiyah/read'), { params })
+                .then((response) => {
+                    console.log(response)
+                    vm.loading = false
+                    vm.loadingFormMutabaahYaumiyah = false
+                    const data = response.data.data
+                    if (data) {
+                        console.log(data)
+                        this.formMutabaahYaumiyah = {
+                            QiyamulLail: data.qiyamul_lail,
+                            Dhuha: data.dhuha,
+                            TilawahQuran: data.tilawah_quran,
+                            MembacaBuku: data.membaca_buku,
+                            Olahraga: data.olahraga,
+                            AlMatsurat: data.al_matsurat,
+                            ShoumSunnah: data.shoum_sunnah,
+                            ShalatSubuh: data.shalat_subuh,
+                            ShalatDzuhur: data.shalat_dzuhur,
+                            ShalatAshar: data.shalat_ashar,
+                            ShalatMaghrib: data.shalat_maghrib,
+                            ShalatIsya: data.shalat_isya,
+                            Tanggal: data.tanggal
+                        }
+                    }
+                })
+                .catch((e) => vm.$onAjaxError(e))
+        },
+        loadFormPerilakuData(userId) {
+            this.showModal3 = true
+            this.clickUserid = userId
+            this.loadingFormPerilaku = true
+            this.axios.get(this.url('laporan/perilaku/data')).then((res) => {
+                const response = res.data.data
+
+                this.dataSourceIbadah = response.filter((item, index) => {
+                    return item.type === 'ibadah'
+                })
+
+                this.dataSourceAkhlak = response.filter((item, index) => {
+                    return item.type === 'akhlak'
+                })
+
+                this.dataSourceAkidah = response.filter((item, index) => {
+                    return item.type === 'akidah'
+                })
+
+                this.dataSourceKedisplinan = response.filter((item, index) => {
+                    return item.type === 'kedisiplinan'
+                })
+
+                this.dataSourceKerapian = response.filter((item, index) => {
+                    return item.type === 'kebersihandankerapian'
+                })
+
+                response.forEach((item, index) => {
+                    this.formPerilaku = {
+                        ...this.formPerilaku,
+                        [item.name.replace(/\s+/g, '')]: {
+                            perilaku_id: item.id,
+                            user_id: userId,
+                            nilai: null,
+                            catatan: null
+                        }
+                    }
+                })
+
+                console.log(this.tanggal)
+
+                this.axios
+                    .get(this.url('laporan/perilaku/data'), {
+                        params: {
+                            user_id: userId,
+                            tanggal: this.tanggal,
+                            req: 'get_perilaku_by_user_id_and_date'
+                        }
+                    })
+                    .then((res) => {
+                        this.loading = false
+                        const response = res.data.data
+                        response.forEach((item, index) => {
+                            this.formPerilaku = {
+                                ...this.formPerilaku,
+                                [item.list_perilaku.name.replace(/\s+/g, '')]: {
+                                    perilaku_id: item.list_perilaku.id,
+                                    user_id: userId,
+                                    nilai: item.nilai,
+                                    catatan: item.catatan
+                                }
+                            }
+                        })
+                        this.loadingFormPerilaku = false
+                    })
+                    .catch((e) => {
+                        console.log(e)
+                    })
+            })
+        },
+        deleteTahfidz(id) {
+            console.log(id)
+            this.axios
+                .delete(this.url('laporan/tahfidz/delete/' + id))
+                .then((res) => {
+                    console.log(res)
+                    this.selectedTahfidz = null
+                    this.loadFormTahfiz(this.clickUserid)
+                    this.formTahfidzSingle = {
+                        surah: 'Al-Fatihah',
+                        ayat: null,
+                        user_id: this.clickUserid,
+                        tanggal: this.tanggal
+                    }
+                    this.$notification.success({
+                        message: 'Berhasil',
+                        description: 'Data berhasil dihapus'
+                    })
+                })
+                .catch((e) => {
+                    this.$notification.error({
+                        message: 'Kesalahan',
+                        description: JSON.stringify(e.response.data)
+                    })
+                })
+        },
+        saveMutabaahYaumiah() {
+            this.axios
+                .post(this.url('laporan/mutabaah-yaumiyah/write'), {
+                    req: 'write_mutabaahyaumiyah_by_user_id_and_date',
+                    user_id: this.clickUserid,
+                    tanggal: this.tanggal,
+                    ...this.formMutabaahYaumiyah
+                })
+                .then((res) => {
+                    console.log(res)
+                    this.$notification.success({
+                        message: 'Berhasil',
+                        description: 'Data berhasil disimpan'
+                    })
+                    this.showModal2 = false
+                })
+                .catch((e) => {
+                    this.$notification.error({
+                        message: 'Kesalahan',
+                        description: JSON.stringify(e.response.data)
+                    })
+                })
+        },
+        columnPerilaku(title) {
+            return [
+                {
+                    title: `${title.charAt(0).toUpperCase() + title.slice(1)}`,
+                    dataIndex: title,
+                    key: title,
+                    width: '50%'
+                },
+                {
+                    title: 'Poin',
+                    key: 'point',
+                    width: '25%'
+                },
+                {
+                    title: 'Catatan',
+                    key: 'catatan',
+                    width: '25%'
+                }
+            ]
         }
     }
-})
+}
 </script>
