@@ -12,6 +12,7 @@ use App\Http\Controllers\UserController;
 use App\Http\Controllers\TahfidzSiswaController;
 use App\Http\Controllers\MutabaahYaumiyahController;
 use App\Http\Controllers\LaporanPerilakuController;
+use App\Http\Controllers\JurnalKelasController;
 use App\Models\LaporanPerilaku;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -73,3 +74,5 @@ Route::post('/laporan/mutabaah-yaumiyah/write', [MutabaahYaumiyahController::cla
 Route::get('/laporan/perilaku/data', [LaporanPerilakuController::class, 'data'])->name('laporan.perilaku.data');
 Route::get('/laporan/perilaku/read', [LaporanPerilakuController::class, 'read'])->name('laporan.perilaku.read');
 Route::post('/laporan/perilaku/write', [LaporanPerilakuController::class, 'write'])->name('laporan.perilaku.write');
+
+Route::apiResource('jurnal-kelas', JurnalKelasController::class);

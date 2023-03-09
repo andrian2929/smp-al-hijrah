@@ -23,7 +23,6 @@ class GuruController extends Controller
                 $data = User::whereHas('roles', function ($q) {
                     $q->where('display_name', 'guru');
                 })->where('id', $request->user_id)->with('wali_kelas', 'guru')->get();
-                return 'ok';
             } else {
 
                 $data = User::whereHas('roles', function ($q) {

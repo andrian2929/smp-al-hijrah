@@ -37,7 +37,7 @@
                                         {{ siswaCount }}
                                     </h1>
                                     <h5 style="color: #ffffff; margin: 0">
-                                        Guru
+                                        Siswa
                                     </h5>
                                 </a-card>
                             </a-spin>

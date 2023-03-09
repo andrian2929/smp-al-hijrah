@@ -4,7 +4,7 @@
         <a-col :xs="23">
             <a-card
                 :loading="loading"
-                title="INFORMASI SISWA"
+                title="Informasi Siswa"
                 style="width: 100%"
             >
                 <a-space

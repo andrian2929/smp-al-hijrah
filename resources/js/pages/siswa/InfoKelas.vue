@@ -13,7 +13,7 @@
     <div style="background-color: #ececec; padding: 20px">
         <a-row :gutter="16">
             <a-col :span="24">
-                <a-card style="border-radius: 20px">
+                <a-card style="border-radius: 20px; margin-bottom: 20px">
                     <a-skeleton :loading="loading">
                         <a-list
                             size="small"

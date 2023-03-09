@@ -151,6 +151,11 @@ export default {
                     url: '/guru/info_siswa'
                 },
                 {
+                    name: 'Jurnal Kelas',
+                    icon: 'read-outlined',
+                    url: '/guru/jurnal_kelas'
+                },
+                {
                     name: 'Laporan',
                     icon: 'file-outlined',
                     child: [
