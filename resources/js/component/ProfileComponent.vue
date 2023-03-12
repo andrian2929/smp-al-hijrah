@@ -213,7 +213,11 @@
                             </a-card>
                         </a-col>
                         <!-- Orangtua Card -->
-                        <a-col :xs="24">
+                        <a-col :xs="24"
+                        v-if="
+                            models.roles &&
+                            models.roles[0].display_name == 'siswa'
+                        ">
                             <a-card title="Wali" style="width: 100%">
                                 <template #extra
                                     ><a

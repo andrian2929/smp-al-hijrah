@@ -15,13 +15,15 @@
         :columns="
           editMode
             ? [
-                { title: 'Waktu', dataIndex: 'waktu' },
+                { title: 'Waktu Mulai', dataIndex: 'waktumulai' },
+                { title: 'Waktu Selesai', dataIndex: 'waktuselesai' },
                 { title: 'Mata Pelajaran', dataIndex: ['mapel', 'name'] },
                 { title: 'Guru', dataIndex: ['guru', 'name'] },
                 { title: 'action', key: 'operation' }
               ]
             : [
-                { title: 'Waktu', dataIndex: 'waktu' },
+                { title: 'Waktu Mulai', dataIndex: 'waktumulai' },
+                { title: 'Waktu Selesai', dataIndex: 'waktuselesai' },
                 { title: 'Mata Pelajaran', dataIndex: ['mapel', 'name'] },
                 { title: 'Guru', dataIndex: ['guru', 'name'] }
               ]
@@ -33,10 +35,18 @@
             <a-table-summary-row>
               <a-table-summary-cell :index="0">
                 <a-time-picker
-                  v-model:value="form[hari].waktu"
+                  v-model:value="form[hari].waktumulai"
                   format="HH:mm"
                   value-format="HH:mm"
-                  placeholder="waktu..."
+                  placeholder="waktu mulai.."
+                />
+              </a-table-summary-cell>
+              <a-table-summary-cell :index="0">
+                <a-time-picker
+                  v-model:value="form[hari].waktuselesai"
+                  format="HH:mm"
+                  value-format="HH:mm"
+                  placeholder="waktu selesai.."
                 />
               </a-table-summary-cell>
               <a-table-summary-cell :index="1">
@@ -111,12 +121,12 @@ export default {
     return {
       models: [],
       form: {
-        senin: { id: null, waktu: null, mapel: null, guru: null },
-        selasa: { id: null, waktu: null, mapel: null, guru: null },
-        rabu: { id: null, waktu: null, mapel: null, guru: null },
-        kamis: { id: null, waktu: null, mapel: null, guru: null },
-        jumat: { id: null, waktu: null, mapel: null, guru: null },
-        sabtu: { id: null, waktu: null, mapel: null, guru: null }
+        senin: { id: null, waktumulai: null, waktuselesai: null, mapel: null, guru: null },
+        selasa: { id: null, waktumulai: null, waktuselesai: null, mapel: null, guru: null },
+        rabu: { id: null, waktumulai: null, waktuselesai: null, mapel: null, guru: null },
+        kamis: { id: null, waktumulai: null, waktuselesai: null, mapel: null, guru: null },
+        jumat: { id: null, waktumulai: null, waktuselesai: null, mapel: null, guru: null },
+        sabtu: { id: null, waktumulai: null, waktuselesai: null, mapel: null, guru: null }
       },
       mapelOptions: []
     }
@@ -137,22 +147,26 @@ export default {
         .get(vm.url('kelas/read'), { params: params })
         .then((response) => {
           vm.models = response.data.models
-          vm.models.waktu = dayjs(response.data.models.waktu, 'HH:mm')
+          vm.models.waktumulai = dayjs(response.data.models.waktumulai, 'HH:mm')
+          vm.models.waktuselesai = dayjs(response.data.models.waktuselesai, 'HH:mm')
           vm.loading = false
         })
         .catch((e) => vm.$onAjaxError(e))
     },
     readDataSingle(hari, data) {
       this.form[hari].id = data.id
-      this.form[hari].waktu = data.waktu
+      this.form[hari].waktumulai = data.waktumulai
+      this.form[hari].waktuselesai = data.waktuselesai
       this.form[hari].mapel = data.mapel_id
       this.form[hari].guru = data.guru_id
     },
     mapelHari(hari) {
       let mapels = this.models.filter((mapel) => mapel.hari == hari)
       return mapels.sort((a, b) => {
-        if (a.waktu < b.waktu) return -1
-        if (a.waktu > b.waktu) return 1
+        if (a.waktumulai < b.waktumulai) return -1
+        if (a.waktuselesai < b.waktuselesai) return -1
+        if (a.waktumulai > b.waktumulai) return 1
+        if (a.waktuselesai > b.waktuselesai) return 1
         return 0
       })
     },

@@ -25,7 +25,8 @@
                             :rules="[
                                 {
                                     required: true,
-                                    message: 'Pilih kelas terlebih dahulu'
+                                    message: 'Pilih kelas terlebih dahulu',
+                                    trigger: 'blur'
                                 }
                             ]"
                         >
@@ -48,7 +49,8 @@
                             :rules="[
                                 {
                                     required: true,
-                                    message: 'Pilih tanggal terlebih dahulu'
+                                    message: 'Pilih tanggal terlebih dahulu',
+                                    trigger: 'blur'
                                 }
                             ]"
                         >
@@ -194,7 +196,8 @@
                     :rules="[
                         {
                             required: true,
-                            message: 'Keterangan ayat surah tidak boleh kosong'
+                            message: 'Keterangan ayat surah tidak boleh kosong',
+                            trigger: 'blur'
                         },
                         {
                             pattern: /^[0-9]+-[0-9]+$/,
@@ -320,11 +323,13 @@
                                 :rules="[
                                     {
                                         required: true,
-                                        message: 'Poin tidak boleh kosong'
+                                        message: 'Poin tidak boleh kosong',
+                                        trigger: 'blur' 
                                     },
                                     {
                                         pattern: new RegExp('^[0-9]*$'),
-                                        message: 'Poin harus berupa angka'
+                                        message: 'Poin harus berupa angka',
+                                        trigger: 'blur' 
                                     }
                                 ]"
                             >
@@ -379,11 +384,13 @@
                             :rules="[
                                 {
                                     required: true,
-                                    message: 'Poin tidak boleh kosong'
+                                    message: 'Poin tidak boleh kosong',
+                                    trigger: 'blur' 
                                 },
                                 {
                                     pattern: new RegExp('^[0-9]*$'),
-                                    message: 'Poin harus berupa angka'
+                                    message: 'Poin harus berupa angka',
+                                    trigger: 'blur' 
                                 }
                             ]"
                         >
@@ -434,11 +441,13 @@
                             :rules="[
                                 {
                                     required: true,
-                                    message: 'Poin tidak boleh kosong'
+                                    message: 'Poin tidak boleh kosong',
+                                    trigger: 'blur' 
                                 },
                                 {
                                     pattern: new RegExp('^[0-9]*$'),
-                                    message: 'Poin harus berupa angka'
+                                    message: 'Poin harus berupa angka',
+                                    trigger: 'blur'
                                 }
                             ]"
                         >
@@ -489,11 +498,13 @@
                             :rules="[
                                 {
                                     required: true,
-                                    message: 'Poin tidak boleh kosong'
+                                    message: 'Poin tidak boleh kosong',
+                                    trigger: 'blur' 
                                 },
                                 {
                                     pattern: new RegExp('^[0-9]*$'),
-                                    message: 'Poin harus berupa angka'
+                                    message: 'Poin harus berupa angka',
+                                    trigger: 'blur' 
                                 }
                             ]"
                         >
@@ -544,11 +555,13 @@
                             :rules="[
                                 {
                                     required: true,
-                                    message: 'Poin tidak boleh kosong'
+                                    message: 'Poin tidak boleh kosong',
+                                    trigger: 'blur' 
                                 },
                                 {
                                     pattern: new RegExp('^[0-9]*$'),
-                                    message: 'Poin harus berupa angka'
+                                    message: 'Poin harus berupa angka',
+                                    trigger: 'blur' 
                                 }
                             ]"
                         >

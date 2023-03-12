@@ -24,7 +24,7 @@
                             <a-list-item>
                                 <strong
                                     >Kelas : {{ kelasData.jenjang }} -
-                                    {{ kelasData.section }}</strong
+                                    {{ kelasData.section }} </strong
                                 >
                             </a-list-item>
                             <a-list-item>
