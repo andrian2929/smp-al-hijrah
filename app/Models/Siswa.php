@@ -19,9 +19,7 @@ class Siswa extends Model
     }
 
     public function kehadiran()
-
     {
-
         return $this->hasMany(KehadiranSiswa::class, 'user_id', 'user_id');
     }
 
@@ -33,5 +31,10 @@ class Siswa extends Model
     public function nilai_mapel()
     {
         return $this->hasOne(NilaiSiswa::class, 'siswa_id', 'id');
+    }
+
+    public function laporan_tahfidz()
+    {
+        return $this->hasMany(TahfidzSiswa::class, 'user_id', 'user_id');
     }
 }

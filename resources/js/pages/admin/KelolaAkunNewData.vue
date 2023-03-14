@@ -5,6 +5,23 @@
                 role.charAt(0).toUpperCase() + role.slice(1)
             }`"
         >
+            <template #extra>
+                <a-button type="primary" @click="bulkInputClick">
+                    Bulk input
+                </a-button>
+            </template>
+            <a-modal
+                v-model:visible="visibleBulkInputModal"
+                :title="`Bulk input ${role}`"
+                @ok="handleOk"
+            >
+                <a-alert
+                    message="This <a-link href='#'>text link</a-link>"
+                    type="info"
+                />
+                <p>Some contents...</p>
+                <p>Some contents...</p>
+            </a-modal>
             <a-form
                 :layout="'vertical'"
                 :model="formGeneral"
@@ -115,7 +132,7 @@
                                 />
                             </a-form-item>
 
-                            <a-form-item
+                            <!-- <a-form-item
                                 label="No Induk"
                                 name="no_induk"
                                 :rules="[
@@ -139,7 +156,7 @@
                                     placeholder="Masukkan nomor induk"
                                     v-model:value="formGeneral.no_induk"
                                 />
-                            </a-form-item>
+                            </a-form-item> -->
                         </a-card>
                     </a-col>
                     <a-col span="12">
@@ -562,6 +579,7 @@
 export default {
     data() {
         return {
+            visibleBulkInputModal: false,
             formGeneral: {
                 username: null,
                 name: null,
@@ -771,6 +789,9 @@ export default {
         onFinish() {
             const vm = this
             vm.writeData()
+        },
+        bulkInputClick() {
+            this.visibleBulkInputModal = true
         }
     }
 }

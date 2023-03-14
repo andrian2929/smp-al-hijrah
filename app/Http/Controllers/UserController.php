@@ -190,7 +190,7 @@ class UserController extends Controller
                     'kelas_id' => 'required|exists:kelas,id',
                     'nisn' => 'required|unique:siswas,nisn',
                     'is_beasiswa' => 'in:0,1',
-                    'asal_sekolah' => 'required|numeric',
+                    'asal_sekolah' => 'required|string',
 
                 ]);
 

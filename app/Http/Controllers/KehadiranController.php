@@ -31,7 +31,6 @@ class KehadiranController extends Controller
         }
 
         if ($request->req === 'by_guru') {
-
             $data = Guru::select('id', 'user_id', 'nip')->with(['kehadiran' => function ($q) use ($request) {
                 $q->where('tanggal', substr($request->tanggal, 0, 10));
             }, 'user' => function ($q) {

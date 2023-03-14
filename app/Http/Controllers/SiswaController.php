@@ -15,6 +15,14 @@ class SiswaController extends Controller
     public function read(Request $request)
     {
 
+        $request->validate([
+
+            'search' => 'sometimes|required',
+            'kelas_id' => 'sometimes|required|exists:kelas,id',
+            'user_id' => 'sometimes|required|exists:users,id',
+            'tanggal' => 'sometimes|required|date_format:Y-m-d',
+        ]);
+
 
         // Cek apakah request dari tabel
         if ($request->req == 'table') {
@@ -31,10 +39,8 @@ class SiswaController extends Controller
                     });
             } else {
                 // Ambil data seluruh siswa
-                $data = Siswa::with('user', 'kelas');
+                $data = Siswa::join('users', 'users.id', '=', 'siswas.user_id')->orderBy('users.name', 'asc')->with('user', 'kelas');
             }
-
-
 
             if ($request->kelas_id) {
                 $data = $data->where('kelas_id', $request->kelas_id);
@@ -53,8 +59,18 @@ class SiswaController extends Controller
         } // get siswa by user id at user table
 
         else if ($request->req == 'get_siswa_by_user_id') {
-
             $data = Siswa::where('user_id', $request->user_id)->with('user', 'kelas')->firstOrFail();
+        } else if ($request->req == 'get_tahfidz_siswa') {
+
+            $data = Siswa::where('user_id', $request->user_id)->with('laporan_tahfidz', 'user')->get();
+
+            if ($request->has('tanggal')) {
+                $data = Siswa::where('user_id', $request->user_id)->with(['laporan_tahfidz' => function ($q) use ($request) {
+                    $q->where('tanggal', $request->tanggal);
+                }, 'user' => function ($q) {
+                    $q->select('id', 'name');
+                }])->get();
+            }
         }
         return response()->json([
             'models' => $data

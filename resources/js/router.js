@@ -32,7 +32,8 @@ import {
     LaporanHadirSiswa,
     LaporanHarianSiswa,
     LaporanIbadahGuru,
-    TugasSiswa
+    TugasSiswa,
+    JurnalKelas
 } from './pages/guru'
 
 import {
@@ -168,6 +169,10 @@ const router = createRouter({
                 {
                     path: 'profile',
                     component: Profile
+                },
+                {
+                    path: 'jurnal_kelas',
+                    component: JurnalKelas
                 }
             ]
         },
@@ -178,10 +183,9 @@ const router = createRouter({
                 {
                     path: '',
                     component: DashboardSiswa,
-                    props : {
-                        name : 'Andrian Putra Ramadan'
+                    props: {
+                        name: 'Andrian Putra Ramadan'
                     }
-                 
                 },
                 {
                     path: 'info_kelas',

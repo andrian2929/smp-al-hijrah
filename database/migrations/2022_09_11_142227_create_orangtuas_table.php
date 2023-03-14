@@ -20,7 +20,7 @@ class CreateOrangtuasTable extends Migration
             $table->unsignedInteger('user_id');
             $table->string('name');
             $table->date('tanggal_lahir');
-            $table->string('pekerjaan');
+            $table->string('pekerjaan')->nullable();
             $table->string('keterangan')->nullable();
             $table->timestamps();
         });

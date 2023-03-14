@@ -66,6 +66,7 @@
             style="width: 200px"
             @search="readData"
           />
+          <a-button type="primary" @click="loadInputNilai">Tambah Nilai</a-button>
           <a-button>
             <template #icon><download-outlined /></template>
           </a-button>
@@ -90,7 +91,7 @@
             </template>
             <template v-else-if="column.key === 'action'">
               <span>
-                <a-button type="" :size="size">
+                <a-button type="" :size="size" @click="loadInputNilai">
                   <template #icon>
                     <edit-outlined :style="{ color: '#000000' }" />
                   </template>
@@ -102,6 +103,41 @@
       </a-card>
     </a-col>
   </a-row>
+  <a-modal
+    v-model:visible="inputModal"
+    title="Input Nilai"
+  >
+  <a-form :model="formInputNilai" ref="formInputNilai" :label-col="labelCol">
+    <a-form-item :name="nis" label="NIS/NISN">
+      <a-input v-model:value="formInputNilai.nis" placeholder="Masukkan NIS/NISN" />
+    </a-form-item>
+    <a-form-item :name="nama" label="Nama Siswa">
+      <a-input v-model:value="formInputNilai.nama" placeholder="Masukkan nama siswa" />
+    </a-form-item>
+    <a-form-item :name="kelas" label="Kelas">
+      <a-input v-model:value="formInputNilai.kelas" placeholder="Masukkan kelas" />
+    </a-form-item>
+    <a-form-item :name="mapel" label="Mata Pelajaran">
+      <a-input v-model:value="formInputNilai.mapel" placeholder="Masukkan mata pelajaran" />
+    </a-form-item>
+    <a-form-item :name="harian" label="Nilai Harian" :wrapper-col="{ span: 3 }">
+      <a-input v-model:value="formInputNilai.harian" />
+    </a-form-item>
+    <a-form-item :name="tugas" label="Nilai Tugas"
+      :wrapper-col="{ span: 3 }"
+    >
+      <a-input v-model:value="formInputNilai.tugas" />
+    </a-form-item>
+    <a-form-item :name="ujianmid" label="Nilai Ujian Mid"
+      :wrapper-col="{ span: 3 }"
+    >
+      <a-input v-model:value="formInputNilai.ujianmid" />
+    </a-form-item>
+    <a-form-item :name="ujiansemester" label="Nilai Ujian Semester" :wrapper-col="{ span: 3 }">
+      <a-input v-model:value="formInputNilai.ujiansemester" />
+    </a-form-item>
+  </a-form>
+  </a-modal>
 </template>
 
 <script>
@@ -205,7 +241,10 @@ export default {
         search: null,
         semester: null
       },
-      fetching: false
+      fetching: false,
+      inputModal: false,
+      formInputNilai: false,
+      labelCol: { style: { width: '150px' } },
     }
   },
   mounted() {
@@ -249,6 +288,9 @@ export default {
       if (this.filter.kelas_id && this.filter.semester) {
         this.readData()
       }
+    },
+    loadInputNilai(){
+      this.inputModal = true
     }
   }
 }

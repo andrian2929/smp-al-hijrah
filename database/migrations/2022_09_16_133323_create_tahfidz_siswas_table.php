@@ -15,7 +15,7 @@ class CreateTahfidzSiswasTable extends Migration
     {
         Schema::create('tahfidz_siswas', function (Blueprint $table) {
             $table->id();
-            $table->unsignedInteger('user_id');
+            $table->foreignId('user_id')->constrained('users')->onDelete('cascade')->onUpdate('cascade');
             $table->string('surah');
             $table->integer('ayat_start')->default(1);
             $table->integer('ayat_end');

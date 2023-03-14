@@ -5,6 +5,7 @@ import LaporanHarianSiswa from './LaporanHarianSiswa.vue'
 import LaporanHadirSiswa from './LaporanHadirSiswa.vue'
 import LaporanIbadahGuru from './LaporanIbadahGuru.vue'
 import TugasSiswa from './TugasSiswa.vue'
+import JurnalKelas from './JurnalKelas.vue'
 
 export {
     DashboardGuru,
@@ -13,5 +14,6 @@ export {
     LaporanHadirSiswa,
     LaporanHarianSiswa,
     LaporanIbadahGuru,
-    TugasSiswa
+    TugasSiswa,
+    JurnalKelas
 }
