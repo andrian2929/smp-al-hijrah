@@ -132,7 +132,7 @@
                                 />
                             </a-form-item>
 
-                            <a-form-item
+                            <!-- <a-form-item
                                 label="No Induk"
                                 name="no_induk"
                                 :rules="[
@@ -156,7 +156,7 @@
                                     placeholder="Masukkan nomor induk"
                                     v-model:value="formGeneral.no_induk"
                                 />
-                            </a-form-item>
+                            </a-form-item> -->
                         </a-card>
                     </a-col>
                     <a-col span="12">

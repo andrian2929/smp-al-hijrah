@@ -33,7 +33,8 @@
                             :rules="[
                                 {
                                     required: true,
-                                    message: 'Kelas tidak boleh kosong'
+                                    message: 'Kelas tidak boleh kosong',
+                                    trigger: blur
                                 }
                             ]"
                         >
@@ -48,6 +49,32 @@
                                     :value="kelas.id"
                                     >{{
                                         `${kelas.jenjang}  ${kelas.section}`
+                                    }}</a-select-option
+                                >
+                            </a-select>
+                        </a-form-item>
+                        <a-form-item
+                            label="Mata Pelajaran"
+                            name="id_mapel"
+                            :rules="[
+                                {
+                                    required: true,
+                                    message: 'Mata Pelajaran tidak boleh kosong',
+                                    trigger: blur
+                                }
+                            ]"
+                        >
+                            <a-select
+                                v-model:value="jurnalKelasAddForm.id_mapel"
+                                placeholder="Pilih mata pelajaran"
+                                @change="handleChange"
+                            >
+                                <a-select-option
+                                    v-for="(mapel, index) in classes"
+                                    :key="mapel.id"
+                                    :value="mapel.id"
+                                    >{{
+                                        `${mapel.jenjang}  ${mapel.section}`
                                     }}</a-select-option
                                 >
                             </a-select>
@@ -144,6 +171,36 @@
                                             </a-select>
                                         </a-form-item>
                                         <a-form-item
+                                            label="Mata Pelajaran"
+                                            name="id_mapel"
+                                            :rules="[
+                                                {
+                                                    required: true,
+                                                    message:
+                                                        'Mata Pelajaran tidak boleh kosong',
+                                                }
+                                            ]"
+                                        >
+                                            <a-select
+                                                v-model:value="
+                                                    jurnalKelasUpdateForm.id_mapel
+                                                "
+                                                placeholder="Pilih Mata Pelajaran"
+                                                @change="handleChange"
+                                            >
+                                                <a-select-option
+                                                    v-for="(
+                                                        mapel, index
+                                                    ) in mapelOptions"
+                                                    :key="mapel.id"
+                                                    :value="mapel.id"
+                                                    >{{
+                                                        `${mapel.name}`
+                                                    }}</a-select-option
+                                                >
+                                            </a-select>
+                                        </a-form-item>
+                                        <a-form-item
                                             label="Catatan"
                                             name="catatan"
                                             :rules="[
@@ -202,6 +259,11 @@ const jurnalKelasTableColumn = [
         key: 'kelas'
     },
     {
+        title: 'Mata Pelajaran',
+        dataIndex: 'mapel',
+        key: 'mapel'
+    },
+    {
         title: 'Catatan',
         dataIndex: 'catatan',
         key: 'catatan'
@@ -222,21 +284,25 @@ export default {
             jurnalKelasModalAddvisible: false,
             jurnalKelasAddForm: {
                 id_kelas: null,
+                id_mapel: null,
                 catatan: null
             },
             jurnalKelasModalUpdateVisible: false,
             jurnalKelasUpdateForm: {
                 id: null,
                 id_kelas: null,
+                id_mapel: null,
                 id_guru: null,
                 catatan: null
             },
-            classes: []
+            classes: [],
+            mapelOptions: [],
         }
     },
     mounted() {
         this.getKelas()
         this.getJurnalKelas()
+        this.getMapel()
     },
     methods: {
         getKelas() {
@@ -247,7 +313,14 @@ export default {
                 })
                 .catch((e) => this.$onAjaxError(e))
         },
-
+        getMapel() {
+            this.axios
+                .get(this.url('mapel/read'), {params : { req: 'table' }})
+                .them((response) => {
+                    this.mapelOptions = response.data.models
+                })
+                .catch((e) => this.$onAjaxError(e))
+        },
         getJurnalKelas() {
             this.jurnalKelasDataSourcesLoading = true
             this.jurnalKelasDataSources = []
@@ -267,6 +340,7 @@ export default {
                                         'dddd, DD MMMM YYYY'
                                     ),
                                     kelas: `${item.kelas.jenjang} - ${item.kelas.section}`,
+                                    mapel: `${item.mapel.name}`,
                                     catatan: item.catatan
                                 })
                             })
@@ -293,6 +367,7 @@ export default {
                             this.jurnalKelasModalAddvisible = false
                             this.jurnalKelasAddForm = {
                                 id_kelas: null,
+                                id_mapel: null,
                                 catatan: null,
                                 id_guru: null
                             }
@@ -335,6 +410,7 @@ export default {
                     this.jurnalKelasUpdateForm = {
                         id: response.data.data.id,
                         id_kelas: response.data.data.id_kelas,
+                        id_mapel: response.data.data.id_mapel,
                         id_guru: response.data.data.id_guru,
                         catatan: response.data.data.catatan
                     }
@@ -357,6 +433,7 @@ export default {
                         .then((response) => {
                             this.jurnalKelasUpdateForm = {
                                 id_kelas: null,
+                                id_mapel,
                                 id_guru: null,
                                 catatan: null
                             }

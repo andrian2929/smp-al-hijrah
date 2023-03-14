@@ -37,7 +37,8 @@
                     >
                         <a-card :title="`${cls.jenjang} - ${cls.section}`">
                             <template #extra>
-                                <a @click="findKelas(cls.id)">Edit </a>
+                                <!-- <a @click="findKelas(cls.id)">Edit </a> -->
+                                <a-button danger @click="findKelas(cls.id)">Edit</a-button>
                             </template>
                             Wali Kelas :
                             {{ cls.wali_kelas ? cls.wali_kelas.name : '-'
