@@ -75,4 +75,5 @@ Route::get('/laporan/perilaku/data', [LaporanPerilakuController::class, 'data'])
 Route::get('/laporan/perilaku/read', [LaporanPerilakuController::class, 'read'])->name('laporan.perilaku.read');
 Route::post('/laporan/perilaku/write', [LaporanPerilakuController::class, 'write'])->name('laporan.perilaku.write');
 
+Route::get('/rekap/kehadiran', \App\Http\Controllers\RekapKehadiranController::class);
 Route::apiResource('jurnal-kelas', JurnalKelasController::class);

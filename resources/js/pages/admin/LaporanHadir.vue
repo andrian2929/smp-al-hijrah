@@ -76,10 +76,181 @@
                         </a-form-item>
                     </a-space>
                 </a-form>
+
                 <a-space
                     direction="horizontal"
                     style="display: flex; justify-content: flex-end"
                 >
+                    <a-button @click="cetakLaporanModalVisible = true">
+                        <template #icon><PrinterOutlined /></template>
+                        Cetak
+                    </a-button>
+                    <a-modal
+                        v-model:visible="cetakLaporanModalVisible"
+                        title="Cetak Laporan Kehadiran"
+                        @ok="handleOk"
+                    >
+                        <p>Pilih berdasarkan:</p>
+                        <a-select
+                            style="width: 200px; margin-bottom: 30px"
+                            placeholder="Pilih berdasarkan"
+                            @change="handleSelectChange"
+                        >
+                            <a-select-option value="siswa"
+                                >Siswa</a-select-option
+                            >
+                            <a-select-option value="kelas"
+                                >Kelas</a-select-option
+                            >
+                        </a-select>
+
+                        <a-form
+                            :model="cetakLaporanForm"
+                            :layout="'vertical'"
+                            @finish="onFinishCetakLaporan"
+                            ref="cetakLaporanForm"
+                            v-if="selectedCetakLaporan == 'kelas'"
+                        >
+                            <a-form-item
+                                name="tanggal"
+                                label="Waktu :"
+                                :rules="[
+                                    {
+                                        required: true,
+                                        message: 'Pilih waktu terlebih dahulu'
+                                    }
+                                ]"
+                            >
+                                <a-date-picker
+                                    placeholder="Pilih waktu"
+                                    value-format="YYYY-MM"
+                                    picker="month"
+                                    style="width: 100%"
+                                    v-model:value="cetakLaporanForm.tanggal"
+                                />
+                            </a-form-item>
+
+                            <a-form-item
+                                name="kelas"
+                                :rules="[
+                                    {
+                                        required: true,
+                                        message: 'Pilih kelas terlebih dahulu'
+                                    }
+                                ]"
+                                label="Kelas :"
+                            >
+                                <a-select
+                                    style="width: 100%"
+                                    placeholder="Pilih kelas"
+                                    v-model:value="cetakLaporanForm.kelas"
+                                >
+                                    <a-select-option
+                                        v-for="cls in classes"
+                                        :key="cls.id"
+                                        :value="cls.id"
+                                        >{{ cls.jenjang }} -
+                                        {{ cls.section }}</a-select-option
+                                    >
+                                </a-select>
+                            </a-form-item>
+                            <a-form-item>
+                                <a-button
+                                    :loading="cetakLaporanButtonLoading"
+                                    type="primary"
+                                    html-type="submit"
+                                >
+                                    Cetak
+                                </a-button>
+                            </a-form-item>
+                        </a-form>
+
+                        <a-form
+                            :model="cetakLaporanForm"
+                            :layout="'vertical'"
+                            @finish="onFinishCetakLaporan"
+                            ref="cetakLaporanForm"
+                            v-if="selectedCetakLaporan == 'siswa'"
+                        >
+                            <a-form-item
+                                name="tanggal"
+                                label="Waktu :"
+                                :rules="[
+                                    {
+                                        required: true,
+                                        message: 'Pilih waktu terlebih dahulu'
+                                    }
+                                ]"
+                            >
+                                <a-date-picker
+                                    placeholder="Pilih waktu"
+                                    value-format="YYYY-MM"
+                                    picker="month"
+                                    style="width: 100%"
+                                    v-model:value="cetakLaporanForm.tanggal"
+                                />
+                            </a-form-item>
+
+                            <a-form-item
+                                name="kelas"
+                                :rules="[
+                                    {
+                                        required: true,
+                                        message: 'Pilih kelas terlebih dahulu'
+                                    }
+                                ]"
+                                label="Kelas :"
+                            >
+                                <a-select
+                                    style="width: 100%"
+                                    placeholder="Pilih kelas"
+                                    v-model:value="cetakLaporanForm.kelas"
+                                    @change="cetakCariSiswaByKelas"
+                                >
+                                    <a-select-option
+                                        v-for="cls in classes"
+                                        :key="cls.id"
+                                        :value="cls.id"
+                                        >{{ cls.jenjang }} -
+                                        {{ cls.section }}
+                                    </a-select-option>
+                                </a-select>
+                            </a-form-item>
+                            <a-form-item
+                                v-if="listSiswaInCetakLaporan.length > 0"
+                                name="siswa"
+                                label="Pilih siswa: "
+                                :rules="[
+                                    {
+                                        required: true,
+                                        message: 'Pilih siswa terlebih dahulu'
+                                    }
+                                ]"
+                            >
+                                <a-select
+                                    style="width=100%"
+                                    placeholder="Pilih siswa"
+                                    v-model:value="cetakLaporanForm.siswa"
+                                >
+                                    <a-select-option
+                                        v-for="siswa in listSiswaInCetakLaporan"
+                                        :key="siswa.id"
+                                        :value="siswa.id"
+                                        >{{ siswa.user.name }}</a-select-option
+                                    >
+                                </a-select>
+                            </a-form-item>
+                            <a-form-item>
+                                <a-button
+                                    :loading="cetakLaporanButtonLoading"
+                                    type="primary"
+                                    html-type="submit"
+                                >
+                                    Cetak
+                                </a-button>
+                            </a-form-item>
+                        </a-form>
+                    </a-modal>
                 </a-space>
             </a-card>
             <a-card title="Daftar Siswa" style="width: 100%" v-if="dataReady">
@@ -228,6 +399,13 @@ export default {
     data() {
         return {
             dataSourceKehadiran: [],
+            cetakLaporanModalVisible: false,
+            selectedCetakLaporan: null,
+            cetakLaporanForm: {
+                tanggal: null
+            },
+            listSiswaInCetakLaporan: [],
+            cetakLaporanButtonLoading: false,
             dateInTable: null,
             models: [],
             formKehadiran: {
@@ -330,6 +508,61 @@ export default {
                     })
 
                     console.log(this.formKehadiran)
+                })
+        },
+        handleSelectChange(value) {
+            this.selectedCetakLaporan = value
+            this.cetakLaporanForm = {
+                tanggal: null
+            }
+        },
+        cetakCariSiswaByKelas(value) {
+            this.axios
+                .get(this.url('siswa/read'), {
+                    params: {
+                        req: 'table',
+                        kelas_id: value
+                    }
+                })
+                .then((response) => {
+                    this.listSiswaInCetakLaporan = response.data.models
+                })
+        },
+        onFinishCetakLaporan() {
+            this.cetakLaporanButtonLoading = true
+            // this.cetakLaporanForm.year =
+            //     this.cetakLaporanForm.tanggal.split('-')[0]
+            // this.cetakLaporanForm.month =
+            //     this.cetakLaporanForm.tanggal.split('-')[1]
+
+            const cetakLaporanData = {
+                month: this.cetakLaporanForm.tanggal.split('-')[1],
+                year: this.cetakLaporanForm.tanggal.split('-')[0]
+            }
+            console.log(cetakLaporanData)
+
+            if (this.selectedCetakLaporan === 'kelas') {
+                cetakLaporanData.kelas = this.cetakLaporanForm.kelas
+            } else if (this.selectedCetakLaporan === 'siswa') {
+                cetakLaporanData.siswa = this.cetakLaporanForm.siswa
+            }
+
+            this.axios
+                .get(
+                    this.url('rekap/kehadiran'),
+                    {
+                        params: cetakLaporanData
+                    },
+                    {
+                        responseType: 'blob'
+                    }
+                )
+                .then((response) => {
+                    this.cetakLaporanButtonLoading = false
+                    this.cetakLaporanModalVisible = false
+                    this.cetakLaporanForm = {
+                        tanggal: null
+                    }
                 })
         }
     }

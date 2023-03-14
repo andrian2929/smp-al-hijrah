@@ -39,7 +39,7 @@ class SiswaController extends Controller
                     });
             } else {
                 // Ambil data seluruh siswa
-                $data = Siswa::with('user', 'kelas');
+                $data = Siswa::join('users', 'users.id', '=', 'siswas.user_id')->orderBy('users.name', 'asc')->with('user', 'kelas');
             }
 
             if ($request->kelas_id) {
