@@ -1,5 +1,5 @@
 <template>
-  <h1 style="margin-left: 30px">Tugas Siswa</h1>
+<h1 style="margin-left: 30px">Tugas Siswa</h1>
   <a-row type="flex" justify="center">
     <a-col :xs="23">
       <a-card
@@ -8,8 +8,7 @@
         style="width: 100%; margin-bottom: 20px"
       >
         <a-space
-          style="
-            display: flex;
+          style="display: flex;
             justify-content: flex-container;
             flex-wrap: wrap;
             margin-bottom: 20px;
@@ -66,13 +65,24 @@
           direction="horizontal"
           style="display: flex; justify-content: flex-end; margin-bottom: 20px"
         >
-          <a-button
+          <!-- <a-button
             style="display: inline-flex; align-items: center"
             type="primary"
-            @click="showModal = true"
+            @click="showModal"
           >
             <template #icon><plus-outlined /></template>Tambah
-          </a-button>
+          </a-button> -->
+          <template #extra>
+            <a
+                @click="
+                    () => {
+                        modal.tambah = true
+                        editPart = 'tambah'
+                    }
+                "
+                ><template #icon><plus-outlined /></template>Tambah
+              </a>
+          </template>
         </a-space>
         <a-table :columns="columns" :data-source="models" style="margin: 15px">
           <template #bodyCell="{ column, record }">
@@ -108,7 +118,7 @@
       </a-card>
     </a-col>
   </a-row>
-  <a-modal v-model:visible="showModal" title="Buat Tugas Siswa" @ok="showModal = false" width="1000px">
+  <!-- <a-modal v-model="visible" title="Buat Tugas Siswa" @ok="handleOk" width="1000px">
     <a-row>
     <a-select
             v-model:value="filter.kelas_id"
@@ -164,7 +174,36 @@
           <a-row>
             <a-textarea v-model:value="value2" placeholder="Deskripsi" allow-clear />
           </a-row>
-  </a-modal>
+  </a-modal> -->
+  <a-modal v-if="editMode"
+        v-model:visible="modal.tambah"
+        title="Tambah"
+        @ok="writeData">
+        <a-form
+            name="tmabah"
+            :label-col="{ span: 8 }"
+            :wrapper-col="{ span: 16 }"
+            class="login-form"
+            autocomplete="off"
+        >
+            <a-form-item
+                label="Nomor Telepon"
+                name="no_telp"
+                :class="{ 'ant-form-item-has-error': validation.no_telp }"
+            >
+                <a-input v-model:value="form.no_telp" />
+            </a-form-item>
+
+            <a-form-item
+                label="Email"
+                name="email"
+                :class="{ 'ant-form-item-has-error': validation.email }"
+            >
+                <a-input v-model:value="form.email" />
+            </a-form-item>
+
+        </a-form>
+    </a-modal>
 </template>
 
 <script>
@@ -214,9 +253,14 @@ const data = [
   }
 ]
 export default {
+  props: {
+    editMode: {
+            type: Boolean,
+            default: false
+        }
+  },
   setup() {
     const value2 = ref('');
-    const showModal = ref(false);
     // const handleChange = info => {
     //   if (info.file.status !== 'uploading') {
     //     console.log(info.file, info.fileList);
@@ -230,7 +274,6 @@ export default {
     const fileList = ref([]);
     return {
       value2,
-      showModal,
       fileList,
       headers: {
         authorization: 'authorization-text',
@@ -248,6 +291,9 @@ export default {
       data,
       models: [],
       form: {},
+      modal: {
+        tambah: false
+      },
       columns,
       classes: [],
       filter: {
@@ -256,7 +302,7 @@ export default {
       },
       dataReady: false,
       fetching: false
-    }
+    };
   },
   mounted() {
     this.getAllKelas()
@@ -313,9 +359,15 @@ export default {
       const vm = this
       const params = {
         req: 'write',
-        kehadiran: vm.form,
-        ...vm.filter
+        kehadiran: vm.editPart,
+        ...vm.form
       }
+      vm.axios
+      .then(() => {
+        vm.modal = {
+          tambah: false,
+        }
+      })
       // vm.axios
         // .post(vm.url('kehadiran/write'), params)
         // .then(() => {

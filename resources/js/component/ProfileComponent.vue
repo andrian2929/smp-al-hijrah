@@ -245,7 +245,7 @@
                                                 dataIndex: 'status'
                                             },
                                             {
-                                                title: 'tanggal Lahir',
+                                                title: 'Tanggal Lahir',
                                                 dataIndex: 'tanggal_lahir'
                                             },
                                             {
@@ -421,6 +421,7 @@
                     <a-select-option value="O">O</a-select-option>
                 </a-select>
             </a-form-item>
+
         </a-form>
     </a-modal>
     <!-- Modal alamat -->
@@ -507,6 +508,7 @@
             >
                 <a-input v-model:value="form.email" />
             </a-form-item>
+
         </a-form>
     </a-modal>
     <!-- Modal Orangtua -->
@@ -524,19 +526,52 @@
             autocomplete="off"
         >
             <a-form-item
-                label="Nomor Telepon"
-                name="no_telp"
-                :class="{ 'ant-form-item-has-error': validation.no_telp }"
-            >
+                label="Nama"
+                name="nama"
+                :class="{ 'ant-form-item-has-error': validation.nama }"
+                >
                 <a-input v-model:value="form.no_telp" />
+            </a-form-item>
+            
+            <a-form-item
+                label="Status"
+                name="status"
+                :class="{ 'ant-form-item-has-error': validation.status }"
+                >
+                <a-input v-model:value="form.status" />
             </a-form-item>
 
             <a-form-item
-                label="Email"
-                name="email"
-                :class="{ 'ant-form-item-has-error': validation.email }"
+            label="Tanggal Lahir"
+                name="tanggal"
+                :rules="[
+                    {
+                        message: 'Pilih tanggal terlebih dahulu'
+                    }
+                ]"
             >
-                <a-input v-model:value="form.email" />
+                <a-date-picker
+                    v-model:value="form.tanggal"
+                    style="width: 315px"
+                    placeholder="Pilih tanggal"
+                    value-format="YYYY-MM-DD"
+                />
+            </a-form-item>
+
+            <a-form-item
+                label="Pekerjaan"
+                name="pekerjaan"
+                :class="{ 'ant-form-item-has-error': validation.pekerjaan }"
+                >
+                <a-input v-model:value="form.pekerjaan" />
+            </a-form-item>
+
+            <a-form-item
+                label="Keterangan Lainnya"
+                name="keterangan"
+                :class="{ 'ant-form-item-has-error': validation.keterangan }"
+                >
+                <a-input v-model:value="form.keterangan" />
             </a-form-item>
         </a-form>
     </a-modal>
