@@ -229,37 +229,92 @@
                                                 editPart = 'orangtua'
                                             }
                                         "
-                                        >Edit</a
+                                        >Tambah</a
                                     ></template
                                 >
                                 <div style="overflow-x: auto">
                                     <a-table
                                         :columns="[
-                                            { title: '', dataIndex: 'type' },
                                             {
                                                 title: 'Nama',
                                                 dataIndex: 'name'
                                             },
                                             {
-                                                title: 'Status',
-                                                dataIndex: 'status'
+                                                title: 'Hubungan',
+                                                dataIndex: 'hubungan'
                                             },
                                             {
-                                                title: 'Tanggal Lahir',
-                                                dataIndex: 'tanggal_lahir'
+                                                title: 'Nomor Telepon',
+                                                dataIndex: 'no_hp'
                                             },
                                             {
                                                 title: 'Pekerjaan',
                                                 dataIndex: 'pekerjaan'
                                             },
                                             {
-                                                title: 'Keterangan Lainnya',
+                                                title: 'Keterangan lainnya',
                                                 dataIndex: 'keterangan'
+                                            },
+                                            {
+                                                title: 'Aksi',
+                                                dataIndex: 'aksi'
                                             }
                                         ]"
                                         :pagination="false"
                                         :data-source="models.orangtua"
-                                    />
+                                    >
+                                        <template
+                                            #bodyCell="{ column, record }"
+                                        >
+                                            <template
+                                                v-if="
+                                                    column.dataIndex ==
+                                                    'hubungan'
+                                                "
+                                            >
+                                                {{
+                                                    `${record.hubungan.toUpperCase()}`
+                                                }}
+                                            </template>
+
+                                            <template
+                                                v-if="
+                                                    column.dataIndex == 'aksi'
+                                                "
+                                            >
+                                                <a-space>
+                                                    <a-button
+                                                        style="margin-left: 3px"
+                                                        type="danger"
+                                                        @click="
+                                                            alert(
+                                                                record.id,
+                                                                deleteOrangTua
+                                                            )
+                                                        "
+                                                    >
+                                                        <template #icon>
+                                                            <delete-outlined />
+                                                        </template>
+                                                    </a-button>
+
+                                                    <a-button
+                                                        style="margin-left: 3px"
+                                                        type="primary"
+                                                        @click="
+                                                            showEditOrangTuaModal(
+                                                                record
+                                                            )
+                                                        "
+                                                    >
+                                                        <template #icon>
+                                                            <edit-outlined />
+                                                        </template>
+                                                    </a-button>
+                                                </a-space>
+                                            </template>
+                                        </template>
+                                    </a-table>
                                 </div>
                             </a-card>
                         </a-col>
@@ -303,7 +358,7 @@
                             >
                                 <a-button>
                                     <upload-outlined></upload-outlined>
-                                    Click to Upload
+                                    Unggah foto
                                 </a-button>
                             </a-upload>
                             <a-button
@@ -421,7 +476,6 @@
                     <a-select-option value="O">O</a-select-option>
                 </a-select>
             </a-form-item>
-
         </a-form>
     </a-modal>
     <!-- Modal alamat -->
@@ -508,7 +562,6 @@
             >
                 <a-input v-model:value="form.email" />
             </a-form-item>
-
         </a-form>
     </a-modal>
     <!-- Modal Orangtua -->
@@ -518,35 +571,75 @@
         title="Edit Wali"
         @ok="writeData"
     >
+        <template #footer> </template>
+
         <a-form
-            name="contact"
+            :model="formAddOrangTua"
+            @finish="addOrangTua"
             :label-col="{ span: 8 }"
             :wrapper-col="{ span: 16 }"
-            class="login-form"
-            autocomplete="off"
         >
             <a-form-item
                 label="Nama"
                 name="nama"
-                :class="{ 'ant-form-item-has-error': validation.nama }"
-                >
-                <a-input v-model:value="form.no_telp" />
-            </a-form-item>
-            
-            <a-form-item
-                label="Status"
-                name="status"
-                :class="{ 'ant-form-item-has-error': validation.status }"
-                >
-                <a-input v-model:value="form.status" />
+                :rules="[
+                    {
+                        required: true,
+                        message: 'Nama tidak boleh kosong'
+                    },
+                    {
+                        type: 'string',
+                        message: 'Nama harus berupa string'
+                    }
+                ]"
+            >
+                <a-input v-model:value="formAddOrangTua.nama" />
             </a-form-item>
 
             <a-form-item
-            label="Tanggal Lahir"
+                label="No Telepon"
+                name="noTelp"
+                :rules="[
+                    {
+                        required: true,
+                        message: 'Nomor telepon tidak boleh kosong'
+                    },
+                    {
+                        pattern: new RegExp('^[0-9]+$'),
+                        message: 'Nomor telepon harus berupa angka'
+                    }
+                ]"
+            >
+                <a-input v-model:value="formAddOrangTua.noTelp" />
+            </a-form-item>
+
+            <a-form-item
+                label="Hubungan"
+                name="tipe"
+                :rules="[
+                    {
+                        required: true,
+                        message: 'Hubungan tidak boleh kosong'
+                    }
+                ]"
+            >
+                <a-select
+                    v-model:value="formAddOrangTua.tipe"
+                    placeholder="Pilih hubungan"
+                >
+                    <a-select-option value="ayah">Ayah</a-select-option>
+                    <a-select-option value="ibu">Ibu</a-select-option>
+                    <a-select-option value="wali">Wali</a-select-option>
+                </a-select>
+            </a-form-item>
+
+            <a-form-item
+                label="Tanggal Lahir"
                 name="tanggal"
                 :rules="[
                     {
-                        message: 'Pilih tanggal terlebih dahulu'
+                        type: 'date',
+                        message: 'Tanggal lahir tidak valid'
                     }
                 ]"
             >
@@ -558,28 +651,24 @@
                 />
             </a-form-item>
 
-            <a-form-item
-                label="Pekerjaan"
-                name="pekerjaan"
-                :class="{ 'ant-form-item-has-error': validation.pekerjaan }"
-                >
-                <a-input v-model:value="form.pekerjaan" />
+            <a-form-item label="Pekerjaan" name="pekerjaan">
+                <a-input v-model:value="formAddOrangTua.pekerjaan" />
             </a-form-item>
 
-            <a-form-item
-                label="Keterangan Lainnya"
-                name="keterangan"
-                :class="{ 'ant-form-item-has-error': validation.keterangan }"
-                >
-                <a-input v-model:value="form.keterangan" />
+            <a-form-item label="Keterangan Lainnya" name="keterangan">
+                <a-textarea
+                    :rows="3"
+                    v-model:value="formAddOrangTua.keterangan"
+                />
+            </a-form-item>
+
+            <a-form-item>
+                <a-button type="primary" html-type="submit">Simpan</a-button>
             </a-form-item>
         </a-form>
     </a-modal>
-    <!-- <a-modal
-        v-if="editMode"
-        v-model:visible="modal.orangtua"
-        title="Edit Wali"
-    >
+
+    <!-- <a-modal v-if="editMode" v-model:visible="modal.orangtua" title="Edit Wali">
         <a-form
             name="orangtua"
             :label-col="{ span: 8 }"
@@ -683,7 +772,16 @@ export default {
                 orangtua: false
             },
             imageNew: null,
-            loading: true
+            loading: true,
+            formAddOrangTua: {
+                nama: null,
+                tipe: null,
+                status: null,
+                tanggalLahir: null,
+                pekerjaan: null,
+                noTelp: null,
+                keteranganLain: null
+            }
         }
     },
     mounted() {
@@ -698,13 +796,14 @@ export default {
                 id: _id
             }
             vm.axios
-                // .get(vm.url('user/read'), { params: params })
-                // .then((response) => {
-                //     vm.models = response.data.models
-                //     vm.form = response.data.models
-                //     this.image = response.data.models.image
-                //     vm.loading = false
-                // })
+                .get(vm.url('user/read'), { params: params })
+                .then((response) => {
+                    vm.models = response.data.models
+                    vm.form = response.data.models
+                    this.image = response.data.models.image
+                    vm.loading = false
+                    console.log(vm.models)
+                })
                 .catch((error) => {
                     vm.$onAjaxError(error)
                 })
@@ -721,7 +820,7 @@ export default {
                 ...vm.form
             }
             vm.axios
-                // .post(vm.url('user/write'), params)
+                .post(vm.url('user/write'), params)
                 .then(() => {
                     vm.openNotification('Berhasil mengupdate data', 'success')
                     vm.modal = {
@@ -775,6 +874,59 @@ export default {
                         description: JSON.stringify(e.response.data.errors)
                     })
                 })
+        },
+        writeOrangTua() {
+            const params = {
+                user_id: this.$props.userId,
+                ...this.formAddOrangTua
+            }
+
+            this.axios
+                .post(this.url('orangtua/write'), params)
+                .then((response) => {
+                    this.readSingleData(this.$props.userId)
+                    this.$notification.success({
+                        message: 'Berhasil',
+                        description: 'Berhasil menambahkan data orang tua'
+                    })
+                })
+                .catch((e) => {
+                    this.$notification.error({
+                        message: e.response.data.message,
+                        description: e.response.data.errors
+                    })
+                })
+        },
+        addOrangTua() {
+            this.writeOrangTua()
+            this.modal.orangtua = false
+        },
+        deleteOrangTua(id) {
+            this.axios
+                .delete(this.url('orangtua/' + id))
+                .then((response) => {
+                    console.log(response)
+                    this.$notification.success({
+                        message: 'Berhasil',
+                        description: 'Berhasil menghapus data orang tua'
+                    })
+                })
+                .catch((e) => {
+                    this.$notification.error({
+                        message: e.response.data.message,
+                        description: e.response.data.errors
+                    })
+                })
+        },
+        showEditOrangTuaModal(data) {
+            this.formAddOrangTua.nama = data.name
+            this.formAddOrangTua.tipe = data.hubungan
+            this.formAddOrangTua.tanggalLahir = data.tanggal_lahir
+            this.formAddOrangTua.pekerjaan = data.pekerjaan
+            this.formAddOrangTua.noTelp = data.no_hp
+            this.formAddOrangTua.keteranganLain = data.keterangan
+
+            this.modal.orangtua = true
         }
     }
 }

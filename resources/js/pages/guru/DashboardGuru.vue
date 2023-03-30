@@ -60,7 +60,10 @@
             </a-col>
 
             <a-col :sm="24" :lg="16">
-                <a-card :title="`Mata Pelajaran`" style="border-radius: 20px">
+                <a-card
+                    :title="`Mata Pelajaran`"
+                    style="border-radius: 20px; margin-bottom: 20px"
+                >
                     <a-skeleton :loading="loading">
                         <a-table
                             :dataSource="scheduleDataSource"
@@ -169,9 +172,14 @@ const scheduleColumn = [
         key: 'hari'
     },
     {
-        title: 'Waktu',
-        dataIndex: 'waktu',
-        key: 'waktu'
+        title: 'Waktu Mulai',
+        dataIndex: 'waktu_mulai',
+        key: 'waktu_mulai'
+    },
+    {
+        title: 'Waktu Selesai',
+        dataIndex: 'waktu_selesai',
+        key: 'waktu_selesai'
     }
 ]
 
@@ -248,16 +256,19 @@ export default {
                             hari: `${item.hari
                                 .charAt(0)
                                 .toUpperCase()}${item.hari.slice(1)}`,
-                            waktu: item.waktu
+                            waktu_mulai: item.waktu_mulai,
+                            waktu_selesai: item.waktu_selesai
                         })
                     }
                     arrayTemp.sort((a, b) => {
-                        return a.waktu.localeCompare(b.waktu)
+                        return a.waktu_mulai.localeCompare(b.waktu_mulai)
                     })
                 })
                 this.scheduleDataSource.push(...arrayTemp)
                 this.scheduleDataSource.map((item, index) => {
-                    item.waktu = item.waktu.substring(0, 5)
+                    item.key = index + 1
+                    item.waktu_mulai = item.waktu_mulai.substring(0, 5)
+                    item.waktu_selesia = item.waktu_selesai.substring(0, 5)
                 })
             })
         }

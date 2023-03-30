@@ -33,12 +33,20 @@
                     </a-select>
                     <a-input-search
                         v-model:value="filters.search"
-                        placeholder="Cari data siswa"
+                        placeholder="Cari data"
                         @search="readData"
                     />
                     <router-link to="/admin/kelola_akun/new">
                         <a-button type="primary">Tambah</a-button>
                     </router-link>
+                    <a-button
+                        @click="cetakRekapSiswa"
+                        type="secondary"
+                        style="margin-left: 5px"
+                    >
+                        <template #icon><PrinterOutlined /></template
+                        >Cetak</a-button
+                    >
                 </a-space>
                 <a-table
                     :columns="columns"
@@ -54,9 +62,8 @@
                         </template>
                         <template v-if="column.key == 'is_beasiswa'">
                             <span v-if="record.is_beasiswa"
-                                ><close-square-outlined
+                                ><check-outlined
                             /></span>
-                            <span v-else><close-circle-outlined /></span>
                         </template>
                         <template v-if="column.key === 'action'">
                             <span>
@@ -169,8 +176,6 @@ export default {
                         item.number = index + 1
                     })
                     vm.models = response.data.models
-
-                    console.log(vm.models)
                 })
                 .catch((e) => vm.$onAjaxError(e))
         },
@@ -178,7 +183,6 @@ export default {
             this.filters.kelas_id = value
         },
         deleteData(_id) {
-            console.log(_id)
             const vm = this
             const params = {
                 req: 'delete',
@@ -194,6 +198,34 @@ export default {
                     vm.readData()
                 })
                 .catch((e) => (vm.validation = vm.$onAjaxError(e)))
+        },
+        cetakRekapSiswa() {
+            this.axios
+                .get(this.url('rekap/siswa'), {
+                    params: { kelas: this.filters.kelas_id }
+                })
+                .then((response) => {
+                    this.$notification.success({
+                        message: 'Berhasil',
+                        description: response.data.message
+                    })
+                })
+                .catch((e) => {
+                    if (
+                        e.response.status === 422 ||
+                        e.response.status === 400
+                    ) {
+                        this.$notification.warning({
+                            message: 'Terjadi kesalahan',
+                            description: e.response.data.message
+                        })
+                    } else {
+                        this.$notification.error({
+                            message: 'Terjadi kesalahan',
+                            description: e.response.data.message
+                        })
+                    }
+                })
         }
     }
 }

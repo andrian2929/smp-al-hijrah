@@ -5,6 +5,7 @@ import App from './App.vue'
 import { createApp } from 'vue'
 import { createStore } from 'vuex'
 import { notification } from 'ant-design-vue'
+import VueCookies from 'vue-cookies'
 
 const store = createStore({
     state() {
@@ -22,13 +23,13 @@ const store = createStore({
         getUserData(state) {
             return state.userData
         }
-    },
-    
+    }
 })
 
 const app = createApp(App)
 app.use(store)
 app.use(router)
+app.use(VueCookies)
 app.config.errorHandler = () => null
 app.config.warnHandler = () => null
 

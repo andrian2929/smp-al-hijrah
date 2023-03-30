@@ -173,7 +173,6 @@ class UserController extends Controller
                 'username' => 'required|unique:users,username|alpha_num',
                 'password' => 'required',
                 'role' => 'required',
-                'no_induk' => 'required|unique:users,no_induk',
                 'name' => 'required',
                 'no_telp' => 'nullable|numeric',
                 'gol_darah' => 'nullable|in:A,B,AB,O',

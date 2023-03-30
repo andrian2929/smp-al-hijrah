@@ -183,9 +183,14 @@ export default defineComponent({
                     key: 'guru'
                 },
                 {
-                    title: 'Waktu',
-                    dataIndex: 'waktu',
-                    key: 'waktu'
+                    title: 'Waktu mulai',
+                    dataIndex: 'waktu_mulai',
+                    key: 'waktu_mulai'
+                },
+                {
+                    title: 'Waktu selesai',
+                    dataIndex: 'waktu_selesai',
+                    key: 'waktu_mulai'
                 }
             ],
             siswa: {
@@ -257,13 +262,14 @@ export default defineComponent({
             let roster = this.siswa.roster.filter(
                 (item) => item.hari == hari.toLowerCase()
             )
-            roster.sort((a, b) => a.waktu.localeCompare(b.waktu))
+            roster.sort((a, b) => a.waktu_mulai.localeCompare(b.waktu_mulai))
             return roster.map((item, index) => {
                 return {
                     key: index + 1,
                     matapelajaran: item.mapel.name,
                     guru: item.guru.name,
-                    waktu: `${item.waktu.substring(0, 5)}`
+                    waktu_mulai: `${item.waktu_mulai.substring(0, 5)}`,
+                    waktu_selesai: `${item.waktu_selesai.substring(0, 5)}`
                 }
             })
         }

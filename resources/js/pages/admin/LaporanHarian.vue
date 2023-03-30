@@ -615,21 +615,13 @@ const columns = [
     },
     {
         title: 'NIS/NISN',
-        dataIndex: 'nis',
-        key: 'nis'
+        dataIndex: 'nisn',
+        key: 'nisn'
     },
     {
         title: 'Nama Siswa',
         dataIndex: 'nama',
         key: 'nama'
-    },
-    {
-        title: 'Kegiatan',
-        key: 'kegiatan'
-    },
-    {
-        title: 'Solat',
-        key: 'solat'
     },
     {
         title: 'Aksi',

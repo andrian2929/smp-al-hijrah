@@ -19,7 +19,8 @@ class CreateMataPelajaranHarisTable extends Migration
             $table->unsignedInteger('kelas_id');
             $table->enum('hari', ['senin', 'selasa', 'rabu', 'kamis', 'jumat', 'sabtu']);
             $table->unsignedInteger('guru_id');
-            $table->time('waktu');
+            $table->time('waktu_mulai');
+            $table->time('waktu_selesai');
             $table->timestamps();
         });
     }

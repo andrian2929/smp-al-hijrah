@@ -52,9 +52,7 @@ class KelasController extends Controller
                 ->get();
         }
         if ($request->req == 'get_siswa_options') {
-
-            $data = Siswa::select('id', 'siswa_id', 'kelas_id', 'nisn')
-                ->whereNull('kelas_id')
+            $data = Siswa::select('id', 'user_id', 'kelas_id', 'nisn')
                 ->with('user', function ($q) {
                     $q->select('id', 'name');
                 })
@@ -104,9 +102,9 @@ class KelasController extends Controller
             $data->save();
         }
         if ($request->req == 'assign_siswa') {
-            $obj = Siswa::findOrFail($request->siswa_id);
-            $obj->kelas_id = $request->kelas_id;
-            $obj->save();
+            $siswa = Siswa::findOrFail($request->siswa_id);
+            $siswa->kelas_id = $request->kelas_id;
+            $siswa->save();
         }
         if ($request->req == 'remove_siswa') {
             $obj = Siswa::findOrFail($request->id);

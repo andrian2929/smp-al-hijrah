@@ -14,6 +14,7 @@ class JurnalKelas extends Model
     protected $fillable = [
         'id_kelas',
         'id_guru',
+        'id_mapel',
         'catatan',
     ];
 
@@ -25,5 +26,10 @@ class JurnalKelas extends Model
     public function guru()
     {
         return $this->belongsTo(Guru::class, 'id_guru', 'user_id');
+    }
+
+    public function mapel()
+    {
+        return $this->belongsTo(MataPelajaranHari::class, 'id_mapel', 'id')->with('mapel');
     }
 }

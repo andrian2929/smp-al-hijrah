@@ -16,12 +16,20 @@
                 >
                     <a-input-search
                         v-model:value="filters.search"
-                        placeholder="cari data"
+                        placeholder="Cari data"
                         @search="readData"
                     />
                     <router-link to="/admin/kelola_akun/new">
-                        <a-button>Tambah</a-button>
+                        <a-button type="primary">Tambah</a-button>
                     </router-link>
+                    <a-button
+                        @click="cetakRekapGuru"
+                        type="secondary"
+                        style="margin-left: 5px"
+                    >
+                        <template #icon><PrinterOutlined /></template
+                        >Cetak</a-button
+                    >
                 </a-space>
                 <a-table
                     :columns="columns"
@@ -163,6 +171,11 @@ export default {
                     vm.readData()
                 })
                 .catch((e) => (vm.validation = vm.$onAjaxError(e)))
+        },
+        cetakRekapGuru() {
+            this.axios.get(this.url('rekap/guru')).then((response) => {
+                console.log(response)
+            })
         }
     }
 }

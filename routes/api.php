@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\GuruController;
+use App\Http\Controllers\InputMasalController;
 use App\Http\Controllers\KehadiranController;
 use App\Http\Controllers\KelasController;
 use App\Http\Controllers\MapelController;
@@ -44,6 +45,8 @@ Route::middleware('auth:sanctum')->get('/authenticated', function (Request $requ
 Route::get('/kelas/read', [KelasController::class, 'read'])->name('kelas.read');
 Route::post('/kelas/write', [KelasController::class, 'write'])->name('kelas.write');
 
+Route::get('/siswa/input-masal/template', [InputMasalController::class, 'downloadTemplate'])->name('siswa.input-masal.template');
+Route::post('/siswa/input-masal', [InputMasalController::class, 'inputMasal'])->name('siswa.input-masal');
 Route::get('/siswa/read', [SiswaController::class, 'read'])->name('siswa.read');
 Route::post('/siswa/write', [SiswaController::class, 'write'])->name('siswa.write');
 
@@ -55,6 +58,7 @@ Route::post('/user/write', [UserController::class, 'write'])->name('user.write')
 
 Route::get('/guru/read', [GuruController::class, 'read'])->name('guru.read');
 
+Route::delete('orangtua/{id}', [OrangtuaController::class, 'delete'])->name('orangtua.delete');
 Route::get('/orangtua/read', [OrangtuaController::class, 'read'])->name('orangtua.read');
 Route::post('/orangtua/write', [OrangtuaController::class, 'write'])->name('orangtua.write');
 
@@ -75,5 +79,7 @@ Route::get('/laporan/perilaku/data', [LaporanPerilakuController::class, 'data'])
 Route::get('/laporan/perilaku/read', [LaporanPerilakuController::class, 'read'])->name('laporan.perilaku.read');
 Route::post('/laporan/perilaku/write', [LaporanPerilakuController::class, 'write'])->name('laporan.perilaku.write');
 
+Route::get('/rekap/guru', [\App\Http\Controllers\RekapDataController::class, 'rekapDataGuru']);
+Route::get('/rekap/siswa', [\App\Http\Controllers\RekapDataController::class, 'rekapDataSiswa']);
 Route::get('/rekap/kehadiran', \App\Http\Controllers\RekapKehadiranController::class);
 Route::apiResource('jurnal-kelas', JurnalKelasController::class);

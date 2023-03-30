@@ -89,7 +89,7 @@ class RekapKehadiranController extends Controller
             </table>
         '
         );
-        $mpdf->WriteHTML(view('rekap-kehadiran/rekap-kehadiran-kelas', ['rekap' => $rekap, 'date' => ['monthName' => $monthName, 'year' => $year, 'month' => $month], 'numOfTheDay' => $numOfTheDay])->render());
+        $mpdf->WriteHTML(view('rekap/rekap-kehadiran-kelas', ['rekap' => $rekap, 'date' => ['monthName' => $monthName, 'year' => $year, 'month' => $month], 'numOfTheDay' => $numOfTheDay])->render());
         $mpdf->Output('rekap-kehadiran-kelas-' . now()->timestamp . '.pdf', 'D');
     }
 
@@ -126,7 +126,7 @@ class RekapKehadiranController extends Controller
             </table>
         '
         );
-        $mpdf->WriteHTML(view('rekap-kehadiran/rekap-kehadiran-siswa', ['rekap' => $rekap, 'date' => ['monthName' => $monthName, 'year' => $year, 'month' => $month], 'numOfTheDay' => $numOfTheDay])->render());
+        $mpdf->WriteHTML(view('rekap/rekap-kehadiran-siswa', ['rekap' => $rekap, 'date' => ['monthName' => $monthName, 'year' => $year, 'month' => $month], 'numOfTheDay' => $numOfTheDay])->render());
         $mpdf->Output('rekap-kehadiran-siswa-' . now()->timestamp . '.pdf', 'D');
 
         $mpdf->Output();

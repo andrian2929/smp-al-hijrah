@@ -17,11 +17,13 @@ class CreateJurnalKelasTable extends Migration
             $table->id();
             $table->unsignedBigInteger('id_kelas');
             $table->unsignedBigInteger('id_guru');
+            $table->unsignedBigInteger('id_mapel');
             $table->string('catatan');
             $table->timestamps();
 
             $table->foreign('id_kelas')->references('id')->on('kelas');
             $table->foreign('id_guru')->references('id')->on('users');
+            $table->foreign('id_mapel')->references('id')->on('mata_pelajaran_haris');
         });
     }
 

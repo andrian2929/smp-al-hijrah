@@ -16,7 +16,7 @@
                 >
                     <a-input-search
                         v-model:value="filters.search"
-                        placeholder="cari data"
+                        placeholder="Cari data"
                         @search="readData"
                     />
                     <router-link to="/admin/kelola_akun/new">

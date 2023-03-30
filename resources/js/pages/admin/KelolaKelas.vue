@@ -3,7 +3,7 @@
         <a-col :xs="23">
             <a-card
                 :loading="loading"
-                title="TATA KELOLA KELAS"
+                title="Tata Kelola Kelas"
                 style="width: 100%"
             >
                 <a-space
@@ -38,7 +38,9 @@
                         <a-card :title="`${cls.jenjang} - ${cls.section}`">
                             <template #extra>
                                 <!-- <a @click="findKelas(cls.id)">Edit </a> -->
-                                <a-button danger @click="findKelas(cls.id)">Edit</a-button>
+                                <a-button danger @click="findKelas(cls.id)"
+                                    >Edit</a-button
+                                >
                             </template>
                             Wali Kelas :
                             {{ cls.wali_kelas ? cls.wali_kelas.name : '-'

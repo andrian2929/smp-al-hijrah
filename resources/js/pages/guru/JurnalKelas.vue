@@ -59,7 +59,8 @@
                             :rules="[
                                 {
                                     required: true,
-                                    message: 'Mata Pelajaran tidak boleh kosong',
+                                    message:
+                                        'Mata Pelajaran tidak boleh kosong',
                                     trigger: blur
                                 }
                             ]"
@@ -67,14 +68,13 @@
                             <a-select
                                 v-model:value="jurnalKelasAddForm.id_mapel"
                                 placeholder="Pilih mata pelajaran"
-                                @change="handleChange"
                             >
                                 <a-select-option
-                                    v-for="(mapel, index) in classes"
+                                    v-for="(mapel, index) in mapelOptions"
                                     :key="mapel.id"
                                     :value="mapel.id"
                                     >{{
-                                        `${mapel.jenjang}  ${mapel.section}`
+                                        `${mapel.mapel.name}`
                                     }}</a-select-option
                                 >
                             </a-select>
@@ -131,103 +131,108 @@
                                     @ok="handleOk"
                                 >
                                     <template #footer> </template>
-                                    <a-form
-                                        :layout="'vertical'"
-                                        :model="jurnalKelasUpdateForm"
-                                        @finish="onFinishJurnalUpdateForm"
-                                        @finishFailed="
-                                            onFinishFailedJurnalUpdateForm
-                                        "
-                                        ref="jurnalKelasUpdateForm"
-                                    >
-                                        <a-form-item
-                                            label="Kelas"
-                                            name="id_kelas"
-                                            :rules="[
-                                                {
-                                                    required: true,
-                                                    message:
-                                                        'Kelas tidak boleh kosong'
-                                                }
-                                            ]"
+                                    <a-spin :spinning="jurnalKelasModalLoading">
+                                        <a-form
+                                            v-if="
+                                                jurnalKelasModalLoading ===
+                                                false
+                                            "
+                                            :layout="'vertical'"
+                                            :model="jurnalKelasUpdateForm"
+                                            @finish="onFinishJurnalUpdateForm"
+                                            @finishFailed="
+                                                onFinishFailedJurnalUpdateForm
+                                            "
+                                            ref="jurnalKelasUpdateForm"
                                         >
-                                            <a-select
-                                                v-model:value="
-                                                    jurnalKelasUpdateForm.id_kelas
-                                                "
-                                                placeholder="Pilih kelas"
-                                                @change="handleChange"
+                                            <a-form-item
+                                                label="Kelas"
+                                                name="id_kelas"
+                                                :rules="[
+                                                    {
+                                                        required: true,
+                                                        message:
+                                                            'Kelas tidak boleh kosong'
+                                                    }
+                                                ]"
                                             >
-                                                <a-select-option
-                                                    v-for="(
-                                                        kelas, index
-                                                    ) in classes"
-                                                    :key="kelas.id"
-                                                    :value="kelas.id"
-                                                    >{{
-                                                        `${kelas.jenjang}  ${kelas.section}`
-                                                    }}</a-select-option
+                                                <a-select
+                                                    v-model:value="
+                                                        jurnalKelasUpdateForm.id_kelas
+                                                    "
+                                                    placeholder="Pilih kelas"
+                                                    @change="handleChange"
                                                 >
-                                            </a-select>
-                                        </a-form-item>
-                                        <a-form-item
-                                            label="Mata Pelajaran"
-                                            name="id_mapel"
-                                            :rules="[
-                                                {
-                                                    required: true,
-                                                    message:
-                                                        'Mata Pelajaran tidak boleh kosong',
-                                                }
-                                            ]"
-                                        >
-                                            <a-select
-                                                v-model:value="
-                                                    jurnalKelasUpdateForm.id_mapel
-                                                "
-                                                placeholder="Pilih Mata Pelajaran"
-                                                @change="handleChange"
+                                                    <a-select-option
+                                                        v-for="(
+                                                            kelas, index
+                                                        ) in classes"
+                                                        :key="kelas.id"
+                                                        :value="kelas.id"
+                                                        >{{
+                                                            `${kelas.jenjang}  ${kelas.section}`
+                                                        }}</a-select-option
+                                                    >
+                                                </a-select>
+                                            </a-form-item>
+                                            <a-form-item
+                                                label="Mata Pelajaran"
+                                                name="id_mapel"
+                                                :rules="[
+                                                    {
+                                                        required: true,
+                                                        message:
+                                                            'Mata Pelajaran tidak boleh kosong'
+                                                    }
+                                                ]"
                                             >
-                                                <a-select-option
-                                                    v-for="(
-                                                        mapel, index
-                                                    ) in mapelOptions"
-                                                    :key="mapel.id"
-                                                    :value="mapel.id"
-                                                    >{{
-                                                        `${mapel.name}`
-                                                    }}</a-select-option
+                                                <a-select
+                                                    v-model:value="
+                                                        jurnalKelasUpdateForm.id_mapel
+                                                    "
+                                                    placeholder="Pilih Mata Pelajaran"
                                                 >
-                                            </a-select>
-                                        </a-form-item>
-                                        <a-form-item
-                                            label="Catatan"
-                                            name="catatan"
-                                            :rules="[
-                                                {
-                                                    required: true,
-                                                    message:
-                                                        'Catatan tidak boleh kosong'
-                                                }
-                                            ]"
-                                        >
-                                            <a-textarea
-                                                v-model:value="
-                                                    jurnalKelasUpdateForm.catatan
-                                                "
-                                                :rows="4"
-                                            />
-                                        </a-form-item>
+                                                    <a-select-option
+                                                        v-for="(
+                                                            mapel, index
+                                                        ) in mapelOptions"
+                                                        :key="mapel.id"
+                                                        :value="mapel.id"
+                                                        >{{
+                                                            `${mapel.mapel.name}`
+                                                        }}</a-select-option
+                                                    >
+                                                </a-select>
+                                            </a-form-item>
+                                            <a-form-item
+                                                label="Catatan"
+                                                name="catatan"
+                                                :rules="[
+                                                    {
+                                                        required: true,
+                                                        message:
+                                                            'Catatan tidak boleh kosong'
+                                                    }
+                                                ]"
+                                            >
+                                                <a-textarea
+                                                    v-model:value="
+                                                        jurnalKelasUpdateForm.catatan
+                                                    "
+                                                    :rows="4"
+                                                />
+                                            </a-form-item>
 
-                                        <a-form-item>
-                                            <a-button
-                                                html-type="submit"
-                                                type="primary"
-                                                :loading="loading"
-                                                >Simpan
-                                            </a-button>
-                                        </a-form-item>
-                                    </a-form>
+                                            <a-form-item>
+                                                <a-button
+                                                    html-type="submit"
+                                                    type="primary"
+                                                    :loading="loading"
+                                                    >Simpan
+                                                </a-button>
+                                            </a-form-item>
+                                        </a-form>
+                                    </a-spin>
                                 </a-modal>
                             </a-space>
                         </template>
@@ -256,7 +261,8 @@ const jurnalKelasTableColumn = [
     {
         title: 'Kelas',
         dataIndex: 'kelas',
-        key: 'kelas'
+        key: 'kelas',
+        width: 100
     },
     {
         title: 'Mata Pelajaran',
@@ -278,6 +284,7 @@ const jurnalKelasTableColumn = [
 export default {
     data() {
         return {
+            jurnalKelasModalLoading: true,
             jurnalKelasTableColumn,
             jurnalKelasDataSources: [],
             jurnalKelasDataSourcesLoading: false,
@@ -296,13 +303,12 @@ export default {
                 catatan: null
             },
             classes: [],
-            mapelOptions: [],
+            mapelOptions: []
         }
     },
     mounted() {
         this.getKelas()
         this.getJurnalKelas()
-        this.getMapel()
     },
     methods: {
         getKelas() {
@@ -313,17 +319,26 @@ export default {
                 })
                 .catch((e) => this.$onAjaxError(e))
         },
-        getMapel() {
-            this.axios
-                .get(this.url('mapel/read'), {params : { req: 'table' }})
-                .them((response) => {
-                    this.mapelOptions = response.data.models
-                })
-                .catch((e) => this.$onAjaxError(e))
+        getMapel(kelas_id) {
+            this.axios.get(this.url('user')).then((response) => {
+                this.axios
+                    .get(this.url('mapel/read'), {
+                        params: {
+                            guru_id: response.data.id,
+                            req: 'get_mapel_by_guru_id',
+                            kelas_id: kelas_id
+                        }
+                    })
+                    .then((response) => {
+                        this.mapelOptions = response.data.models
+                    })
+                    .catch((e) => this.$onAjaxError(e))
+            })
         },
         getJurnalKelas() {
             this.jurnalKelasDataSourcesLoading = true
             this.jurnalKelasDataSources = []
+
             this.axios
                 .get(this.url('user'))
                 .then((response) => {
@@ -340,7 +355,7 @@ export default {
                                         'dddd, DD MMMM YYYY'
                                     ),
                                     kelas: `${item.kelas.jenjang} - ${item.kelas.section}`,
-                                    mapel: `${item.mapel.name}`,
+                                    mapel: `${item.mapel.mapel.name}`,
                                     catatan: item.catatan
                                 })
                             })
@@ -351,7 +366,10 @@ export default {
                 .catch((e) => this.$onAjaxError(e))
         },
         handleChange(value) {
+            this.mapelOptions = []
+            this.jurnalKelasAddForm.id_mapel = null
             this.jurnalKelasAddForm.id_kelas = value
+            this.getMapel(value)
         },
         onFinishJurnalForm() {
             this.axios
@@ -404,6 +422,7 @@ export default {
                 })
         },
         showJurnalUpdateModal(id) {
+            this.jurnalKelasModalLoading = true
             this.axios
                 .get(this.url('jurnal-kelas/' + id))
                 .then((response) => {
@@ -414,7 +433,9 @@ export default {
                         id_guru: response.data.data.id_guru,
                         catatan: response.data.data.catatan
                     }
+                    this.getMapel(this.jurnalKelasUpdateForm.id_kelas)
                     this.jurnalKelasModalUpdateVisible = true
+                    this.jurnalKelasModalLoading = false
                 })
                 .catch((e) => this.$onAjaxError(e))
         },
@@ -433,7 +454,7 @@ export default {
                         .then((response) => {
                             this.jurnalKelasUpdateForm = {
                                 id_kelas: null,
-                                id_mapel,
+                                id_mapel: null,
                                 id_guru: null,
                                 catatan: null
                             }
@@ -445,8 +466,8 @@ export default {
                         })
                         .catch((e) => {
                             this.$notification.error({
-                                message: 'Kesalahan',
-                                description: e.response.data.message
+                                message: 'Terjadi kesalahan',
+                                description: e
                             })
                         })
                 })

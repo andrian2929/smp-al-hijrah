@@ -15,11 +15,12 @@ class CreateOrangtuasTable extends Migration
     {
         Schema::create('orangtuas', function (Blueprint $table) {
             $table->id();
-            $table->enum('type', ['ayah', 'ibu', 'wali']);
-            $table->enum('status', ['kandung', 'angkat']);
             $table->unsignedInteger('user_id');
+            $table->string('hubungan');
+            $table->string('status')->nullable();
+            $table->string('no_hp')->nullable();
             $table->string('name');
-            $table->date('tanggal_lahir');
+            $table->date('tanggal_lahir')->nullable();
             $table->string('pekerjaan')->nullable();
             $table->string('keterangan')->nullable();
             $table->timestamps();

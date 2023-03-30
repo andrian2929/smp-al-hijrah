@@ -32,7 +32,7 @@
                     </a-select>
                     <a-input-search
                         v-model:value="filters.search"
-                        placeholder="Cari data siswa"
+                        placeholder="Cari data"
                         @search="readData"
                     />
                     <router-link to="/admin/kelola_akun/new">
@@ -52,8 +52,9 @@
                             >
                         </template>
                         <template v-if="column.key == 'is_beasiswa'">
-                            <span v-if="record.is_beasiswa">Ya</span>
-                            <span v-else>Tidak</span>
+                            <span v-if="record.is_beasiswa"
+                                ><check-outlined
+                            /></span>
                         </template>
                         <template v-if="column.key === 'action'">
                             <span>

@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\MataPelajaran;
 use App\Models\MataPelajaranHari;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
 
 class MapelController extends Controller
 {
@@ -37,12 +38,13 @@ class MapelController extends Controller
         }
 
         if ($request->req == 'get_mapel_by_guru_id') {
-
-            $mapel = MataPelajaranHari::select('id', 'hari', 'waktu', 'mapel_id', 'guru_id', 'kelas_id')
+            $mapel = MataPelajaranHari::select('id', 'hari', 'waktu_mulai', 'waktu_selesai', 'mapel_id', 'guru_id', 'kelas_id')
                 ->where('guru_id', $request->guru_id)
-                ->with('mapel')->with('kelas')
-                ->get();
-            $data = $mapel;
+                ->with('mapel')->with('kelas');
+            if ($request->kelas_id) {
+                $mapel = $mapel->where('kelas_id', $request->kelas_id);
+            }
+            $data = $mapel->get();
 
             // $mapel = MataPelajaran::select('id', 'name', 'gurus')->whereHas('hari')->with('hari')->get();
             // $data = $mapel->filter(function ($item) use ($request) {
@@ -86,17 +88,26 @@ class MapelController extends Controller
             $data->delete();
         }
         if ($request->req == 'add_mapel_to_roster') {
-            $request->validate([
-                'waktu' => 'required',
+            $validator = Validator::make($request->all(), [
+                'waktu_mulai' => 'required|date_format:H:i',
+                'waktu_selesai' => 'required|date_format:H:i|after:waktu_mulai',
                 'mapel' => 'required|exists:mata_pelajarans,id',
                 'guru' => 'required|exists:users,id'
             ]);
+
+            if ($validator->fails()) {
+                return response()->json([
+                    'message' => $validator->errors()->first()
+                ], 422);
+            }
+
             $obj = MataPelajaranHari::find($request->id);
             if (!$obj) {
                 $obj = new MataPelajaranHari();
             }
             $obj->hari = $request->hari;
-            $obj->waktu = $request->waktu;
+            $obj->waktu_mulai = $request->waktu_mulai;
+            $obj->waktu_selesai = $request->waktu_selesai;
             $obj->mapel_id = $request->mapel;
             $obj->guru_id = $request->guru;
             $obj->kelas_id = $request->kelas_id;

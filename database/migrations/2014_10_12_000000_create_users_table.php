@@ -17,7 +17,7 @@ class CreateUsersTable extends Migration
             $table->id();
             $table->string('username')->unique();
             $table->string('name');
-            $table->string('no_induk')->unique();
+            $table->string('no_induk')->nullable();
             $table->string('image')->nullable();
             $table->string('no_telp')->nullable();
             $table->text('alamat')->nullable();

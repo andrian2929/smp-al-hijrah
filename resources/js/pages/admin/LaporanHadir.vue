@@ -511,6 +511,7 @@ export default {
                 })
         },
         handleSelectChange(value) {
+            this.cetakLaporanButtonLoading = false
             this.selectedCetakLaporan = value
             this.cetakLaporanForm = {
                 tanggal: null

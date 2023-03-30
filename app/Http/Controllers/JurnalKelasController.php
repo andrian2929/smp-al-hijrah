@@ -18,7 +18,7 @@ class JurnalKelasController extends Controller
         $jurnalKelas = JurnalKelas::with('kelas', 'guru')->get();
 
         if ($request->has('id_guru')) {
-            $jurnalKelas = JurnalKelas::with('kelas', 'guru')->where('id_guru', $request->id_guru)->get();
+            $jurnalKelas = JurnalKelas::with('kelas', 'guru', 'mapel')->where('id_guru', $request->id_guru)->get();
         }
 
         return response()->json([
@@ -38,10 +38,10 @@ class JurnalKelasController extends Controller
     public function store(Request $request)
     {
         $validator = Validator::make(
-            $request->all(),
             [
                 'id_kelas' => 'required|exists:kelas,id',
                 'id_guru' => 'required|exists:users,id',
+                'id_mapel' => 'required|exists:mata_pelajaran_haris,id',
                 'catatan' => 'required|string',
             ],
             [
@@ -64,6 +64,7 @@ class JurnalKelasController extends Controller
         $jurnalKelas = JurnalKelas::create([
             'id_kelas' => $request->id_kelas,
             'id_guru' => $request->id_guru,
+            'id_mapel' => $request->id_mapel,
             'catatan' => $request->catatan,
         ]);
 
@@ -99,7 +100,7 @@ class JurnalKelasController extends Controller
             ], 422);
         }
 
-        $jurnalKelas = JurnalKelas::with('kelas', 'guru')->find($id);
+        $jurnalKelas = JurnalKelas::with('kelas', 'guru', 'mapel')->find($id);
 
         return response()->json([
             'status' => 'success',
@@ -118,10 +119,10 @@ class JurnalKelasController extends Controller
     public function update(Request $request, $id)
     {
         $validator = Validator::make(
-            $request->all(),
             [
                 'id_kelas' => 'required|exists:kelas,id',
                 'id_guru' => 'required|exists:users,id',
+                'id_mapel' => 'required|exists:mata_pelajaran_haris,id',
                 'catatan' => 'required|string',
             ],
             [
@@ -145,6 +146,7 @@ class JurnalKelasController extends Controller
         $jurnalKelas->update([
             'id_kelas' => $request->id_kelas,
             'id_guru' => $request->id_guru,
+            'id_mapel' => $request->id_mapel,
             'catatan' => $request->catatan,
         ]);
 
