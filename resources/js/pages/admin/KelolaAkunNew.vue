@@ -40,12 +40,12 @@
                         name="file"
                         :file-list="fileList"
                         :multiple="false"
-                        :before-upload="beforeUpload"
-                        @change="prosesInputMasal"
+                        :beforeUpload="beforeUpload"
+                        :customRequest="prosesInputMasal"
                     >
                         <a-button>
                             <upload-outlined></upload-outlined>
-                            Unggah file
+                            Unggah berkas
                         </a-button>
                     </a-upload>
                     <a-modal
@@ -79,6 +79,7 @@
 
 <script>
 import FileSaver from 'file-saver'
+import * as XLSX from 'xlsx'
 const kelasColumns = [
     {
         title: 'Kode',
@@ -137,7 +138,6 @@ export default {
                 .catch((e) => vm.$onAjaxError(e))
         },
         downloadTemplate() {
-            console.log('ok')
             this.axios
                 .get(this.url('siswa/input-masal/template'), {
                     responseType: 'blob'
@@ -149,24 +149,47 @@ export default {
                     )
                 })
         },
-        prosesInputMasal() {
-            console.log(this.fileList)
-
-            // console.log('andrian')
-            // const vm = this
-            // const formData = new FormData()
-            // formData.append('file', vm.fileList[0].originFileObj)
-            // console.log(formData)
-            // vm.axios
-            //     .post(vm.url('siswa/input-masal'), formData, {
-            //         headers: {
-            //             'Content-Type': 'multipart/form-data'
-            //         }
-            //     })
-            //     .then((response) => {
-            //         console.log('andrian')
-            //     })
-            //     .catch((e) => vm.$onAjaxError(e))
+        beforeUpload(file) {
+            if (
+                file.type !=
+                'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+            ) {
+                this.$message.error(
+                    'File yang diunggah harus berupa file Excel'
+                )
+                return false
+            }
+        },
+        prosesInputMasal(file) {
+            const vm = this
+            const formData = new FormData()
+            formData.append('file', vm.fileList[0].originFileObj)
+            vm.axios
+                .post(vm.url('siswa/input-masal'), formData, {
+                    headers: {
+                        'Content-Type': 'multipart/form-data'
+                    }
+                })
+                .then((response) => {
+                    const worksheet = XLSX.utils.json_to_sheet(response.data)
+                    const workbook = XLSX.utils.book_new()
+                    XLSX.utils.book_append_sheet(workbook, worksheet, 'Sheet1')
+                    const excelBuffer = XLSX.write(workbook, {
+                        bookType: 'xlsx',
+                        type: 'array'
+                    })
+                    const data = new Blob([excelBuffer], {
+                        type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8'
+                    })
+                    FileSaver.saveAs(data, 'hasil_input_masal.xlsx')
+                })
+                .catch((e) => {
+                    console.log(e)
+                    this.$notification.error({
+                        message: 'Terjadi kesalahan',
+                        description: e
+                    })
+                })
         }
     }
 }

@@ -364,6 +364,7 @@
 </template>
 
 <script>
+import FileSaver from 'file-saver'
 import moment from 'moment'
 import 'moment/locale/id'
 
@@ -540,7 +541,6 @@ export default {
                 month: this.cetakLaporanForm.tanggal.split('-')[1],
                 year: this.cetakLaporanForm.tanggal.split('-')[0]
             }
-            console.log(cetakLaporanData)
 
             if (this.selectedCetakLaporan === 'kelas') {
                 cetakLaporanData.kelas = this.cetakLaporanForm.kelas
@@ -549,16 +549,23 @@ export default {
             }
 
             this.axios
-                .get(
-                    this.url('rekap/kehadiran'),
-                    {
-                        params: cetakLaporanData
-                    },
-                    {
-                        responseType: 'blob'
-                    }
-                )
+                .get(this.url('rekap/kehadiran'), {
+                    params: cetakLaporanData,
+                    responseType: 'blob'
+                })
                 .then((response) => {
+                    const fileName =
+                        response.headers['content-disposition'].split(
+                            'filename='
+                        )[1]
+
+                    FileSaver.saveAs(
+                        new Blob([response.data], {
+                            type: 'application/pdf'
+                        }),
+                        fileName.substring(1, fileName.length - 1)
+                    )
+
                     this.cetakLaporanButtonLoading = false
                     this.cetakLaporanModalVisible = false
                     this.cetakLaporanForm = {

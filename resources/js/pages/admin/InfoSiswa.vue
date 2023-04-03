@@ -101,6 +101,7 @@
     </a-row>
 </template>
 <script>
+import FileSaver from 'file-saver'
 const columns = [
     {
         title: 'No',
@@ -202,29 +203,27 @@ export default {
         cetakRekapSiswa() {
             this.axios
                 .get(this.url('rekap/siswa'), {
-                    params: { kelas: this.filters.kelas_id }
+                    params: { kelas: this.filters.kelas_id },
+                    responseType: 'blob'
                 })
                 .then((response) => {
-                    this.$notification.success({
-                        message: 'Berhasil',
-                        description: response.data.message
-                    })
+                    const fileName =
+                        response.headers['content-disposition'].split(
+                            'filename='
+                        )[1]
+                    console.log(fileName)
+                    FileSaver.saveAs(
+                        new Blob([response.data], {
+                            type: 'application/pdf'
+                        }),
+                        fileName.substring(1, fileName.length - 1)
+                    )
                 })
                 .catch((e) => {
-                    if (
-                        e.response.status === 422 ||
-                        e.response.status === 400
-                    ) {
-                        this.$notification.warning({
-                            message: 'Terjadi kesalahan',
-                            description: e.response.data.message
-                        })
-                    } else {
-                        this.$notification.error({
-                            message: 'Terjadi kesalahan',
-                            description: e.response.data.message
-                        })
-                    }
+                    this.$notification.error({
+                        message: 'Terjadi kesalahan',
+                        description: e.response.data.message
+                    })
                 })
         }
     }

@@ -27,7 +27,7 @@ class InputMasalController extends Controller
         $sheetCount = count($sheetData);
 
         $data = [];
-        for ($i = 2; $i <= $sheetCount; $i++) {
+        for ($i = 2; $i < $sheetCount; $i++) {
             $data[] = [
                 'nama'          => $sheetData[$i]['A'],
                 'nisn'          => $sheetData[$i]['B'],

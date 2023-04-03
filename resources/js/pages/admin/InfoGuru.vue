@@ -84,6 +84,7 @@
     </a-row>
 </template>
 <script>
+import FileSaver from 'file-saver'
 const columns = [
     {
         title: 'ID',
@@ -173,9 +174,30 @@ export default {
                 .catch((e) => (vm.validation = vm.$onAjaxError(e)))
         },
         cetakRekapGuru() {
-            this.axios.get(this.url('rekap/guru')).then((response) => {
-                console.log(response)
-            })
+            this.axios
+                .get(this.url('rekap/guru'), {
+                    params: { kelas: this.filters.kelas_id },
+                    responseType: 'blob'
+                })
+                .then((response) => {
+                    const fileName =
+                        response.headers['content-disposition'].split(
+                            'filename='
+                        )[1]
+                    console.log(fileName)
+                    FileSaver.saveAs(
+                        new Blob([response.data], {
+                            type: 'application/pdf'
+                        }),
+                        fileName.substring(1, fileName.length - 1)
+                    )
+                })
+                .catch((e) => {
+                    this.$notification.error({
+                        message: 'Terjadi kesalahan',
+                        description: e
+                    })
+                })
         }
     }
 }
