@@ -168,26 +168,26 @@ export default {
                 .post(vm.url('siswa/input-masal'), formData, {
                     headers: {
                         'Content-Type': 'multipart/form-data'
-                    }
+                    },
+                    responseType: 'blob'
                 })
                 .then((response) => {
-                    const worksheet = XLSX.utils.json_to_sheet(response.data)
-                    const workbook = XLSX.utils.book_new()
-                    XLSX.utils.book_append_sheet(workbook, worksheet, 'Sheet1')
-                    const excelBuffer = XLSX.write(workbook, {
-                        bookType: 'xlsx',
-                        type: 'array'
-                    })
-                    const data = new Blob([excelBuffer], {
-                        type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8'
-                    })
-                    FileSaver.saveAs(data, 'hasil_input_masal.xlsx')
+                    const fileName =
+                        response.headers['content-disposition'].split(
+                            'filename='
+                        )[1]
+                    console.log(fileName)
+                    FileSaver.saveAs(
+                        new Blob([response.data], {
+                            type: 'application/pdf'
+                        }),
+                        fileName.substring(1, fileName.length - 1)
+                    )
                 })
                 .catch((e) => {
-                    console.log(e)
-                    this.$notification.error({
+                    $this.notification.error({
                         message: 'Terjadi kesalahan',
-                        description: e
+                        description: e.response.data.message
                     })
                 })
         }
