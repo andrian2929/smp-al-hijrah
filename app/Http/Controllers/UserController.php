@@ -169,8 +169,7 @@ class UserController extends Controller
         if ($request->req == 'add') {
 
             $data =  $request->validate([
-                // username cannot be space
-                'username' => 'required|unique:users,username|alpha_num',
+                'username' => 'required|unique:users,username',
                 'password' => 'required',
                 'role' => 'required',
                 'name' => 'required',
@@ -266,7 +265,7 @@ class UserController extends Controller
                 $user->attachRole($role);
             }
 
-            if ($request->role == "admin") {
+            if ($request->role == "admin" || $request->role == "piket") {
 
                 $user = new User();
                 $user->username = $request->username;

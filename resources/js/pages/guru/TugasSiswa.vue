@@ -2,220 +2,213 @@
     <h1 style="margin-left: 30px">Tugas Siswa</h1>
     <a-row type="flex" justify="center">
         <a-col :xs="23">
-            <a-card
-                :loading="loading"
-                title="Pilih Kriteria"
-                style="width: 100%; margin-bottom: 20px"
-            >
-                <a-space
-                    style="
-                        display: flex;
-                        justify-content: flex-container;
-                        flex-wrap: wrap;
-                        margin-bottom: 20px;
+            <a-card :loading="fetching" style="width: 100%">
+                <a-button
+                    type="primary"
+                    @click="
+                        () => {
+                            this.modal.tambahTugas = true
+                            this.editMode = false
+                            this.formTambahTugas = {}
+                        }
                     "
                 >
-                    <a-select
-                        v-model:value="filter.kelas_id"
-                        style="width: 345px"
-                        placeholder="Kelas"
-                    >
-                        <a-select-option
-                            v-for="cls in classes"
-                            :key="cls.id"
-                            :value="cls.id"
-                            >{{ cls.jenjang }} -
-                            {{ cls.section }}</a-select-option
-                        >
-                    </a-select>
-                    <a-date-picker
-                        v-model:value="filter.tanggal"
-                        style="width: 345px"
-                        placeholder="Tanggal"
-                    />
-                    <a-select
-                        v-model:value="filter.subjek"
-                        style="width: 345px"
-                        placeholder="Subjek"
-                        @change="(e) => (filter.subjek = e.value)"
-                    >
-                        <a-select-option value="ips">IPS</a-select-option>
-                        <a-select-option value="ipa">IPA</a-select-option>
-                        <a-select-option value="bahasa">BAHASA</a-select-option>
-                    </a-select>
-                </a-space>
-                <a-space
-                    direction="horizontal"
-                    style="display: flex; justify-content: flex-end"
-                >
-                    <a-button
-                        type="primary"
-                        style="display: inline-flex; align-items: center"
-                        @click.prevent="readData"
-                    >
-                        <template #icon><SearchOutlined /></template>
-                        Cari
-                    </a-button>
-                </a-space>
-            </a-card>
-            <a-card
-                :loading="fetching"
-                title="Status Tugas Siswa"
-                style="width: 100%"
-            >
-                <a-space
-                    direction="horizontal"
-                    style="
-                        display: flex;
-                        justify-content: flex-end;
-                        margin-bottom: 20px;
-                    "
-                >
-                    <!-- <a-button
-            style="display: inline-flex; align-items: center"
-            type="primary"
-            @click="showModal"
-          >
-            <template #icon><plus-outlined /></template>Tambah
-          </a-button> -->
-                    <template #extra>
-                        <a
-                            @click="
-                                () => {
-                                    modal.tambah = true
-                                    editPart = 'tambah'
-                                }
-                            "
-                            >Tambah
-                        </a>
-                    </template>
-                </a-space>
+                    <template #icon><PlusOutlined /></template>
+                    Tambah
+                </a-button>
                 <a-table
                     :columns="columns"
-                    :data-source="models"
+                    :data-source="tugas"
                     style="margin: 15px"
                 >
                     <template #bodyCell="{ column, record }">
-                        <template v-if="column.key === 'nama'">
-                            <a>
-                                {{ record.nama }}
-                            </a>
-                        </template>
-                        <template v-else-if="column.key === 'status'">
-                            <a-select
-                                v-model:value="filter.status"
-                                style="width: 150px"
-                                placeholder="Status"
-                                @change="(e) => (filter.status = e.value)"
-                            >
-                                <a-select-option value="selesai"
-                                    >Selesai</a-select-option
+                        <template v-if="column.key === 'aksi'">
+                            <a-space>
+                                <a-button
+                                    @click="showSiswa(record.id)"
+                                    type="primary"
                                 >
-                                <a-select-option value="belum"
-                                    >Belum Selesai</a-select-option
+                                    <template #icon><PlusOutlined /></template>
+                                </a-button>
+                                <a-button
+                                    type="primary"
+                                    @click="showTugas(record.id)"
                                 >
-                            </a-select>
-                        </template>
-                        <template v-else-if="column.key === 'judul'">
-                            <a>
-                                {{ record.judul }}
-                            </a>
-                        </template>
-                        <template v-else-if="column.key === 'skor'">
-                            <a-input
-                                v-model:value="form[`siswa-${record.id}-`].skor"
-                                placeholder="Skor"
-                            />
+                                    <template #icon><EditOutlined /></template>
+                                </a-button>
+                                <a-button
+                                    type="danger"
+                                    @click="alert(record.id, deleteTugas)"
+                                >
+                                    <template #icon
+                                        ><DeleteOutlined
+                                    /></template>
+                                </a-button>
+                            </a-space>
                         </template>
                     </template>
                 </a-table>
             </a-card>
         </a-col>
     </a-row>
-    <!-- <a-modal v-model="visible" title="Buat Tugas Siswa" @ok="handleOk" width="1000px">
-    <a-row>
-    <a-select
-            v-model:value="filter.kelas_id"
-            style="width: 345px; margin-bottom: 6px; margin-right: 6px"
-            placeholder="Kelas"
-          >
-            <a-select-option
-              v-for="cls in classes"
-              :key="cls.id"
-              :value="cls.id"
-              >{{ cls.jenjang }} - {{ cls.section }}</a-select-option
-            >
-          </a-select>
-          <a-select
-                v-model:value="filter.subjek"
-                style="width: 345px; margin-bottom: 6px; margin-right: 6px"
-                placeholder="Subjek"
-                @change="(e) => (filter.subjek = e.value)"
-            >
-                <a-select-option value="ips">IPS</a-select-option>
-                <a-select-option value="ipa">IPA</a-select-option>
-                <a-select-option value="bahasa">BAHASA</a-select-option>
-            </a-select>
-          </a-row>
-          <a-row>
-            <a-date-picker
-              v-model:value="filter.tanggal"
-              style="width: 345px; margin-bottom: 6px; margin-right: 6px"
-              placeholder="Tanggal PR"
-            />
-            <a-date-picker
-              v-model:value="filter.tanggal"
-              style="width: 345px; margin-bottom: 6px; margin-right: 6px"
-              placeholder="Tanggal Pengumpulan"
-            />
-            <a-upload
-          v-model:file-list="fileList"
-          name="file"
-          action="https://www.mocky.io/v2/5cc8019d300000980a055e76"
-          :headers="headers"
-          @change="handleChange"
-        >
-          <a-button>
-            <upload-outlined></upload-outlined>
-            Attach Document
-          </a-button>
-          </a-upload>
-          </a-row>
-          <a-row style="margin-bottom: 6px">
-            <a-input v-model:value="value" placeholder="Input Nilai Point" style="width: 345px; margin-right: 6px"/>
-            <a-input v-model:value="value" placeholder="Judul" style="width: 345px;"/>
-          </a-row>
-          <a-row>
-            <a-textarea v-model:value="value2" placeholder="Deskripsi" allow-clear />
-          </a-row>
-  </a-modal> -->
+
     <a-modal
-        v-if="editMode"
-        v-model:visible="modal.tambah"
-        title="Tambah"
+        v-model:visible="modal.tambahTugas"
+        title="Tambah Tugas"
         @ok="writeData"
     >
+        <template #footer></template>
         <a-form
-            name="tmabah"
-            :label-col="{ span: 8 }"
-            :wrapper-col="{ span: 16 }"
-            class="login-form"
-            autocomplete="off"
+            layout="vertical"
+            :model="formTambahTugas"
+            @finish="editMode ? editTugas() : addTugas()"
+            ref="formTambahTugas"
         >
             <a-form-item
-                label="Nomor Telepon"
-                name="no_telp"
-                :class="{ 'ant-form-item-has-error': validation.no_telp }"
+                label="Kelas"
+                name="kelas"
+                :rules="[
+                    {
+                        required: true,
+                        message: 'Kelas harus diisi'
+                    }
+                ]"
             >
-                <a-input v-model:value="form.no_telp" />
+                <a-select
+                    v-model:value="formTambahTugas.kelas"
+                    placeholder="Kelas"
+                    @change="(e) => getMapelByIdGuru(e.value)"
+                >
+                    <a-select-option
+                        v-for="cls in classes"
+                        :key="cls.id"
+                        :value="cls.id"
+                        >{{ cls.jenjang }} - {{ cls.section }}
+                    </a-select-option>
+                </a-select>
+            </a-form-item>
+            <a-form-item
+                label="Tanggal"
+                name="tanggal"
+                :rules="[
+                    {
+                        required: true,
+                        message: 'Tanggal harus diisi'
+                    },
+                    {
+                        pattern: new RegExp(
+                            /^([0-9]{4})-([0-9]{2})-([0-9]{2})$/
+                        ),
+                        message: 'Format tanggal tidak valid'
+                    }
+                ]"
+            >
+                <a-date-picker
+                    style="width: 100%"
+                    v-model:value="formTambahTugas.tanggal"
+                    placeholder="Tanggal"
+                    value-format="YYYY-MM-DD"
+                />
+            </a-form-item>
+            <a-form-item
+                label="Mata Pelajaran"
+                name="mataPelajaran"
+                :rules="[
+                    {
+                        required: true,
+                        message: 'Mata Pelajaran harus diisi'
+                    }
+                ]"
+            >
+                <a-select
+                    v-model:value="formTambahTugas.mataPelajaran"
+                    placeholder="Pilih mata pelajaran"
+                >
+                    <a-select-option
+                        v-for="mapel in mapels"
+                        :key="mapel.id"
+                        :value="mapel.id"
+                        >{{ mapel.mapel.name }}
+                    </a-select-option>
+                </a-select>
             </a-form-item>
 
             <a-form-item
-                label="Email"
-                name="email"
-                :class="{ 'ant-form-item-has-error': validation.email }"
+                label="Jenis Tugas"
+                name="jenisTugas"
+                :rules="[
+                    {
+                        required: true,
+                        message: 'Jenis Tugas harus diisi'
+                    }
+                ]"
             >
-                <a-input v-model:value="form.email" />
+                <a-select
+                    v-model:value="formTambahTugas.jenisTugas"
+                    placeholder="Jenis Tugas"
+                >
+                    <a-select-option value="ulangan">Ulangan</a-select-option>
+                    <a-select-option value="uts">UTS</a-select-option>
+                    <a-select-option value="uas">UAS</a-select-option>
+                </a-select>
+            </a-form-item>
+
+            <a-form-item>
+                <a-button
+                    type="primary"
+                    style="display: inline-flex; align-items: center"
+                    htmlType="submit"
+                >
+                    Simpan
+                </a-button>
+            </a-form-item>
+        </a-form>
+    </a-modal>
+
+    <a-modal v-model:visible="modal.tambahNilai" title="Tambah Nilai Siswa">
+        <template #footer></template>
+        <a-form
+            :model="formTambahNilai"
+            @finish="addNilai()"
+            ref="formTambahNilai"
+        >
+            <a-table :columns="tambahNilaiColumns" :data-source="siswa">
+                <template #bodyCell="{ column, record }">
+                    <template v-if="column.key === 'nilai'">
+                        <a-form-item
+                            :name="[`nilai_${record.siswa_id}`, 'nilai']"
+                            :rules="[
+                                {
+                                    required: true,
+                                    message: 'Nilai harus diisi'
+                                },
+                                {
+                                    pattern: new RegExp(/^[0-9]+$/),
+                                    message: 'Nilai harus berupa angka'
+                                }
+                            ]"
+                        >
+                            <a-input-number
+                                v-model:value="
+                                    formTambahNilai[`nilai_${record.siswa_id}`]
+                                        .nilai
+                                "
+                                :min="0"
+                                :max="100"
+                            />
+                        </a-form-item>
+                    </template>
+                </template>
+            </a-table>
+
+            <a-form-item>
+                <a-button
+                    type="primary"
+                    style="display: inline-flex; align-items: center"
+                    htmlType="submit"
+                >
+                    Simpan
+                </a-button>
             </a-form-item>
         </a-form>
     </a-modal>
@@ -226,105 +219,89 @@ import { message } from 'ant-design-vue'
 import {
     SearchOutlined,
     PlusOutlined,
-    UploadOutlined
+    UploadOutlined,
+    FormOutlined,
+    FileTextOutlined,
+    EditOutlined,
+    DeleteOutlined
 } from '@ant-design/icons-vue'
-import { defineComponent, ref } from 'vue'
+
 const columns = [
     {
-        title: 'ID',
-        dataIndex: 'id'
+        title: 'No',
+        dataIndex: 'no'
     },
     {
-        title: 'NIS',
-        dataIndex: ['user', 'no_induk']
+        title: 'Kelas',
+        dataIndex: 'kelas'
+    },
+    {
+        title: 'Mata Pelajaran',
+        dataIndex: 'mata_pelajaran'
+    },
+    {
+        title: 'Tanggal',
+        dataIndex: 'tanggal'
+    },
+
+    {
+        title: 'Jenis Tugas',
+        dataIndex: 'jenis_tugas'
+    },
+    {
+        title: 'Aksi',
+        key: 'aksi'
+    }
+]
+
+const tambahNilaiColumns = [
+    {
+        title: 'No',
+        dataIndex: 'no'
     },
     {
         title: 'Nama Siswa',
-        dataIndex: ['user', 'name']
+        dataIndex: 'nama'
     },
     {
-        title: 'Tanggal Pengumpulan',
-        key: 'tanggalpengumpulan'
-    },
-    {
-        title: 'Status',
-        key: 'status'
-    },
-    {
-        title: 'Judul',
-        key: 'judul'
-    },
-    {
-        title: 'Skor',
-        key: 'skor'
+        title: 'Nilai',
+        key: 'nilai'
     }
 ]
-const data = [
-    {
-        key: '1',
-        nis: 2910398212,
-        nama: 'Muhammad Farhan Syahreza',
-        tanggalpengumpulan: '2022-12-12'
-    }
-]
+
 export default {
-    props: {
-        editMode: {
-            type: Boolean,
-            default: false
-        }
-    },
-    setup() {
-        const value2 = ref('')
-        // const handleChange = info => {
-        //   if (info.file.status !== 'uploading') {
-        //     console.log(info.file, info.fileList);
-        //   }
-        //   if (info.file.status === 'done') {
-        //     message.success(`${info.file.name} file uploaded successfully`);
-        //   } else if (info.file.status === 'error') {
-        //     message.error(`${info.file.name} file upload failed.`);
-        //   }
-        // };
-        const fileList = ref([])
-        return {
-            value2,
-            fileList,
-            headers: {
-                authorization: 'authorization-text'
-            },
-            handleChange
-        }
-    },
-    components: {
-        SearchOutlined,
-        PlusOutlined,
-        UploadOutlined
-    },
     data() {
         return {
-            data,
             models: [],
-            form: {},
+            formTambahTugas: {},
+            formTambahNilai: {},
             modal: {
-                tambah: false
+                tambahTugas: false,
+                tambahNilai: false
             },
+            tambahNilaiColumns,
             columns,
             classes: [],
+            mapels: [],
+            tugas: [],
+            siswa: [],
             filter: {
                 kelas_id: null,
                 tanggal: null
             },
             dataReady: false,
-            fetching: false
+            fetching: false,
+            editMode: false
         }
     },
     mounted() {
         this.getAllKelas()
+        this.getTugas()
     },
     methods: {
         getAllKelas() {
             const vm = this
+            vm.formTambahTugas.mapels = null
             vm.loading = true
             const params = {
                 req: 'all'
@@ -337,65 +314,224 @@ export default {
                 })
                 .catch((e) => vm.$onAjaxError(e))
         },
-        readData() {
+        getMapelByIdGuru() {
             const vm = this
-            vm.fetching = true
-            vm.dataReady = false
-            const params = {
-                req: 'daily'
-                // kelas_id: vm.filter.kelas_id,
-                // tanggal: vm.getDate(vm.filter.tanggal)
-            }
             vm.axios
-                // .get(vm.url('kehadiran/read'), { params })
+                .get(vm.url('user'))
                 .then((response) => {
-                    vm.fetching = false
-                    console.log(response.data.models)
-                    vm.models = response.data.models
-                    vm.models.forEach((kehadiran) => {
-                        console.log(kehadiran)
-                        // vm.form[`siswa-${kehadiran.id}-`] = {
-                        //   status: kehadiran.kehadiran
-                        //     ? kehadiran.kehadiran.kehadiran
-                        //     : null,
-                        //   description: kehadiran.kehadiran
-                        //     ? kehadiran.kehadiran.keterangan
-                        //     : null
-                        // }
+                    const params = {
+                        req: 'get_mapel_by_guru_id',
+                        kelas_id: vm.formTambahTugas.kelas,
+                        guru_id: response.data.id
+                    }
+                    vm.axios
+                        .get(vm.url('mapel/read'), { params })
+                        .then((response) => {
+                            vm.loading = false
+                            vm.mapels = response.data.models
+                        })
+                })
+                .catch((error) => {})
+        },
+        addTugas() {
+            const vm = this
+            vm.formTambahTugas = {
+                mata_pelajaran_id: vm.formTambahTugas.mataPelajaran,
+                tanggal: vm.formTambahTugas.tanggal,
+                jenis_tugas: vm.formTambahTugas.jenisTugas
+            }
+
+            vm.axios
+                .post(vm.url('siswa/tugas'), vm.formTambahTugas)
+                .then((response) => {
+                    vm.modal.tambahTugas = false
+                    this.getTugas()
+                    vm.$emit('refresh')
+                    this.$notification.success({
+                        message: 'Berhasil',
+                        description: 'Tugas berhasil disimpan'
                     })
                 })
-                .then(() => (vm.dataReady = true))
-                .catch((e) => {
-                    vm.$onAjaxError(e)
-                    vm.dataReady = false
+                .catch((error) => {
+                    this.$notification.error({
+                        message: 'Gagal',
+                        description: error.response.data.message
+                    })
                 })
         },
-        writeData() {
+        getTugas() {
             const vm = this
-            const params = {
-                req: 'write',
-                kehadiran: vm.editPart,
-                ...vm.form
-            }
-            vm.axios.then(() => {
-                vm.modal = {
-                    tambah: false
-                }
-            })
-            // vm.axios
-            // .post(vm.url('kehadiran/write'), params)
-            // .then(() => {
-            //   vm.readData()
-            //   vm.openNotification('berhasil update data', 'success')
-            // })
-            // .catch((e) => (vm.validation = vm.$onAjaxError(e)))
+            vm.axios
+                .get(vm.url('siswa/tugas'))
+                .then((response) => {
+                    vm.tugas = response.data.data.map((item, index) => {
+                        return {
+                            id: item.id,
+                            no: index + 1,
+                            kelas: `${item.mata_pelajaran.kelas.jenjang} - ${item.mata_pelajaran.kelas.section}`,
+                            mata_pelajaran: item.mata_pelajaran.mapel.name,
+                            tanggal: item.tanggal,
+                            jenis_tugas: item.jenis_tugas.toUpperCase()
+                        }
+                    })
+
+                    console.log(vm.tugas)
+                })
+                .catch((error) => {
+                    this.$notification.error({
+                        message: 'Terjadi kesalahan',
+                        description: error.response.data.message
+                    })
+                })
         },
-        getDate(date) {
-            let tanggal = new Date(date)
-            var dd = String(tanggal.getDate()).padStart(2, '0')
-            var mm = String(tanggal.getMonth() + 1).padStart(2, '0') //January is 0!
-            var yyyy = tanggal.getFullYear()
-            return yyyy + '-' + mm + '-' + dd
+        deleteTugas(id) {
+            const vm = this
+            vm.axios
+                .delete(vm.url('siswa/tugas/' + id))
+                .then((response) => {
+                    vm.getTugas()
+                    this.$notification.success({
+                        message: 'Berhasil',
+                        description: 'Data berhasil dihapus'
+                    })
+                })
+                .catch((error) => {
+                    this.$notification.error({
+                        message: 'Terjadi kesalahan',
+                        description: error.response.data.message
+                    })
+                })
+        },
+        showTugas(id) {
+            const vm = this
+            vm.editMode = true
+            vm.formTambahTugas = {}
+            vm.axios
+                .get(vm.url('siswa/tugas/' + id))
+                .then((response) => {
+                    let tugas = response.data.data
+                    vm.formTambahTugas = {
+                        id: tugas.id,
+                        kelas: tugas.mata_pelajaran.kelas_id,
+                        mataPelajaran: tugas.mata_pelajaran.id,
+                        tanggal: tugas.tanggal,
+                        jenisTugas: tugas.jenis_tugas
+                    }
+
+                    vm.getMapelByIdGuru()
+                })
+                .catch((error) => {
+                    this.$notification.error({
+                        message: 'Terjadi kesalahan',
+                        description: error
+                    })
+                })
+
+            vm.modal.tambahTugas = true
+        },
+        editTugas() {
+            const vm = this
+            vm.formTambahTugas = {
+                id: vm.formTambahTugas.id,
+                mata_pelajaran_id: vm.formTambahTugas.mataPelajaran,
+                tanggal: vm.formTambahTugas.tanggal,
+                jenis_tugas: vm.formTambahTugas.jenisTugas
+            }
+            vm.axios
+                .put(
+                    vm.url('siswa/tugas/' + vm.formTambahTugas.id),
+                    vm.formTambahTugas
+                )
+                .then((response) => {
+                    vm.modal.tambahTugas = false
+                    vm.editMode = false
+                    this.getTugas()
+                    vm.$emit('refresh')
+                    this.$notification.success({
+                        message: 'Berhasil',
+                        description: 'Tugas berhasil disimpan'
+                    })
+                })
+                .catch((error) => {
+                    this.$notification.error({
+                        message: 'Gagal',
+                        description: error.response.data.message
+                    })
+                })
+        },
+        showSiswa(tugasId) {
+            const vm = this
+            this.formTambahNilai = {}
+            vm.axios
+                .get(vm.url('siswa/tugas/' + tugasId + '/siswa'))
+                .then((response) => {
+                    if (response.data.data.nilai.length === 0) {
+                        vm.siswa =
+                            response.data.data.mata_pelajaran.kelas.siswa.map(
+                                (item, index) => {
+                                    return {
+                                        no: index + 1,
+                                        siswa_id: item.id,
+                                        nama: item.user.name,
+                                        nisn: item.nisn,
+                                        nilai: 0
+                                    }
+                                }
+                            )
+                    } else {
+                        vm.siswa = response.data.data.nilai.map(
+                            (item, index) => {
+                                return {
+                                    no: index + 1,
+                                    siswa_id: item.id,
+                                    nama: item.user.name,
+                                    nisn: item.nisn,
+                                    nilai: item.pivot.nilai
+                                }
+                            }
+                        )
+                    }
+
+                    vm.siswa.forEach((item) => {
+                        this.formTambahNilai = {
+                            ...this.formTambahNilai,
+                            [`nilai_${item.siswa_id}`]: {
+                                siswa_id: item.siswa_id,
+                                tugas_id: tugasId,
+                                nilai: item.nilai
+                            }
+                        }
+                    })
+                    vm.modal.tambahNilai = true
+                })
+                .catch((error) => {
+                    this.$notification.error({
+                        message: 'Terjadi kesalahan',
+                        description: error
+                    })
+                })
+        },
+        addNilai() {
+            const vm = this
+            vm.axios
+                .post(
+                    vm.url('siswa/tugas/mark'),
+                    Object.values(vm.formTambahNilai)
+                )
+                .then((response) => {
+                    vm.modal.tambahNilai = false
+                    vm.$emit('refresh')
+                    this.$notification.success({
+                        message: 'Berhasil',
+                        description: 'Nilai berhasil disimpan'
+                    })
+                })
+                .catch((error) => {
+                    this.$notification.error({
+                        message: 'Gagal',
+                        description: error.response.data.message
+                    })
+                })
         }
     }
 }

@@ -2,10 +2,10 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\Pivot;
 
-class TugasSiswa extends Model
+class TugasSiswa extends Pivot
 {
-    use HasFactory;
+    protected $table = 'tugas_siswa';
+    protected $guarded = [];
 }

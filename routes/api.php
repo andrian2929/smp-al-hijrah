@@ -83,3 +83,7 @@ Route::get('/rekap/guru', [\App\Http\Controllers\RekapDataController::class, 're
 Route::get('/rekap/siswa', [\App\Http\Controllers\RekapDataController::class, 'rekapDataSiswa']);
 Route::get('/rekap/kehadiran', \App\Http\Controllers\RekapKehadiranController::class);
 Route::apiResource('jurnal-kelas', JurnalKelasController::class);
+
+Route::apiResource('siswa/tugas', \App\Http\Controllers\TugasController::class);
+Route::post('siswa/tugas/mark', [\App\Http\Controllers\TugasController::class, 'mark']);
+Route::get('siswa/tugas/{tugas}/siswa', [\App\Http\Controllers\TugasController::class, 'siswa']);

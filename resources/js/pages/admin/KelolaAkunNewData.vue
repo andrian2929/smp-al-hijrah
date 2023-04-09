@@ -5,23 +5,6 @@
                 role.charAt(0).toUpperCase() + role.slice(1)
             }`"
         >
-            <template #extra>
-                <a-button type="primary" @click="bulkInputClick">
-                    Bulk input
-                </a-button>
-            </template>
-            <a-modal
-                v-model:visible="visibleBulkInputModal"
-                :title="`Bulk input ${role}`"
-                @ok="handleOk"
-            >
-                <a-alert
-                    message="This <a-link href='#'>text link</a-link>"
-                    type="info"
-                />
-                <p>Some contents...</p>
-                <p>Some contents...</p>
-            </a-modal>
             <a-form
                 :layout="'vertical'"
                 :model="formGeneral"
@@ -666,6 +649,7 @@ export default {
                 role: vm.$route.params.role,
                 ...vm.formGeneral
             }
+            console.log(params)
             vm.axios
                 .post(vm.url('user/write'), params)
                 .then((response) => {
@@ -737,7 +721,7 @@ export default {
                         }
                     }
 
-                    if ($vm.route.params.role == 'admin') {
+                    if (vm.$route.params.role == 'admin') {
                         vm.formGeneral = {
                             username: null,
                             name: null,
@@ -766,7 +750,7 @@ export default {
                     console.log(e)
                     this.$notification.error({
                         message: e.response.data.message,
-                        description: JSON.stringify(e.response.data.errors)
+                        description: e.response.data.errors
                     })
                 })
         },
