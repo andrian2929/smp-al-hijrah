@@ -5,7 +5,7 @@ import NotFound from './pages/NotFound'
 import NavbarAdmin from './layout/NavbarAdmin'
 import NavbarGuru from './layout/NavbarGuru'
 import NavbarSiswa from './layout/NavbarSiswa'
-import { mapState } from 'vuex'
+import NavbarPiket from './layout/NavbarPiket'
 
 import {
     DashboardAdmin,
@@ -43,6 +43,14 @@ import {
     LaporanHarian as SiswaLaporanHarian,
     LaporanNilai as SiswaLaporanNilai
 } from './pages/siswa'
+
+import {
+    DashboardPiket,
+    JurnalGuru,
+    JurnalSiswa,
+    KehadiranTamu,
+    JanjiTemuTamu
+} from './pages/piket'
 
 const routerHistory = createWebHistory()
 
@@ -206,6 +214,36 @@ const router = createRouter({
                 {
                     path: 'profile',
                     component: Profile
+                }
+            ]
+        },
+        {
+            path: '/piket',
+            component: NavbarPiket,
+            children: [
+                {
+                    path: '',
+                    component: DashboardPiket
+                },
+                {
+                    path: 'jurnal/siswa',
+                    component: JurnalSiswa
+                },
+                {
+                    path: 'jurnal/guru',
+                    component: JurnalGuru
+                },
+                {
+                    path: 'profile',
+                    component: Profile
+                },
+                {
+                    path: 'tamu/kehadiran',
+                    component: KehadiranTamu
+                },
+                {
+                    path: 'tamu/janji-temu',
+                    component: JanjiTemuTamu
                 }
             ]
         },

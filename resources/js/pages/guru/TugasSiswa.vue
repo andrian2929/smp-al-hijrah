@@ -52,11 +52,7 @@
         </a-col>
     </a-row>
 
-    <a-modal
-        v-model:visible="modal.tambahTugas"
-        title="Tambah Tugas"
-        @ok="writeData"
-    >
+    <a-modal v-model:visible="modal.tambahTugas" title="Tambah Tugas">
         <template #footer></template>
         <a-form
             layout="vertical"

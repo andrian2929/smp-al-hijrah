@@ -87,3 +87,7 @@ Route::apiResource('jurnal-kelas', JurnalKelasController::class);
 Route::apiResource('siswa/tugas', \App\Http\Controllers\TugasController::class);
 Route::post('siswa/tugas/mark', [\App\Http\Controllers\TugasController::class, 'mark']);
 Route::get('siswa/tugas/{tugas}/siswa', [\App\Http\Controllers\TugasController::class, 'siswa']);
+
+Route::apiResource('piket/jurnal/guru/ketertiban', \App\Http\Controllers\KetertibanGuruController::class);
+
+Route::apiResource('piket/jurnal/guru/pengganti', \App\Http\Controllers\GuruPenggantiController::class);

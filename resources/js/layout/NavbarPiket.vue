@@ -141,30 +141,30 @@ export default {
             visible: false,
             menu: [
                 {
-                    name: 'Dashboard',
-                    icon: 'dashboard-outlined',
-                    url: '/siswa'
-                },
-                {
-                    name: 'Informasi Kelas',
-                    icon: 'home-outlined',
-                    url: '/siswa/info_kelas'
-                },
-                {
-                    name: 'Laporan',
-                    icon: 'file-outlined',
+                    name: 'Jurnal',
+                    icon: 'read-outlined',
                     child: [
                         {
-                            name: 'Laporan Harian',
-                            link: '/siswa/laporan_harian'
+                            name: 'Jurnal Guru',
+                            link: '/piket/jurnal/guru'
                         },
                         {
-                            name: 'Laporan Kehadiran',
-                            link: '/siswa/laporan_hadir'
+                            name: 'Jurnal Siswa',
+                            link: '/piket/jurnal/siswa'
+                        }
+                    ]
+                },
+                {
+                    name: 'Front Office',
+                    icon: 'user-outlined',
+                    child: [
+                        {
+                            name: 'Kehadiaran Tamu',
+                            link: '/piket/tamu/kehadiran'
                         },
                         {
-                            name: 'Laporan Nilai',
-                            link: '/siswa/laporan_nilai'
+                            name: 'Janji Temu',
+                            link: '/piket/tamu/janji-temu'
                         }
                     ]
                 }
@@ -198,8 +198,10 @@ export default {
         },
         logout() {
             axios.get(this.url('logout')).then(() => {
+                //remove localStorage
                 localStorage.removeItem('loggedIn')
                 localStorage.removeItem('token')
+
                 window.location.href = '/login'
             })
         }
