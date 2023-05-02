@@ -2,14 +2,14 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Seeder;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Str;
-use Faker\Factory as Faker;
 use App\Models\User;
+use Illuminate\Support\Str;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\Hash;
 
-class AdminSeeder extends Seeder
+
+class PiketSeeder extends Seeder
 {
     /**
      * Run the database seeds.
@@ -18,11 +18,10 @@ class AdminSeeder extends Seeder
      */
     public function run()
     {
-
         $admin = User::factory()->create([
-            'username' => 'admin',
-            'name' => 'Andrian Ramadan',
-            'no_induk' => '2124329',
+            'username' => 'piketpiket',
+            'name' => 'Piket Piket',
+            'no_induk' => '01891211212',
             'image' => null,
             'no_telp' => '081261447311',
             'alamat' => 'Medan',
@@ -37,22 +36,17 @@ class AdminSeeder extends Seeder
             'tempat_lahir' => 'Medan',
             'tanggal_lahir' => '2000-12-12',
             'is_active' => 1,
-            'email' => 'ramadanandrian89@gmail.com',
+            'email' => 'dfdfadfsd@gmail.com',
             'email_verified_at' => now(),
-            'password' => Hash::make('admin'),
+            'password' => Hash::make('piketpiket'),
             'remember_token' => Str::random(10),
             'created_at' => now(),
             'updated_at' => now(),
         ]);
 
         DB::table('role_user')->insert([
-            'role_id' => 1,
+            'role_id' => 4,
             'user_id' => $admin->id,
         ]);
-
-        // DB::table('role_user')->insert([
-        //     'role_id' => 2,
-        //     'user_id' => $admin->id,
-        // ]);
     }
 }

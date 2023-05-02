@@ -459,7 +459,8 @@ export default {
                     this.readKehadiran()
                 })
                 .catch((e) => {
-                    this.$message.error(JSON.stringify(e.response.data.message))
+                    console.log('error')
+                    this.$message.error(e.response.data.message)
                 })
         },
         readKehadiran() {

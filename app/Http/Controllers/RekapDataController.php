@@ -33,6 +33,7 @@ class RekapDataController extends Controller
             'margin_right' => 10,
             'margin_top' => 40,
             'margin_bottom' => 10,
+            'tempDir' => storage_path('tempdir')
         ]);
         $mpdf->SetHTMLHeader(
             '
@@ -73,6 +74,7 @@ class RekapDataController extends Controller
             'margin_right' => 10,
             'margin_top' => 40,
             'margin_bottom' => 10,
+            'tempDir' => storage_path('tempdir')
         ]);
         $mpdf->SetHTMLHeader(
             '

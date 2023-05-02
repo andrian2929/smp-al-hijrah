@@ -2,8 +2,11 @@
 /public/hot
 /public/storage
 /public/js
+/public/img/profile_photo/*
 /public/js/app.js
 /storage/*.key
+/storage/tempdir
+/storage/framework/views/*
 /vendor
 .env
 .env.backup

@@ -6,7 +6,7 @@ import NavbarAdmin from './layout/NavbarAdmin'
 import NavbarGuru from './layout/NavbarGuru'
 import NavbarSiswa from './layout/NavbarSiswa'
 import NavbarPiket from './layout/NavbarPiket'
-
+import store from './store/index'
 import {
     DashboardAdmin,
     InfoSiswa,
@@ -140,7 +140,20 @@ const router = createRouter({
                     path: 'profile',
                     component: Profile
                 }
-            ]
+            ],
+            beforeEnter: (to, from, next) => {
+                store.watch(
+                    (state) => state.userData,
+                    (userData) => {
+                        const role = userData.role[0].display_name
+                        if (role === 'admin') {
+                            next()
+                        } else {
+                            next('/login')
+                        }
+                    }
+                )
+            }
         },
         {
             path: '/guru',
@@ -182,7 +195,20 @@ const router = createRouter({
                     path: 'jurnal_kelas',
                     component: JurnalKelas
                 }
-            ]
+            ],
+            beforeEnter: (to, from, next) => {
+                store.watch(
+                    (state) => state.userData,
+                    (userData) => {
+                        const role = userData.role[0].display_name
+                        if (role === 'guru') {
+                            next()
+                        } else {
+                            next('/login')
+                        }
+                    }
+                )
+            }
         },
         {
             path: '/siswa',
@@ -215,7 +241,20 @@ const router = createRouter({
                     path: 'profile',
                     component: Profile
                 }
-            ]
+            ],
+            beforeEnter: (to, from, next) => {
+                store.watch(
+                    (state) => state.userData,
+                    (userData) => {
+                        const role = userData.role[0].display_name
+                        if (role === 'siswa') {
+                            next()
+                        } else {
+                            next('/login')
+                        }
+                    }
+                )
+            }
         },
         {
             path: '/piket',
@@ -245,7 +284,20 @@ const router = createRouter({
                     path: 'tamu/janji-temu',
                     component: JanjiTemuTamu
                 }
-            ]
+            ],
+            beforeEnter: (to, from, next) => {
+                store.watch(
+                    (state) => state.userData,
+                    (userData) => {
+                        const role = userData.role[0].display_name
+                        if (role === 'piket') {
+                            next()
+                        } else {
+                            next('/login')
+                        }
+                    }
+                )
+            }
         },
         {
             path: '/:catchAll(.*)',
@@ -253,14 +305,18 @@ const router = createRouter({
         }
     ]
 })
-// router.beforeEach(async(to, from) => {
-//     const canAccess = await canUserAccess(to)
-//     if (!canAccess) return '/login'
+
+// router.beforeEach(async (to, from) => {
+//     // get state with async function
+//     console.log(store.state)
+//     //  const canAccess = await canUserAccess(to)
+//     // if (!canAccess) return '/login'
 // })
 // const canUserAccess = (to) => {
-//     if(store.userData) {
-//         return true
-//     }
+//     console.log(store.state.userData)
+//     // if ($store.getUsersData()) {
+//     //     return true
+//     // }
 //     return false
 // }
 export default router

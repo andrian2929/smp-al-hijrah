@@ -4,27 +4,8 @@ import 'ant-design-vue/dist/antd.css'
 import App from './App.vue'
 import { createApp } from 'vue'
 import { createStore } from 'vuex'
-import { notification } from 'ant-design-vue'
 import VueCookies from 'vue-cookies'
-
-const store = createStore({
-    state() {
-        return {
-            userData: null,
-            notification
-        }
-    },
-    mutations: {
-        setUserData(state, data) {
-            state.userData = data
-        }
-    },
-    getters: {
-        getUserData(state) {
-            return state.userData
-        }
-    }
-})
+import store from './store/index'
 
 const app = createApp(App)
 app.use(store)

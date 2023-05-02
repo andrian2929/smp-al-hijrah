@@ -91,3 +91,9 @@ Route::get('siswa/tugas/{tugas}/siswa', [\App\Http\Controllers\TugasController::
 Route::apiResource('piket/jurnal/guru/ketertiban', \App\Http\Controllers\KetertibanGuruController::class);
 
 Route::apiResource('piket/jurnal/guru/pengganti', \App\Http\Controllers\GuruPenggantiController::class);
+
+Route::apiResource('piket/jurnal/siswa', \App\Http\Controllers\JurnalSiswaController::class);
+
+Route::apiResource('piket/tamu/kehadiran', \App\Http\Controllers\KehadiranTamuController::class);
+
+Route::apiResource('piket/tamu/janji-temu', \App\Http\Controllers\JanjiTemuController::class);

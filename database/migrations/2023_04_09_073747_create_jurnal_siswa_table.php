@@ -15,6 +15,8 @@ class CreateJurnalSiswaTable extends Migration
     {
         Schema::create('jurnal_siswa', function (Blueprint $table) {
             $table->id();
+            $table->time('jam')->nullable();
+            $table->string('keterangan')->nullable();
             $table->foreignId('kehadiran_siswa_id')->constrained('kehadiran_siswas')->onDelete('cascade')->onUpdate('cascade');
             $table->timestamps();
         });

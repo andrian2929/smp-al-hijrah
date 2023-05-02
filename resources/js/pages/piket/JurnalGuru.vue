@@ -1,7 +1,7 @@
 <template>
     <a-row type="flex" justify="center">
         <a-col :xs="23">
-            <h1>Jurnal Makan</h1>
+            <h1>Jurnal Guru</h1>
             <a-card style="border-radius: 20px">
                 <a-tabs v-model:activeKey="activeKey">
                     <a-tab-pane key="1" tab="Ketertiban Guru">
@@ -11,7 +11,10 @@
                                 () => {
                                     modalEditMode.ketertibanGuru = false
                                     modalVisible.ketertibanGuru = true
-                                    formKetertibanGuru = {}
+                                    formKetertibanGuru = {
+                                        tanggal: currentDate,
+                                        jam: currentTime
+                                    }
                                 }
                             "
                             >Tambah</a-button
@@ -66,7 +69,11 @@
                             type="primary"
                             @click="
                                 () => {
-                                    formGuruPengganti = {}
+                                    formGuruPengganti = {
+                                        jam: currentTime,
+                                        tanggal: currentDate
+                                    }
+
                                     modalVisible.guruPengganti = true
                                     modalEditMode.guruPengganti = false
                                 }
@@ -482,6 +489,14 @@ export default {
         this.getGuruPenggantiData()
         this.getAllGuru()
     },
+    computed: {
+        currentDate() {
+            return moment().format('YYYY-MM-DD')
+        },
+        currentTime() {
+            return moment().format('HH:mm')
+        }
+    },
     methods: {
         getAllGuru() {
             const vm = this
@@ -675,6 +690,7 @@ export default {
         showGuruPengganti(id) {
             const vm = this
             vm.formGuruPengganti = {}
+            vm.modalEditMode.guruPengganti = true
             console.log(id)
             vm.axios
                 .get(vm.url('piket/jurnal/guru/pengganti/' + id))
@@ -684,9 +700,7 @@ export default {
                     }).user_id
 
                     console.log(guru_id)
-
                     vm.getMapelByIdGuru(guru_id)
-
                     vm.formGuruPengganti = {
                         id: res.data.data.id,
                         guru: guru_id,
@@ -697,6 +711,43 @@ export default {
                         keterangan: res.data.data.keterangan
                     }
                     vm.modalVisible.guruPengganti = true
+                })
+        },
+        editGuruPengganti() {
+            const vm = this
+            const guru_id = vm.guru.find((item) => {
+                return item.user_id == vm.formGuruPengganti.guru
+            }).id
+
+            const data = {
+                id: vm.formGuruPengganti.id,
+                guru_id: guru_id,
+                mata_pelajaran_id: vm.formGuruPengganti.mataPelajaran,
+                guru_pengganti_id: vm.formGuruPengganti.guruPengganti,
+                tanggal: vm.formGuruPengganti.tanggal,
+                jam: vm.formGuruPengganti.jam,
+                keterangan: vm.formGuruPengganti.keterangan
+            }
+
+            console.log(data)
+
+            vm.axios
+                .put(vm.url('piket/jurnal/guru/pengganti/' + data.id), data)
+                .then((res) => {
+                    this.$notification.success({
+                        message: 'Berhasil',
+                        description: 'Data berhasil diubah'
+                    })
+                    this.getGuruPenggantiData()
+                    vm.modalVisible.guruPengganti = false
+                    vm.modalEditMode.guruPengganti = false
+                    vm.formGuruPengganti = {}
+                })
+                .catch((err) => {
+                    this.$notification.error({
+                        message: 'Terjadi kesalahan',
+                        description: err.response.data.data
+                    })
                 })
         }
     }

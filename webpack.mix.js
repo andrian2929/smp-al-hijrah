@@ -12,14 +12,13 @@ const mix = require('laravel-mix')
  */
 mix.webpackConfig({
     devServer: {
-        watchOptions: {
-            poll: true
-        },
-        host: '0.0.0.0',
-        port: 8083
+        port: 8082, // use any port suitable for your configuration
+        host: '0.0.0.0' // to accept connections from outside container
     }
 })
 
 mix.js('resources/js/app.js', 'public/js')
     .vue()
     .sass('resources/sass/app.scss', 'public/css')
+
+mix.version()

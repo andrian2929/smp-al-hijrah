@@ -12,4 +12,15 @@ class KehadiranSiswa extends Model
 
     protected $table = 'kehadiran_siswas';
     protected $fillable = ['user_id', 'tanggal', 'kehadiran', 'keterangan'];
+
+    public function jurnalSiswa()
+    {
+        return $this->hasOne(JurnalSiswa::class, 'kehadir
+        an_siswa_id', 'id');
+    }
+
+    public function siswa()
+    {
+        return $this->hasOne(Siswa::class, 'user_id', 'user_id');
+    }
 }

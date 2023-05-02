@@ -12,6 +12,7 @@ class Siswa extends Model
 
     protected $table = 'siswas';
     protected $guarded = [];
+
     public function kelas()
     {
         return $this->belongsTo(Kelas::class);

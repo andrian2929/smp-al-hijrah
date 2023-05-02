@@ -11,4 +11,9 @@ class JurnalSiswa extends Model
 
     protected $table = 'jurnal_siswa';
     protected $guarded = [];
+
+    public function kehadiranSiswa()
+    {
+        return $this->belongsTo(KehadiranSiswa::class, 'kehadiran_siswa_id', 'id');
+    }
 }

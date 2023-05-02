@@ -6,6 +6,7 @@ use App\Models\KehadiranSiswa;
 use App\Models\Siswa;
 use Illuminate\Http\Request;
 use App\Models\Guru;
+use Illuminate\Support\Facades\Validator;
 
 class KehadiranController extends Controller
 {
@@ -27,7 +28,12 @@ class KehadiranController extends Controller
                 $q->where('tanggal', substr($request->tanggal, 0, 10));
             }, 'user' => function ($q) {
                 $q->select('id', 'no_induk', 'name');
-            }])->get();
+            }]);
+
+            if ($request->has('user_id'))
+                $data = $data->where('user_id', $request->user_id);
+
+            $data = $data->get();
         }
 
         if ($request->req === 'by_guru') {
@@ -51,26 +57,27 @@ class KehadiranController extends Controller
 
     public function write(Request $request)
     {
+        $validator = Validator::make($request->all(), [
+            'model' => 'required|array',
+            'model.*.user_id' => 'required|exists:users,id',
+            'model.*.kehadiran' => 'required|in:izin,hadir,absen,telat',
+            'model.*.keterangan' => 'nullable|string',
+            'model.*.tanggal' => 'required|date_format:Y-m-d|before_or_equal:today',
+        ], [
+            'model.*.user_id.required' => 'User ID tidak boleh kosong',
+            'model.*.user_id.exists' => 'User ID tidak ditemukan',
+            'model.*.kehadiran.required' => 'Kehadiran tidak boleh kosong',
+            'model.*.kehadiran.in' => 'Kehadiran tidak valid',
+            'model.*.tanggal.required' => 'Tanggal tidak boleh kosong',
+            'model.*.tanggal.date_format' => 'Format tanggal tidak valid',
+            'model.*.tanggal.before_or_equal' => 'Tanggal tidak boleh lebih dari hari ini',
+        ]);
 
-        $request->validate(
-            [
-                'model' => 'required|array',
-                'model.*.user_id' => 'required|exists:users,id',
-                'model.*.kehadiran' => 'required|in:izin,hadir,absen,telat,]',
-                'model.*.keterangan' => 'nullable|string',
-                'model.*.tanggal' => 'required|date_format:Y-m-d|before_or_equal:today',
-            ],
-            [
-                'model.*.user_id.required' => 'User ID tidak boleh kosong',
-                'model.*.user_id.exists' => 'User ID tidak ditemukan',
-                'model.*.kehadiran.required' => 'Kehadiran tidak boleh kosong',
-                'model.*.kehadiran.in' => 'Kehadiran tidak valid',
-                'model.*.tanggal.required' => 'Tanggal tidak boleh kosong',
-                'model.*.tanggal.date_format' => 'Format tanggal tidak valid',
-                'model.*.tanggal.before_or_equal' => 'Tanggal tidak boleh lebih dari hari ini',
-
-            ]
-        );
+        if ($validator->fails()) {
+            return response()->json([
+                'message' => $validator->errors()->first()
+            ], 422);
+        }
 
         foreach ($request->model as $_model) {
             $model = KehadiranSiswa::updateOrCreate(

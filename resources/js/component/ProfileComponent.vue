@@ -32,7 +32,7 @@
                         models.is_active ? 'btn-green' : 'btn-grey'
                     }`"
                 >
-                    {{ models.is_active ? 'aktif' : 'nonaktif' }}
+                    {{ models.is_active ? 'Aktif' : 'Non Aktif' }}
                 </a-button>
             </a-col>
         </a-skeleton>
