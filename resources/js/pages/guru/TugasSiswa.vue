@@ -312,6 +312,7 @@ export default {
         },
         getMapelByIdGuru() {
             const vm = this
+            delete vm.formTambahTugas.mataPelajaran
             vm.axios
                 .get(vm.url('user'))
                 .then((response) => {
@@ -320,14 +321,19 @@ export default {
                         kelas_id: vm.formTambahTugas.kelas,
                         guru_id: response.data.id
                     }
+
+                    console.log(params)
                     vm.axios
                         .get(vm.url('mapel/read'), { params })
                         .then((response) => {
                             vm.loading = false
                             vm.mapels = response.data.models
+                            console.log(vm.mapels)
                         })
                 })
-                .catch((error) => {})
+                .catch((error) => {
+                    console.log(error)
+                })
         },
         addTugas() {
             const vm = this
@@ -405,16 +411,18 @@ export default {
             vm.axios
                 .get(vm.url('siswa/tugas/' + id))
                 .then((response) => {
-                    let tugas = response.data.data
+                    console.log(response)
+                    const tugas = response.data.data
                     vm.formTambahTugas = {
                         id: tugas.id,
                         kelas: tugas.mata_pelajaran.kelas_id,
-                        mataPelajaran: tugas.mata_pelajaran.id,
                         tanggal: tugas.tanggal,
                         jenisTugas: tugas.jenis_tugas
                     }
-
+                    console.log('andrian')
+                    console.log(vm.formTambahTugas)
                     vm.getMapelByIdGuru()
+                    vm.formTambahTugas.mataPelajaran = tugas.mata_pelajaran.id
                 })
                 .catch((error) => {
                     this.$notification.error({
