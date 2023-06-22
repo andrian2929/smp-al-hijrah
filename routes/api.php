@@ -75,6 +75,8 @@ Route::delete('/laporan/tahfidz/delete/{tahfidz}', [TahfidzSiswaController::clas
 Route::get('/laporan/mutabaah-yaumiyah/read', [MutabaahYaumiyahController::class, 'read'])->name('laporan.mutabaahyaumiyah.read');
 Route::post('/laporan/mutabaah-yaumiyah/write', [MutabaahYaumiyahController::class, 'write'])->name('laporan.mutabaahyaumiyah.write');
 
+Route::get('/laporan/tugas-siswa/mata-pelajaran-hari/{id}', [\App\Http\Controllers\TugasController::class, 'getTugasByMataPelajaranHari'])->name('laporan.tugas-siswa.mata-pelajaran-hari');
+
 Route::get('/laporan/perilaku/data', [LaporanPerilakuController::class, 'data'])->name('laporan.perilaku.data');
 Route::get('/laporan/perilaku/read', [LaporanPerilakuController::class, 'read'])->name('laporan.perilaku.read');
 Route::post('/laporan/perilaku/write', [LaporanPerilakuController::class, 'write'])->name('laporan.perilaku.write');

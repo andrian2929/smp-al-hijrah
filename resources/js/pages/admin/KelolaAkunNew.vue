@@ -172,6 +172,7 @@ export default {
                     responseType: 'blob'
                 })
                 .then((response) => {
+                    console.log(response)
                     const fileName =
                         response.headers['content-disposition'].split(
                             'filename='

@@ -101,32 +101,32 @@ class InputMasalController extends Controller
         $mpdf->Output('hasil-input-masal', 'D');
 
 
-        // $exportSheet = new \PhpOffice\PhpSpreadsheet\Spreadsheet();
-        // $sheet = $exportSheet->getActiveSheet();
-        // $sheet->setCellValue('A1', 'Nama Lengkap');
-        // $sheet->setCellValue('B1', 'NISN');
-        // $sheet->setCellValue('C1', 'Email');
-        // $sheet->setCellValue('D1', 'Asal Sekolah');
-        // $sheet->setCellValue('E1', 'Kelas');
-        // $sheet->setCellValue('F1', 'Username');
-        // $sheet->setCellValue('G1', 'Password');
-        // $row = 2;
-        // foreach ($data as $key => $value) {
-        //     $sheet->setCellValue('A' . $row, $value['nama']);
-        //     $sheet->setCellValue('B' . $row, $value['nisn']);
-        //     $sheet->setCellValue('C' . $row, $value['email']);
-        //     $sheet->setCellValue('D' . $row, $value['asal_sekolah']);
-        //     $sheet->setCellValue('E' . $row, $value['kelas']);
-        //     $sheet->setCellValue('F' . $row, $value['username']);
-        //     $sheet->setCellValue('G' . $row, $value['password']);
-        //     $row++;
-        // }
+        $exportSheet = new \PhpOffice\PhpSpreadsheet\Spreadsheet();
+        $sheet = $exportSheet->getActiveSheet();
+        $sheet->setCellValue('A1', 'Nama Lengkap');
+        $sheet->setCellValue('B1', 'NISN');
+        $sheet->setCellValue('C1', 'Email');
+        $sheet->setCellValue('D1', 'Asal Sekolah');
+        $sheet->setCellValue('E1', 'Kelas');
+        $sheet->setCellValue('F1', 'Username');
+        $sheet->setCellValue('G1', 'Password');
+        $row = 2;
+        foreach ($data as $key => $value) {
+            $sheet->setCellValue('A' . $row, $value['nama']);
+            $sheet->setCellValue('B' . $row, $value['nisn']);
+            $sheet->setCellValue('C' . $row, $value['email']);
+            $sheet->setCellValue('D' . $row, $value['asal_sekolah']);
+            $sheet->setCellValue('E' . $row, $value['kelas']);
+            $sheet->setCellValue('F' . $row, $value['username']);
+            $sheet->setCellValue('G' . $row, $value['password']);
+            $row++;
+        }
 
-        // $writer = new \PhpOffice\PhpSpreadsheet\Writer\Xlsx($exportSheet);
-        // $writer->save('export.xlsx');
-        // header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+        $writer = new \PhpOffice\PhpSpreadsheet\Writer\Xlsx($exportSheet);
+        $writer->save('export.xlsx');
+        header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
 
-        // return response()->download('export.xlsx');
+        return response()->download('export.xlsx');
     }
 
     public function downloadTemplate()

@@ -20,7 +20,6 @@ class Tugas extends Model
 
     public function nilai()
     {
-        // many to many relationship between tugas and siswa
         return $this->belongsToMany(Siswa::class, 'tugas_siswa', 'tugas_id', 'siswa_id')
             ->withPivot('nilai')->with('user')
             ->withTimestamps();

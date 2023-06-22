@@ -46,15 +46,22 @@ class MapelController extends Controller
             }
             $data = $mapel->get();
 
-            // $mapel = MataPelajaran::select('id', 'name', 'gurus')->whereHas('hari')->with('hari')->get();
-            // $data = $mapel->filter(function ($item) use ($request) {
-            //     $gurus = json_decode($item->gurus);
-            //     if (!is_array($gurus))
-            //         return false;
-            //     return in_array($request->guru_id, $gurus);
-            // });
-            // $data = array_values($data->toArray());
+            $mapel = MataPelajaran::select('id', 'name', 'gurus')->whereHas('hari')->with('hari')->get();
+            $data = $mapel->filter(function ($item) use ($request) {
+                $gurus = json_decode($item->gurus);
+                if (!is_array($gurus))
+                    return false;
+                return in_array($request->guru_id, $gurus);
+            });
+            $data = array_values($data->toArray());
+        }
 
+        if ($request->req == 'get_mapel_by_kelas_id') {
+            $mapel = MataPelajaranHari::select('id', 'hari', 'waktu_mulai', 'waktu_selesai', 'mapel_id', 'guru_id', 'kelas_id')
+                ->where('kelas_id', $request->kelas_id)
+                ->with('mapel')->with('kelas');
+
+            $data = $mapel->get();
         }
         return response()->json([
             'models' => $data

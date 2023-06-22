@@ -166,4 +166,13 @@ class TugasController extends Controller
             'data' => $tugas
         ]);
     }
+
+    public function getTugasByMataPelajaranHari($id)
+    {
+        $tugas = Tugas::where('mata_pelajaran_id', $id)->get();
+        return response()->json([
+            'status' => 'success',
+            'data' => $tugas->load(['mataPelajaran', 'mataPelajaran.kelas.siswa.user'])
+        ]);
+    }
 }

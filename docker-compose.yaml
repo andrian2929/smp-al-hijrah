@@ -1,16 +1,16 @@
 version: '3'
 services:
   web:
-   image: andrianramadan/php7.4-fpm-nginx-node18:latest
-   container_name: smp-alhijrah-web
-   environment: 
-    - CHOKIDAR_USEPOLLING=true
-   ports:
-    - '8082:80'
-   volumes:
-    - './:/var/www/dev/api/current'
-   depends_on: 
-    - db
+    image: andrianramadan/php7.4-fpm-nginx-node18:latest
+    container_name: smp-alhijrah-web
+    environment:
+      - CHOKIDAR_USEPOLLING=true
+    ports:
+      - '8082:80'
+    volumes:
+      - './:/var/www/dev/api/current'
+    depends_on:
+      - db
 
   db:
     image: mysql:latest
@@ -21,13 +21,3 @@ services:
       - MYSQL_ROOT_PASSWORD=${DB_PASSWORD}
     ports:
       - '3306:3306'
-
-
-    
- 
-   
-
-
-
-  
-
