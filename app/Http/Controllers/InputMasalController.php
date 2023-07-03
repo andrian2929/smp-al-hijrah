@@ -27,6 +27,8 @@ class InputMasalController extends Controller
         $sheetData = $spreadsheet->getActiveSheet()->toArray(null, true, true, true);
         $sheetCount = count($sheetData);
 
+
+
         $data = [];
         for ($i = 2; $i <= $sheetCount; $i++) {
             $data[] = [
@@ -42,10 +44,11 @@ class InputMasalController extends Controller
             ];
         }
 
+
         $validator = Validator::make($data, [
             '*.nama'            => 'required',
             '*.nisn'            => 'required',
-            // '*.email'           => 'required|email|unique:users',
+            '*.email'           => 'required|email|unique:users',
             '*.asal_sekolah'    => 'required|string',
             '*.kelas_id'        => 'required|exists:kelas,id',
             '*.username'        => 'required|unique:users'
@@ -96,7 +99,7 @@ class InputMasalController extends Controller
             return $a['kelas_id'] <=> $b['kelas_id'];
         });
 
-        $mpdf = new Mpdf();
+        $mpdf = new Mpdf(['tempDir' => storage_path('app/public/temp')]);
         $mpdf->WriteHTML(view('input-massal/input-masal', compact('data')));
         $mpdf->Output('hasil-input-masal', 'D');
 

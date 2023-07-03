@@ -170,7 +170,7 @@ export default {
                     ]
                 },
                 {
-                    name: 'Tugas Siswa',
+                    name: 'Penilaian Akademik',
                     icon: 'read-outlined',
                     url: '/guru/tugas_siswa'
                 }

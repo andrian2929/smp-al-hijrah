@@ -1,5 +1,5 @@
 <template>
-    <h1 style="margin-left: 30px">Tugas Siswa</h1>
+    <h1 style="margin-left: 30px">Penilaian Akademik Siswa</h1>
     <a-row type="flex" justify="center">
         <a-col :xs="23">
             <a-card :loading="fetching" style="width: 100%">
@@ -16,6 +16,120 @@
                     <template #icon><PlusOutlined /></template>
                     Tambah
                 </a-button>
+
+                <a-row
+                    type="flex"
+                    justify="space-between"
+                    style="margin-bottom: 15px; margin-top: 20px"
+                >
+                    <a-col>
+                        <a-form
+                            :model="filter"
+                            @finish="onFinishFilter"
+                            @finishFailed="onFinishFailedFilter"
+                            ref="filter"
+                            :layout="'vertical'"
+                        >
+                            <a-space
+                                style="
+                                    display: flex;
+                                    justify-content: flex-container;
+                                    flex-wrap: wrap;
+                                "
+                            >
+                                <a-form-item
+                                    name="kelasId"
+                                    :rules="[
+                                        {
+                                            required: true,
+                                            message:
+                                                'Pilih kelas terlebih dahulu',
+                                            trigger: 'blur'
+                                        }
+                                    ]"
+                                    label="Kelas"
+                                >
+                                    <a-select
+                                        v-model:value="filter.kelasId"
+                                        style="width: 345px"
+                                        placeholder="Pilih kelas"
+                                        @change="getMapelByIdGuru"
+                                    >
+                                        <a-select-option value="all"
+                                            >Semua</a-select-option
+                                        >
+                                        <a-select-option
+                                            v-for="cls in classes"
+                                            :key="cls.id"
+                                            :value="cls.id"
+                                            >{{ cls.jenjang }} -
+                                            {{ cls.section }}
+                                        </a-select-option>
+                                    </a-select>
+                                </a-form-item>
+                                <a-form-item
+                                    name="mataPelajaran"
+                                    :rules="[
+                                        {
+                                            required: true,
+                                            message:
+                                                'Pilih mata pelajaran terlebih dahulu',
+                                            trigger: 'blur'
+                                        }
+                                    ]"
+                                    label="Mata Pelajaran"
+                                >
+                                    <a-select
+                                        v-model:value="filter.mataPelajaran"
+                                        placeholder="Pilih mata pelajaran"
+                                        style="width: 345px"
+                                    >
+                                        <a-select-option value="all"
+                                            >Semua</a-select-option
+                                        >
+                                        <a-select-option
+                                            v-for="mapel in mapels"
+                                            :key="mapel.id"
+                                            :value="mapel.id"
+                                            >{{ mapel.mapel.name }}
+                                        </a-select-option>
+                                    </a-select>
+                                </a-form-item>
+                            </a-space>
+                            <a-space>
+                                <a-form-item>
+                                    <a-button
+                                        type="danger"
+                                        style="align-items: center"
+                                        html-type="submit"
+                                    >
+                                        <template #icon
+                                            ><SearchOutlined
+                                        /></template>
+                                        Cari
+                                    </a-button>
+                                </a-form-item>
+                            </a-space>
+                        </a-form>
+                    </a-col>
+
+                    <a-col>
+                        <a-button
+                            type="primary"
+                            html-type="button"
+                            @click="
+                                () => {
+                                    modal.cetakNilai = true
+                                }
+                            "
+                        >
+                            <template #icon>
+                                <PrinterOutlined />
+                            </template>
+                            Cetak
+                        </a-button>
+                    </a-col>
+                </a-row>
                 <a-table
                     :columns="columns"
                     :data-source="tugas"
@@ -73,7 +187,7 @@
                 <a-select
                     v-model:value="formTambahTugas.kelas"
                     placeholder="Kelas"
-                    @change="(e) => getMapelByIdGuru(e.value)"
+                    @change="getMapelByIdGuru"
                 >
                     <a-select-option
                         v-for="cls in classes"
@@ -143,9 +257,38 @@
                     v-model:value="formTambahTugas.jenisTugas"
                     placeholder="Jenis Tugas"
                 >
-                    <a-select-option value="ulangan">Ulangan</a-select-option>
                     <a-select-option value="uts">UTS</a-select-option>
                     <a-select-option value="uas">UAS</a-select-option>
+                    <a-select-option value="ulangan-1"
+                        >Ulangan 1</a-select-option
+                    >
+                    <a-select-option value="ulangan-2"
+                        >Ulangan 2</a-select-option
+                    >
+                    <a-select-option value="ulangan-3"
+                        >Ulangan 3</a-select-option
+                    >
+                    <a-select-option value="ulangan-4"
+                        >Ulangan 4</a-select-option
+                    >
+                    <a-select-option value="ulangan-5"
+                        >Ulangan 5</a-select-option
+                    >
+                    <a-select-option value="ulangan-6"
+                        >Ulangan 6</a-select-option
+                    >
+                    <a-select-option value="ulangan-7"
+                        >Ulangan 7</a-select-option
+                    >
+                    <a-select-option value="ulangan-8"
+                        >Ulangan 8</a-select-option
+                    >
+                    <a-select-option value="ulangan-9"
+                        >Ulangan 9</a-select-option
+                    >
+                    <a-select-option value="ulangan-10"
+                        >Ulangan 10</a-select-option
+                    >
                 </a-select>
             </a-form-item>
 
@@ -196,7 +339,6 @@
                     </template>
                 </template>
             </a-table>
-
             <a-form-item>
                 <a-button
                     type="primary"
@@ -208,10 +350,92 @@
             </a-form-item>
         </a-form>
     </a-modal>
+
+    <a-modal v-model:visible="modal.cetakNilai" title="Cetak nilai siswa">
+        <template #footer></template>
+        <a-form
+            :model="filterCetakNilai"
+            @finish="onfinishCetakNilaiFilter"
+            ref="filterCetakNilai"
+            :layout="'horizontal'"
+            v-bind="{
+                labelCol: {
+                    span: 8
+                },
+                wrapperCol: {
+                    span: 10
+                }
+            }"
+        >
+            <a-form-item
+                name="kelasId"
+                :rules="[
+                    {
+                        required: true,
+                        message: 'Pilih kelas terlebih dahulu',
+                        trigger: 'blur'
+                    }
+                ]"
+                label="Kelas"
+            >
+                <a-select
+                    v-model:value="filterCetakNilai.kelasId"
+                    style="width: 300px"
+                    placeholder="Pilih kelas"
+                    @change="getMapelByIdGuru"
+                >
+                    <a-select-option
+                        v-for="cls in classes"
+                        :key="cls.id"
+                        :value="cls.id"
+                        >{{ cls.jenjang }} -
+                        {{ cls.section }}
+                    </a-select-option>
+                </a-select>
+            </a-form-item>
+            <a-form-item
+                name="mataPelajaran"
+                :rules="[
+                    {
+                        required: true,
+                        message: 'Pilih mata pelajaran terlebih dahulu',
+                        trigger: 'blur'
+                    }
+                ]"
+                label="Mata Pelajaran"
+            >
+                <a-select
+                    v-model:value="filterCetakNilai.mataPelajaran"
+                    placeholder="Pilih mata pelajaran"
+                    style="width: 300px"
+                >
+                    <a-select-option
+                        v-for="mapel in mapels"
+                        :key="mapel.id"
+                        :value="mapel.id"
+                        >{{ mapel.mapel.name }}
+                    </a-select-option>
+                </a-select>
+            </a-form-item>
+
+            <a-form-item>
+                <a-button
+                    type="danger"
+                    style="align-items: center"
+                    html-type="submit"
+                >
+                    <template #icon><PrinterOutlined /></template>
+                    Cetak
+                </a-button>
+            </a-form-item>
+        </a-form>
+    </a-modal>
 </template>
 
 <script>
 import { message } from 'ant-design-vue'
+import FileSaver from 'file-saver'
+
 import {
     SearchOutlined,
     PlusOutlined,
@@ -219,7 +443,8 @@ import {
     FormOutlined,
     FileTextOutlined,
     EditOutlined,
-    DeleteOutlined
+    DeleteOutlined,
+    PrinterOutlined
 } from '@ant-design/icons-vue'
 
 const columns = [
@@ -273,7 +498,8 @@ export default {
             formTambahNilai: {},
             modal: {
                 tambahTugas: false,
-                tambahNilai: false
+                tambahNilai: false,
+                cetakNilai: false
             },
             tambahNilaiColumns,
             columns,
@@ -282,8 +508,12 @@ export default {
             tugas: [],
             siswa: [],
             filter: {
-                kelas_id: null,
-                tanggal: null
+                kelasId: null,
+                mataPelajaran: null
+            },
+            filterCetakNilai: {
+                kelasId: null,
+                mataPelajaran: null
             },
             dataReady: false,
             fetching: false,
@@ -310,19 +540,20 @@ export default {
                 })
                 .catch((e) => vm.$onAjaxError(e))
         },
-        getMapelByIdGuru() {
+        getMapelByIdGuru(kelasId) {
             const vm = this
             delete vm.formTambahTugas.mataPelajaran
+            vm.filter.mataPelajaran = null
+            vm.filterCetakNilai.mataPelajaran = null
+            vm.mapels = []
             vm.axios
                 .get(vm.url('user'))
                 .then((response) => {
                     const params = {
                         req: 'get_mapel_by_guru_id',
-                        kelas_id: vm.formTambahTugas.kelas,
+                        kelas_id: kelasId,
                         guru_id: response.data.id
                     }
-
-                    console.log(params)
                     vm.axios
                         .get(vm.url('mapel/read'), { params })
                         .then((response) => {
@@ -342,7 +573,6 @@ export default {
                 tanggal: vm.formTambahTugas.tanggal,
                 jenis_tugas: vm.formTambahTugas.jenisTugas
             }
-
             vm.axios
                 .post(vm.url('siswa/tugas'), vm.formTambahTugas)
                 .then((response) => {
@@ -361,10 +591,14 @@ export default {
                     })
                 })
         },
+        onFinishFilter() {
+            const vm = this
+            vm.getTugas()
+        },
         getTugas() {
             const vm = this
             vm.axios
-                .get(vm.url('siswa/tugas'))
+                .get(vm.url('siswa/tugas'), { params: vm.filter })
                 .then((response) => {
                     vm.tugas = response.data.data.map((item, index) => {
                         return {
@@ -376,8 +610,6 @@ export default {
                             jenis_tugas: item.jenis_tugas.toUpperCase()
                         }
                     })
-
-                    console.log(vm.tugas)
                 })
                 .catch((error) => {
                     this.$notification.error({
@@ -430,7 +662,6 @@ export default {
                         description: error
                     })
                 })
-
             vm.modal.tambahTugas = true
         },
         editTugas() {
@@ -495,7 +726,6 @@ export default {
                             }
                         )
                     }
-
                     vm.siswa.forEach((item) => {
                         this.formTambahNilai = {
                             ...this.formTambahNilai,
@@ -536,6 +766,48 @@ export default {
                         description: error.response.data.message
                     })
                 })
+        },
+        onfinishCetakNilaiFilter() {
+            const vm = this
+            vm.axios.get(vm.url('user')).then((res) => {
+                vm.axios
+                    .get(this.url('siswa/tugas/cetak'), {
+                        params: {
+                            ...vm.filterCetakNilai,
+                            guru_id: res.data.id
+                        },
+                        responseType: 'blob'
+                    })
+                    .then((response) => {
+                        const fileName =
+                            response.headers['content-disposition'].split(
+                                'filename='
+                            )[1]
+                        FileSaver.saveAs(
+                            new Blob([response.data], {
+                                type: 'application/pdf'
+                            }),
+                            fileName.substring(1, fileName.length - 1)
+                        )
+
+                        vm.$notification.success({
+                            message: 'Berhasil',
+                            description: 'Data berhasil diunduh'
+                        })
+
+                        vm.filterCetakNilai = {
+                            kelasId: null,
+                            mataPelajaran: null
+                        }
+
+                        vm.modal.cetakNilai = false
+                    })
+                    .catch((e) => {
+                        vm.$notification.error({
+                            message: 'Terjadi kesalahan'
+                        })
+                    })
+            })
         }
     }
 }

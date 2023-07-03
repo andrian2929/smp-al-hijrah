@@ -51,7 +51,7 @@
                     align-items: center;
                 "
             >
-            <a-popover
+                <a-popover
                     placement="bottomRight"
                     v-model:visible="visible"
                     trigger="click"
@@ -89,7 +89,6 @@
                             cursor: pointer;
                         "
                     >
-                
                         <a-avatar
                             size="large"
                             style="
@@ -98,11 +97,13 @@
                                 justify-content: center;
                                 gap: 5px;
                             "
-                           :src="userData.image == 'default.png' ? '/img/no_profile.png' : '/img/profile_photo/' + userData.image"
-                         
-                alt="profile picture"
+                            :src="
+                                userData.image == 'default.png'
+                                    ? '/img/no_profile.png'
+                                    : '/img/profile_photo/' + userData.image
+                            "
+                            alt="profile picture"
                         >
-                           
                         </a-avatar>
                         <span style="font-size: 1rem">{{ userData.name }}</span>
                         <down-outlined />
@@ -130,8 +131,8 @@ export default {
                     icon: 'dashboard-outlined',
                     child: [
                         {
-                           name: 'Dashboard Admin',
-                           link: '/admin' 
+                            name: 'Dashboard Admin',
+                            link: '/admin'
                         }
                     ]
                 },
@@ -157,14 +158,14 @@ export default {
                             name: 'Laporan Kehadiran Siswa',
                             link: '/admin/laporan_hadir'
                         },
-                        {
-                            name: 'Laporan Kehadiran Guru',
-                            link: '/admin/laporan_hadir_guru'
-                        },
-                        {
-                            name: 'Laporan Nilai Siswa',
-                            link: '/admin/laporan_nilai'
-                        },
+                        // {
+                        //     name: 'Laporan Kehadiran Guru',
+                        //     link: '/admin/laporan_hadir_guru'
+                        // },
+                        // {
+                        //     name: 'Laporan Nilai Siswa',
+                        //     link: '/admin/laporan_nilai'
+                        // },
                         {
                             name: 'Laporan Harian Siswa',
                             link: '/admin/laporan_harian'

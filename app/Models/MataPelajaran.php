@@ -20,4 +20,19 @@ class MataPelajaran extends Model
   {
     return $this->hasMany(MataPelajaranHari::class, 'mapel_id');
   }
+
+  public function tugas()
+  {
+    return $this->hasMany(Tugas::class, 'mata_pelajaran_id');
+  }
+
+  /**
+   * Get all classes for this subject.
+   * 
+   * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+   */
+  public function kelas()
+  {
+    return $this->belongsToMany(Kelas::class, MataPelajaranHari::class, 'mapel_id', 'kelas_id');
+  }
 }

@@ -20,7 +20,6 @@ class CreateGurusTable extends Migration
             $table->string('gelar')->nullable();
             $table->date('tanggal_bergabung')->nullable();
             $table->timestamps();
-
             $table->foreign('user_id')->references('id')->on('users')->cascadeOnDelete();
         });
     }

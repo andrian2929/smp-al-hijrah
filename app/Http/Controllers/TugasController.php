@@ -5,7 +5,9 @@ namespace App\Http\Controllers;
 use App\Models\Tugas;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
-use PhpOffice\PhpSpreadsheet\Calculation\Information\Value;
+use Mpdf\Mpdf;
+use App\Models\MataPelajaran;
+use App\Models\MataPelajaranHari;
 
 class TugasController extends Controller
 {
@@ -16,7 +18,23 @@ class TugasController extends Controller
      */
     public function index()
     {
-        $tugas = Tugas::with(['mataPelajaran.mapel', 'mataPelajaran.kelas'])->get();
+        $tugas = Tugas::with(['mataPelajaran.mapel', 'mataPelajaran.kelas']);
+
+        if (request()->kelasId) {
+            if (request()->kelasId != 'all') {
+                $tugas =  $tugas->whereHas('mataPelajaran.kelas', function ($q) {
+                    $q->where('kelas_id', request()->kelasId);
+                });
+            }
+        }
+
+        if (request()->mataPelajaran) {
+            if (request()->mataPelajaran != 'all') {
+                $tugas =  $tugas->where('mata_pelajaran_id', request()->mataPelajaran);
+            }
+        }
+
+        $tugas = $tugas->get();
 
         return response()->json([
             'status' => 'success',
@@ -174,5 +192,56 @@ class TugasController extends Controller
             'status' => 'success',
             'data' => $tugas->load(['mataPelajaran', 'mataPelajaran.kelas.siswa.user'])
         ]);
+    }
+
+    /**
+     * Print grade report based on subject and class grouply
+     * 
+     * @param Request $request
+     *  
+     */
+    public function cetak(Request $request)
+    {
+        $mataPelajaran = MataPelajaranHari::with(['mapel', 'guru', 'kelas', 'tugas.nilai', 'siswa'])
+            ->whereHas('guru', function ($query) use ($request) {
+                $query->where('id', $request->guru_id);
+            })
+            ->where('id', '=', $request->mataPelajaran)
+            ->where('kelas_id', '=', $request->kelasId)
+            ->first();
+
+        $pdf = new Mpdf([
+            'mode' => 'utf-8',
+            'format' => 'A4',
+            'orientation' => 'L',
+            'margin_left' => 10,
+            'margin_right' => 10,
+            'margin_top' => 40,
+            'margin_bottom' => 10,
+            'tempDir' => storage_path('tempdir')
+        ]);
+        $pdf->SetHTMLHeader(
+            '
+                <table border="0" width="100%" align="center">
+                    <tr>
+                        <td  align="center">
+                             <h2>Rekapitulasi Nilai Siswa</h2>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td  align="center">
+                            <h3>SMP IT Al-Hijrah Medan</h3>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td  align="center">
+                            <p>Jl. Perhubungan, Laut Dendang, Kec. Percut Sei Tuan, Kab. Deli Serdang, Sumatera Utara, 20371</p>
+                        </td>
+                     </tr>
+                </table>
+            '
+        );
+        $pdf->WriteHTML(view('rekap.rekap-nilai', compact('mataPelajaran'))->render());
+        $pdf->Output('rekap-nilai-' . now()->timestamp . '.pdf', 'D');
     }
 }
