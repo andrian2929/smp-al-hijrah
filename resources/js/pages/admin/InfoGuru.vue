@@ -84,7 +84,7 @@
     </a-row>
 </template>
 <script>
-import FileSaver from 'file-saver'
+const FileSaver = require('file-saver')
 const columns = [
     {
         title: 'ID',

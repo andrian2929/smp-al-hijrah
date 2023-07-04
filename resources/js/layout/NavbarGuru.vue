@@ -164,6 +164,10 @@ export default {
                             link: '/guru/laporan_hadir_siswa'
                         },
                         {
+                            name: 'Laporan Harian Siswa',
+                            link: '/guru/laporan_harian_siswa'
+                        },
+                        {
                             name: 'Laporan Ibadah Harian',
                             link: '/guru/laporan_ibadah_guru'
                         }

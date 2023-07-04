@@ -254,110 +254,62 @@
                 </a-space>
             </a-card>
             <a-card title="Daftar Siswa" style="width: 100%" v-if="dataReady">
-                <a-form
-                    :model="formKehadiran"
-                    @finish="onFinishKehadiran"
-                    @finishFailed="onFinishFailedKehadiran"
-                    ref="formKehadiran"
+                <a-space
+                    direction="horizontal"
+                    style="
+                        display: flex;
+                        justify-content: space-between;
+                        margin-bottom: 20px;
+                    "
                 >
-                    <a-space
-                        direction="horizontal"
-                        style="
-                            display: flex;
-                            justify-content: space-between;
-                            margin-bottom: 20px;
-                        "
-                    >
-                        <div style="align-items: center">
-                            <h3 style="margin-left: 35px">
-                                {{ dateInTable }}
-                            </h3>
-                        </div>
+                    <div style="align-items: center">
+                        <h3 style="margin-left: 35px">
+                            {{ dateInTable }}
+                        </h3>
+                    </div>
 
-                        <div style="align-items: center">
-                            <a-button type="primary" html-type="submit">
-                                <template #icon><save-outlined /></template
-                                >Simpan Kehadiran
-                            </a-button>
-                        </div>
-                    </a-space>
+                    <div style="align-items: center">
+                        <a-button type="primary" html-type="submit">
+                            <template #icon><save-outlined /></template>Simpan
+                            Kehadiran
+                        </a-button>
+                    </div>
+                </a-space>
 
-                    <a-table
-                        :columns="columns"
-                        :data-source="dataSourceKehadiran"
-                        style="margin: 15px"
-                        :pagination="true"
-                        :loading="dataSourceKehadiran.length === 0"
-                    >
-                        <template #bodyCell="{ column, record }">
-                            <template v-if="column.key === 'id'">
-                                <a>
-                                    {{ record.key }}
-                                </a>
-                            </template>
-
-                            <template v-if="column.key === 'nisn'">
-                                <a>
-                                    {{ record.nisn }}
-                                </a>
-                            </template>
-
-                            <template v-if="column.key === 'nama'">
-                                <a>
-                                    {{ record.nama }}
-                                </a>
-                            </template>
-
-                            <template v-else-if="column.key === 'kehadiran'">
-                                <div>
-                                    <a-form-item
-                                        :name="[
-                                            `siswa_${record.id}`,
-                                            'kehadiran'
-                                        ]"
-                                        :rules="[
-                                            {
-                                                required: true,
-                                                message:
-                                                    'Pilih kehadiran terlebih dahulu'
-                                            }
-                                        ]"
-                                    >
-                                        <a-radio-group
-                                            v-model:value="
-                                                formKehadiran[
-                                                    `siswa_${record.id}`
-                                                ].kehadiran
-                                            "
-                                        >
-                                            <a-radio value="hadir"
-                                                >Hadir</a-radio
-                                            >
-                                            <a-radio value="absen"
-                                                >Absen</a-radio
-                                            >
-                                            <a-radio value="telat"
-                                                >Telat</a-radio
-                                            >
-                                            <a-radio value="izin">Izin</a-radio>
-                                        </a-radio-group>
-                                    </a-form-item>
-                                </div>
-                            </template>
-                            <template v-else-if="column.key === 'keterangan'">
-                                <a-form-item>
-                                    <a-input
-                                        v-model:value="
-                                            formKehadiran[`siswa_${record.id}`]
-                                                .keterangan
-                                        "
-                                        placeholder="Keterangan"
-                                    />
-                                </a-form-item>
-                            </template>
+                <a-table
+                    :columns="columns"
+                    :data-source="dataSourceKehadiran"
+                    style="margin: 15px"
+                    :pagination="true"
+                    :loading="dataSourceKehadiran.length === 0"
+                >
+                    <template #bodyCell="{ column, record }">
+                        <template v-if="column.key === 'id'">
+                            <a>
+                                {{ record.key }}
+                            </a>
                         </template>
-                    </a-table>
-                </a-form>
+
+                        <template v-if="column.key === 'nisn'">
+                            <a>
+                                {{ record.nisn }}
+                            </a>
+                        </template>
+
+                        <template v-if="column.key === 'nama'">
+                            <a>
+                                {{ record.nama }}
+                            </a>
+                        </template>
+
+                        <template v-else-if="column.key === 'kehadiran'">
+                            {{ record.kehadiran }}
+                        </template>
+                        <template v-else-if="column.key === 'keterangan'">
+                            {{ record.keterangan }}
+                        </template>
+                    </template>
+                </a-table>
             </a-card>
         </a-col>
     </a-row>
@@ -488,7 +440,17 @@ export default {
                                 key: index + 1,
                                 id: model.user_id,
                                 nisn: model.nisn,
-                                nama: model.user.name
+                                nama: model.user.name,
+                                kehadiran:
+                                    model.kehadiran.length === 0
+                                        ? null
+                                        : this.capitalizeFirstLetter(
+                                              model.kehadiran[0].kehadiran
+                                          ),
+                                keterangan:
+                                    model.kehadiran.length === 0
+                                        ? null
+                                        : model.kehadiran[0].keterangan
                             }
                         ]
 
@@ -533,11 +495,6 @@ export default {
         },
         onFinishCetakLaporan() {
             this.cetakLaporanButtonLoading = true
-            // this.cetakLaporanForm.year =
-            //     this.cetakLaporanForm.tanggal.split('-')[0]
-            // this.cetakLaporanForm.month =
-            //     this.cetakLaporanForm.tanggal.split('-')[1]
-
             const cetakLaporanData = {
                 month: this.cetakLaporanForm.tanggal.split('-')[1],
                 year: this.cetakLaporanForm.tanggal.split('-')[0]
@@ -573,6 +530,9 @@ export default {
                         tanggal: null
                     }
                 })
+        },
+        capitalizeFirstLetter(string) {
+            return string.charAt(0).toUpperCase() + string.slice(1)
         }
     }
 }
