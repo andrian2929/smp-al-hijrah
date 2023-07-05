@@ -19,7 +19,8 @@
                                 "
                             >
                                 <a-form-item
-                                    name="tanggal"
+                                    name="startDate"
+                                    label="Dari"
                                     :rules="[
                                         {
                                             required: true,
@@ -36,44 +37,36 @@
                                     ]"
                                 >
                                     <a-date-picker
-                                        v-model:value="formTahfidz.tanggal"
+                                        v-model:value="formTahfidz.startDate"
                                         style="width: 200px"
                                         placeholder="Tanggal Posting"
                                         value-format="YYYY-MM-DD"
                                     />
                                 </a-form-item>
-                                <a-form-item>
-                                    <a-select
-                                        v-model:value="formTahfidz.surah"
-                                        placeholder="Nama Surah"
-                                        @change="onChangeSurah"
-                                    >
-                                        <a-select-option
-                                            v-for="surah in surahData"
-                                            :key="surah.key"
-                                            :value="surah.surah"
-                                        >
-                                            {{ surah.surah }}
-                                        </a-select-option>
-                                    </a-select>
-                                </a-form-item>
+
                                 <a-form-item
-                                    name="ayat"
+                                    name="endDate"
+                                    label="Sampai"
                                     :rules="[
                                         {
                                             required: true,
-                                            message: 'Ayat harus diisi'
+                                            message:
+                                                'Tanggal tidak boleh kosong'
                                         },
                                         {
-                                            pattern: /^[0-9]+-[0-9]+$/,
-                                            message: 'Format ayat salah'
+                                            pattern: new RegExp(
+                                                '^[0-9]{4}-[0-9]{2}-[0-9]{2}$'
+                                            ),
+                                            message:
+                                                'Format tanggal lahir harus YYYY-MM-DD'
                                         }
                                     ]"
                                 >
-                                    <a-input
-                                        placeholder="Contoh : 1-5"
+                                    <a-date-picker
+                                        v-model:value="formTahfidz.endDate"
                                         style="width: 200px"
-                                        v-model:value="formTahfidz.ayat"
+                                        placeholder="Tanggal Posting"
+                                        value-format="YYYY-MM-DD"
                                     />
                                 </a-form-item>
 
@@ -86,18 +79,16 @@
                                             align-items: center;
                                         "
                                     >
-                                        <template #icon
-                                            ><save-outlined /></template
-                                        >Simpan
+                                        Cari
                                     </a-button>
                                 </a-form-item>
                             </a-space>
                         </a-form>
                     </a-card>
                     <a-card
-                        :loading="loading"
                         title="Laporan Tahfidz"
                         style="width: 100%"
+                        v-if="!loading"
                     >
                         <a-space
                             direction="horizontal"
@@ -113,6 +104,7 @@
                             :columns="columns"
                             :data-source="tahfizSource()"
                             style="margin: 15px"
+                            :loading="loadingTahfidzData"
                         >
                             <template #bodyCell="{ column, record }">
                                 <template v-if="column.key === 'tanggal'">
@@ -834,13 +826,17 @@ export default {
             columnKedisplinan: this.columnPerilaku('kedisplinan'),
             dataSourceKerapian: null,
             columnKerapian: this.columnPerilaku('kerapian'),
-
+            filterTahfizh: {
+                req: 'get_tahfidz_siswa',
+                tanggal: moment().format('YYYY-MM-DD'),
+                user_id: null
+            },
             classes: [],
             formTahfidz: {
-                tanggal: moment().format('YYYY-MM-DD'),
-                surah: 'Al-Fatihah',
-                ayat: null
+                startDate: moment().format('YYYY-MM-DD'),
+                endDate: moment().format('YYYY-MM-DD')
             },
+            loadingTahfidzData: true,
             userData: null,
             loading: true,
             tahfidzData: null,
@@ -1335,7 +1331,31 @@ export default {
     },
     methods: {
         onFinishTahfidz() {
-            this.saveLaporanTahfidz()
+            this.loading = false
+            console.log(this.loading)
+            this.loadingTahfidzData = true
+            this.searchTahfidz()
+        },
+        searchTahfidz() {
+            this.axios
+                .get(this.url('laporan/tahfidz/read'), {
+                    params: {
+                        user_id: this.userData.id,
+                        req: 'single_by_date',
+                        ...this.formTahfidz
+                    }
+                })
+                .then((res) => {
+                    this.tahfidzData = res.data.data
+                    this.loadingTahfidzData = false
+                })
+                .catch((e) => {
+                    this.loadingTahfidzData = false
+                    this.$notification.error({
+                        message: 'Kesalahan',
+                        description: e.response.data.message
+                    })
+                })
         },
         onFinishPerilaku() {
             const tanggal = this.formPerilaku.tanggal
@@ -1364,6 +1384,22 @@ export default {
                         message: 'Kesalahan',
                         description: JSON.stringify(e.response.data.errors)
                     })
+                })
+        },
+        readTahfidz() {
+            this.axios
+                .get(this.url('user'))
+                .then((res) => {
+                    this.filterTahfizh.user_id = res.data.id
+                    const params = this.filterTahfizh
+                    this.axios
+                        .get(this.url('laporan/tahfidz/read'), { params })
+                        .then((res) => {
+                            console.log(res)
+                        })
+                })
+                .catch((err) => {
+                    console.log(err)
                 })
         },
         saveLaporanTahfidz() {
