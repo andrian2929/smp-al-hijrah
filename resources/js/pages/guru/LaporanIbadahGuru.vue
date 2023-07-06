@@ -8,7 +8,6 @@
                         <a-form
                             :model="formTahfidz"
                             @finish="onFinishTahfidz"
-                            @finishFailed="onFinishFailed"
                             ref="formTahfidz"
                         >
                             <a-space
@@ -88,24 +87,15 @@
                     <a-card
                         title="Laporan Tahfidz"
                         style="width: 100%"
-                        v-if="!loading"
+                        v-if="showTahfidzData"
                     >
                         <a-space
                             direction="horizontal"
-                            style="
-                                display: flex;
-                                justify-content: flex-end;
-                                margin-bottom: 10px;
-                            "
+                            style="display: flex; justify-content: flex-end"
                         >
                         </a-space>
 
-                        <a-table
-                            :columns="columns"
-                            :data-source="tahfizSource()"
-                            style="margin: 15px"
-                            :loading="loadingTahfidzData"
-                        >
+                        <a-table :columns="columns" :data-source="tahfidzData">
                             <template #bodyCell="{ column, record }">
                                 <template v-if="column.key === 'tanggal'">
                                     <a>
@@ -209,453 +199,96 @@
                 </a-tab-pane>
 
                 <a-tab-pane key="3" tab="Perilaku Harian">
-                    <a-form
-                        :model="formPerilaku"
-                        @finish="onFinishPerilaku"
-                        @finishFailed="onFinishFailed"
-                        ref="formPerilaku"
-                    >
-                        <a-card
-                            title="Tanggal Kegiatan"
-                            style="width: 100%; margin-bottom: 20px"
-                        >
-                            <a-form-item
-                                name="tanggal"
-                                :rules="[
-                                    {
-                                        required: true,
-                                        message: 'Tanggal harus diisi'
-                                    },
-                                    {
-                                        pattern: new RegExp(
-                                            '^[0-9]{4}-[0-9]{2}-[0-9]{2}$'
-                                        ),
-                                        message:
-                                            'Format tanggal harus YYYY-MM-DD'
-                                    }
-                                ]"
-                            >
-                                <a-date-picker
-                                    v-model:value="formPerilaku.tanggal"
-                                    style="width: 345px"
-                                    placeholder="Tanggal"
-                                    value-format="YYYY-MM-DD"
-                                />
-                            </a-form-item>
-                        </a-card>
-                        <a-card
-                            :loading="loading"
-                            title="Laporan Perilaku"
-                            style="width: 100%"
+                    <a-card title="Tanggal Kegiatan">
+                        <a-form
+                            :model="formPerilaku"
+                            @finish="onFinishPerilaku"
+                            ref="formPerilaku"
                         >
                             <a-space
-                                direction="horizontal"
                                 style="
                                     display: flex;
-                                    justify-content: flex-end;
-                                    margin-bottom: 20px;
+                                    justify-content: flex-container;
+                                    flex-wrap: wrap;
                                 "
                             >
-                            </a-space>
-
-                            <a-table
-                                :dataSource="dataSourceIbadah"
-                                :columns="columnIbadah"
-                                :pagination="false"
-                                style="margin-bottom: 6px"
-                                bordered
-                            >
-                                <template #bodyCell="{ column, record }">
-                                    <div v-if="record.type === 'ibadah'">
-                                        <template
-                                            v-if="column.key === 'ibadah'"
-                                        >
-                                            <a>
-                                                {{ record.name }}
-                                            </a>
-                                        </template>
-                                        <template
-                                            v-else-if="column.key === 'point'"
-                                        >
-                                            <a-form-item
-                                                :name="[
-                                                    record.name.replace(
-                                                        /\s+/g,
-                                                        ''
-                                                    ),
-                                                    'nilai'
-                                                ]"
-                                                :rules="[
-                                                    {
-                                                        required: true,
-                                                        message:
-                                                            'Poin tidak boleh kosong'
-                                                    },
-                                                    {
-                                                        pattern: new RegExp(
-                                                            '^[0-9]*$'
-                                                        ),
-                                                        message:
-                                                            'Poin harus berupa angka'
-                                                    }
-                                                ]"
-                                            >
-                                                <a-input
-                                                    v-model:value="
-                                                        formPerilaku[
-                                                            record.name.replace(
-                                                                /\s+/g,
-                                                                ''
-                                                            )
-                                                        ].nilai
-                                                    "
-                                                    placeholder="Masukkan poin"
-                                                />
-                                            </a-form-item>
-                                        </template>
-                                        <template
-                                            v-else-if="column.key === 'catatan'"
-                                        >
-                                            <a-form-item
-                                                :name="[
-                                                    record.name.replace(
-                                                        /\s+/g,
-                                                        ''
-                                                    ),
-                                                    'catatan'
-                                                ]"
-                                            >
-                                                <a-input
-                                                    v-model:value="
-                                                        formPerilaku[
-                                                            record.name.replace(
-                                                                /\s+/g,
-                                                                ''
-                                                            )
-                                                        ].catatan
-                                                    "
-                                                    placeholder="Masukkan catatan"
-                                                />
-                                            </a-form-item>
-                                        </template>
-                                    </div>
-                                </template>
-                            </a-table>
-
-                            <a-table
-                                :dataSource="dataSourceAkidah"
-                                :columns="columnAkidah"
-                                :pagination="false"
-                                style="margin-bottom: 6px"
-                                bordered
-                            >
-                                <template #bodyCell="{ column, record }">
-                                    <template v-if="column.key === 'akidah'">
-                                        <a>
-                                            {{ record.name }}
-                                        </a>
-                                    </template>
-                                    <template
-                                        v-else-if="column.key === 'point'"
-                                    >
-                                        <a-form-item
-                                            :name="[
-                                                record.name.replace(/\s+/g, ''),
-                                                'nilai'
-                                            ]"
-                                            :rules="[
-                                                {
-                                                    required: true,
-                                                    message:
-                                                        'Poin tidak boleh kosong'
-                                                },
-                                                {
-                                                    pattern: new RegExp(
-                                                        '^[0-9]*$'
-                                                    ),
-                                                    message:
-                                                        'Poin harus berupa angka'
-                                                }
-                                            ]"
-                                        >
-                                            <a-input
-                                                v-model:value="
-                                                    formPerilaku[
-                                                        record.name.replace(
-                                                            /\s+/g,
-                                                            ''
-                                                        )
-                                                    ].nilai
-                                                "
-                                                placeholder="Masukkan poin"
-                                            />
-                                        </a-form-item>
-                                    </template>
-                                    <template
-                                        v-else-if="column.key === 'catatan'"
-                                    >
-                                        <a-form-item
-                                            :name="[
-                                                record.name.replace(/\s+/g, ''),
-                                                'catatan'
-                                            ]"
-                                        >
-                                            <a-input
-                                                v-model:value="
-                                                    formPerilaku[
-                                                        record.name.replace(
-                                                            /\s+/g,
-                                                            ''
-                                                        )
-                                                    ].catatan
-                                                "
-                                                placeholder="Masukkan catatan"
-                                            />
-                                        </a-form-item>
-                                    </template>
-                                </template>
-                            </a-table>
-
-                            <a-table
-                                :dataSource="dataSourceAkhlak"
-                                :columns="columnAkhlak"
-                                :pagination="false"
-                                bordered
-                                style="margin-bottom: 6px"
-                            >
-                                <template #bodyCell="{ column, record }">
-                                    <template v-if="column.key === 'akhlak'">
-                                        <a>
-                                            {{ record.name }}
-                                        </a>
-                                    </template>
-                                    <template
-                                        v-else-if="column.key === 'point'"
-                                    >
-                                        <a-form-item
-                                            :name="[
-                                                record.name.replace(/\s+/g, ''),
-                                                'nilai'
-                                            ]"
-                                            :rules="[
-                                                {
-                                                    required: true,
-                                                    message:
-                                                        'Poin tidak boleh kosong'
-                                                },
-                                                {
-                                                    pattern: new RegExp(
-                                                        '^[0-9]*$'
-                                                    ),
-                                                    message:
-                                                        'Poin harus berupa angka'
-                                                }
-                                            ]"
-                                        >
-                                            <a-input
-                                                v-model:value="
-                                                    formPerilaku[
-                                                        record.name.replace(
-                                                            /\s+/g,
-                                                            ''
-                                                        )
-                                                    ].nilai
-                                                "
-                                                placeholder="Masukkan poin"
-                                            />
-                                        </a-form-item>
-                                    </template>
-                                    <template
-                                        v-else-if="column.key === 'catatan'"
-                                    >
-                                        <a-form-item
-                                            :name="[
-                                                record.name.replace(/\s+/g, ''),
-                                                'catatan'
-                                            ]"
-                                        >
-                                            <a-input
-                                                v-model:value="
-                                                    formPerilaku[
-                                                        record.name.replace(
-                                                            /\s+/g,
-                                                            ''
-                                                        )
-                                                    ].catatan
-                                                "
-                                                placeholder="Masukkan catatan"
-                                            />
-                                        </a-form-item>
-                                    </template>
-                                </template>
-                            </a-table>
-
-                            <a-table
-                                :dataSource="dataSourceKedisplinan"
-                                :columns="columnKedisplinan"
-                                :pagination="false"
-                                bordered
-                                style="margin-bottom: 6px"
-                            >
-                                <template #bodyCell="{ column, record }">
-                                    <template
-                                        v-if="column.key === 'kedisplinan'"
-                                    >
-                                        <a>
-                                            {{ record.name }}
-                                        </a>
-                                    </template>
-                                    <template
-                                        v-else-if="column.key === 'point'"
-                                    >
-                                        <a-form-item
-                                            :name="[
-                                                record.name.replace(/\s+/g, ''),
-                                                'nilai'
-                                            ]"
-                                            :rules="[
-                                                {
-                                                    required: true,
-                                                    message:
-                                                        'Poin tidak boleh kosong'
-                                                },
-                                                {
-                                                    pattern: new RegExp(
-                                                        '^[0-9]*$'
-                                                    ),
-                                                    message:
-                                                        'Poin harus berupa angka'
-                                                }
-                                            ]"
-                                        >
-                                            <a-input
-                                                v-model:value="
-                                                    formPerilaku[
-                                                        record.name.replace(
-                                                            /\s+/g,
-                                                            ''
-                                                        )
-                                                    ].nilai
-                                                "
-                                                placeholder="Masukkan poin"
-                                            />
-                                        </a-form-item>
-                                    </template>
-                                    <template
-                                        v-else-if="column.key === 'catatan'"
-                                    >
-                                        <a-form-item
-                                            :name="[
-                                                record.name.replace(/\s+/g, ''),
-                                                'catatan'
-                                            ]"
-                                        >
-                                            <a-input
-                                                v-model:value="
-                                                    formPerilaku[
-                                                        record.name.replace(
-                                                            /\s+/g,
-                                                            ''
-                                                        )
-                                                    ].catatan
-                                                "
-                                                placeholder="Masukkan catatan"
-                                            />
-                                        </a-form-item>
-                                    </template>
-                                </template>
-                            </a-table>
-
-                            <a-table
-                                :dataSource="dataSourceKerapian"
-                                :columns="columnKerapian"
-                                :pagination="false"
-                                bordered
-                                style="margin-bottom: 6px"
-                            >
-                                <template #bodyCell="{ column, record }">
-                                    <template v-if="column.key === 'kerapian'">
-                                        <a>
-                                            {{ record.name }}
-                                        </a>
-                                    </template>
-                                    <template
-                                        v-else-if="column.key === 'point'"
-                                    >
-                                        <a-form-item
-                                            :name="[
-                                                record.name.replace(/\s+/g, ''),
-                                                'nilai'
-                                            ]"
-                                            :rules="[
-                                                {
-                                                    required: true,
-                                                    message:
-                                                        'Poin tidak boleh kosong'
-                                                },
-                                                {
-                                                    pattern: new RegExp(
-                                                        '^[0-9]*$'
-                                                    ),
-                                                    message:
-                                                        'Poin harus berupa angka'
-                                                }
-                                            ]"
-                                        >
-                                            <a-input
-                                                v-model:value="
-                                                    formPerilaku[
-                                                        record.name.replace(
-                                                            /\s+/g,
-                                                            ''
-                                                        )
-                                                    ].nilai
-                                                "
-                                                placeholder="Masukkan poin"
-                                            />
-                                        </a-form-item>
-                                    </template>
-                                    <template
-                                        v-else-if="column.key === 'catatan'"
-                                    >
-                                        <a-form-item
-                                            :name="[
-                                                record.name.replace(/\s+/g, ''),
-                                                'catatan'
-                                            ]"
-                                        >
-                                            <a-input
-                                                v-model:value="
-                                                    formPerilaku[
-                                                        record.name.replace(
-                                                            /\s+/g,
-                                                            ''
-                                                        )
-                                                    ].catatan
-                                                "
-                                                placeholder="Masukkan catatan"
-                                            />
-                                        </a-form-item>
-                                    </template>
-                                </template>
-                            </a-table>
-
-                            <a-form-item>
-                                <a-button
-                                    type="primary"
-                                    html-type="submit"
-                                    style="
-                                        display: inline-flex;
-                                        align-items: center;
-                                        margin-top: 10px;
-                                    "
+                                <a-form-item
+                                    name="startDate"
+                                    label="Dari"
+                                    :rules="[
+                                        {
+                                            required: true,
+                                            message:
+                                                'Tanggal tidak boleh kosong'
+                                        },
+                                        {
+                                            pattern: new RegExp(
+                                                '^[0-9]{4}-[0-9]{2}-[0-9]{2}$'
+                                            ),
+                                            message:
+                                                'Format tanggal lahir harus YYYY-MM-DD'
+                                        }
+                                    ]"
                                 >
-                                    <template #icon><save-outlined /></template
-                                    >Simpan
-                                </a-button>
-                            </a-form-item>
-                        </a-card>
-                    </a-form>
+                                    <a-date-picker
+                                        v-model:value="formPerilaku.startDate"
+                                        style="width: 200px"
+                                        placeholder="Tanggal Posting"
+                                        value-format="YYYY-MM-DD"
+                                    />
+                                </a-form-item>
+
+                                <a-form-item
+                                    name="endDate"
+                                    label="Sampai"
+                                    :rules="[
+                                        {
+                                            required: true,
+                                            message:
+                                                'Tanggal tidak boleh kosong'
+                                        },
+                                        {
+                                            pattern: new RegExp(
+                                                '^[0-9]{4}-[0-9]{2}-[0-9]{2}$'
+                                            ),
+                                            message:
+                                                'Format tanggal lahir harus YYYY-MM-DD'
+                                        }
+                                    ]"
+                                >
+                                    <a-date-picker
+                                        v-model:value="formPerilaku.endDate"
+                                        style="width: 200px"
+                                        placeholder="Tanggal Posting"
+                                        value-format="YYYY-MM-DD"
+                                    />
+                                </a-form-item>
+
+                                <a-form-item>
+                                    <a-button
+                                        type="primary"
+                                        html-type="submit"
+                                        style="
+                                            display: inline-flex;
+                                            align-items: center;
+                                        "
+                                    >
+                                        Cari
+                                    </a-button>
+                                </a-form-item>
+                            </a-space>
+                        </a-form>
+                    </a-card>
+
+                    <a-card title="Laporan Perilaku" v-if="perilakuData">
+                        <a-table
+                            :columns="perilakuColumns"
+                            :dataSource="perilakuData"
+                        >
+                            <template #bodyCell="{ column, record }">
+                            </template>
+                        </a-table>
+                    </a-card>
                 </a-tab-pane>
             </a-tabs>
         </a-col>
@@ -737,8 +370,7 @@ const columns = [
     {
         title: 'Tanggal',
         dataIndex: 'Tanggal',
-        key: 'tanggal',
-        width: 150
+        key: 'tanggal'
     },
     {
         title: 'Surah',
@@ -776,35 +408,22 @@ const kolom2 = [
     }
 ]
 
-const columnIbadah = [
+const perilakuColumns = [
     {
-        title: 'Ibadah',
-        dataIndex: 'ibadah',
-        key: 'ibadah'
+        title: 'No.',
+        dataIndex: 'no',
+        key: 'no'
     },
     {
-        title: 'Poin',
-        key: 'point'
+        title: 'Tanggal',
+        dataIndex: 'tanggal',
+        key: 'tanggal',
+        width: '25%'
     },
     {
-        title: 'Catatan',
-        key: 'catatan'
-    }
-]
-
-const columnAkidah = [
-    {
-        title: 'Aqidah',
-        dataIndex: 'aqidah',
-        key: 'aqidah'
-    },
-    {
-        title: 'Poin',
-        key: 'point'
-    },
-    {
-        title: 'Catatan',
-        key: 'catatan'
+        title: 'Keterangan',
+        dataIndex: 'keterangan',
+        key: 'keterangan'
     }
 ]
 
@@ -819,18 +438,19 @@ export default {
             dataSourceIbadah: null,
             columnIbadah: this.columnPerilaku('ibadah'),
             dataSourceAkidah: null,
-            columnAkidah: this.columnPerilaku('akidah'),
-            dataSourceAkhlak: null,
-            columnAkhlak: this.columnPerilaku('akhlak'),
-            dataSourceKedisplinan: null,
-            columnKedisplinan: this.columnPerilaku('kedisplinan'),
-            dataSourceKerapian: null,
-            columnKerapian: this.columnPerilaku('kerapian'),
+            perilakuColumns,
             filterTahfizh: {
-                req: 'get_tahfidz_siswa',
-                tanggal: moment().format('YYYY-MM-DD'),
-                user_id: null
+                req: 'single_by_date',
+                startDate: null,
+                endDate: null
             },
+            filterPerilaku: {
+                guru_id: null,
+                startDate: null,
+                endDate: null
+            },
+            perilakuData: null,
+            showTahfidzData: false,
             classes: [],
             formTahfidz: {
                 startDate: moment().format('YYYY-MM-DD'),
@@ -856,466 +476,9 @@ export default {
                 Tanggal: moment().format('YYYY-MM-DD')
             },
             formPerilaku: {
-                tanggal: moment().format('YYYY-MM-DD')
-            },
-            surahData: [
-                {
-                    key: '1',
-                    surah: 'Al-Fatihah'
-                },
-                {
-                    key: '2',
-                    surah: 'Al-Baqarah'
-                },
-                {
-                    key: '3',
-                    surah: 'Ali Imran'
-                },
-                {
-                    key: '4',
-                    surah: 'An-Nisa'
-                },
-                {
-                    key: '5',
-                    surah: 'Al-Maidah'
-                },
-                {
-                    key: '6',
-                    surah: 'Al-Anam'
-                },
-                {
-                    key: '7',
-                    surah: 'Al-Araf'
-                },
-                {
-                    key: '8',
-                    surah: 'Al-Anfal'
-                },
-                {
-                    key: '9',
-                    surah: 'At-Taubah'
-                },
-                {
-                    key: '10',
-                    surah: 'Yunus'
-                },
-                {
-                    key: '11',
-                    surah: 'Hud'
-                },
-                {
-                    key: '12',
-                    surah: 'Yusuf'
-                },
-                {
-                    key: '13',
-                    surah: "Ar-Ra'd"
-                },
-                {
-                    key: '14',
-                    surah: 'Ibrahim'
-                },
-                {
-                    key: '15',
-                    surah: 'Al-Hijr'
-                },
-                {
-                    key: '16',
-                    surah: 'An-Nahl'
-                },
-                {
-                    key: '17',
-                    surah: 'Al-Isra'
-                },
-                {
-                    key: '18',
-                    surah: 'Al-Kahfi'
-                },
-                {
-                    key: '19',
-                    surah: 'Maryam'
-                },
-                {
-                    key: '20',
-                    surah: 'Ta-Ha'
-                },
-                {
-                    key: '21',
-                    surah: 'Al-Anbiya'
-                },
-                {
-                    key: '22',
-                    surah: 'Al-Hajj'
-                },
-                {
-                    key: '23',
-                    surah: "Al-Mu'minun"
-                },
-                {
-                    key: '24',
-                    surah: 'An-Nur'
-                },
-                {
-                    key: '25',
-                    surah: 'Al-Furqan'
-                },
-                {
-                    key: '26',
-                    surah: "Ash-Shu'ara"
-                },
-                {
-                    key: '27',
-                    surah: 'An-Naml'
-                },
-                {
-                    key: '28',
-                    surah: 'Al-Qasas'
-                },
-                {
-                    key: '29',
-                    surah: 'Al-Ankabut'
-                },
-                {
-                    key: '30',
-                    surah: 'Ar-Rum'
-                },
-                {
-                    key: '31',
-                    surah: 'Luqman'
-                },
-                {
-                    key: '32',
-                    surah: 'As-Sajdah'
-                },
-                {
-                    key: '33',
-                    surah: 'Al-Ahzab'
-                },
-                {
-                    key: '34',
-                    surah: 'Saba'
-                },
-                {
-                    key: '35',
-                    surah: 'Fatir'
-                },
-                {
-                    key: '36',
-                    surah: 'Ya-Sin'
-                },
-                {
-                    key: '37',
-                    surah: 'As-Saffat'
-                },
-                {
-                    key: '38',
-                    surah: 'Sad'
-                },
-                {
-                    key: '39',
-                    surah: 'Az-Zumar'
-                },
-                {
-                    key: '40',
-                    surah: 'Ghafir'
-                },
-                {
-                    key: '41',
-                    surah: 'Fussilat'
-                },
-                {
-                    key: '42',
-                    surah: 'Ash-Shura'
-                },
-                {
-                    key: '43',
-                    surah: 'Az-Zukhruf'
-                },
-                {
-                    key: '44',
-                    surah: 'Ad-Dukhan'
-                },
-                {
-                    key: '45',
-                    surah: 'Al-Jathiya'
-                },
-                {
-                    key: '46',
-                    surah: 'Al-Ahqaf'
-                },
-                {
-                    key: '47',
-                    surah: 'Muhammad'
-                },
-                {
-                    key: '48',
-                    surah: 'Al-Fath'
-                },
-                {
-                    key: '49',
-                    surah: 'Al-Hujurat'
-                },
-                {
-                    key: '50',
-                    surah: 'Qaf'
-                },
-                {
-                    key: '51',
-                    surah: 'Adh-Dhariyat'
-                },
-                {
-                    key: '52',
-                    surah: 'At-Tur'
-                },
-                {
-                    key: '53',
-                    surah: 'An-Najm'
-                },
-                {
-                    key: '54',
-                    surah: 'Al-Qamar'
-                },
-                {
-                    key: '55',
-                    surah: 'Ar-Rahman'
-                },
-                {
-                    key: '56',
-                    surah: "Al-Waqi'ah"
-                },
-                {
-                    key: '57',
-                    surah: 'Al-Hadid'
-                },
-                {
-                    key: '58',
-                    surah: 'Al-Mujadilah'
-                },
-                {
-                    key: '59',
-                    surah: 'Al-Hasyr'
-                },
-                {
-                    key: '60',
-                    surah: 'Al-Mumtahanah'
-                },
-                {
-                    key: '61',
-                    surah: 'As-Saff'
-                },
-                {
-                    key: '62',
-                    surah: "Al-Jumu'ah"
-                },
-                {
-                    key: '63',
-                    surah: 'Al-Munafiqun'
-                },
-                {
-                    key: '64',
-                    surah: 'At-Taghabun'
-                },
-                {
-                    key: '65',
-                    surah: 'At-Talaq'
-                },
-                {
-                    key: '66',
-                    surah: 'At-Tahrim'
-                },
-                {
-                    key: '67',
-                    surah: 'Al-Mulk'
-                },
-                {
-                    key: '68',
-                    surah: 'Al-Qalam'
-                },
-                {
-                    key: '69',
-                    surah: 'Al-Haqqah'
-                },
-                {
-                    key: '70',
-                    surah: "Al-Ma'arij"
-                },
-                {
-                    key: '71',
-                    surah: 'Nuh'
-                },
-                {
-                    key: '72',
-                    surah: 'Al-Jinn'
-                },
-                {
-                    key: '73',
-                    surah: 'Al-Muzzammil'
-                },
-                {
-                    key: '74',
-                    surah: 'Al-Muddaththir'
-                },
-                {
-                    key: '75',
-                    surah: 'Al-Qiyamah'
-                },
-                {
-                    key: '76',
-                    surah: 'Al-Insan'
-                },
-                {
-                    key: '77',
-                    surah: 'Al-Mursalat'
-                },
-                {
-                    key: '78',
-                    surah: 'An-Naba'
-                },
-                {
-                    key: '79',
-                    surah: "An-Nazi'at"
-                },
-                {
-                    key: '80',
-                    surah: "'Abasa"
-                },
-                {
-                    key: '81',
-                    surah: 'At-Takwir'
-                },
-                {
-                    key: '82',
-                    surah: 'Al-Infitar'
-                },
-                {
-                    key: '83',
-                    surah: 'Al-Mutaffifin'
-                },
-                {
-                    key: '84',
-                    surah: 'Al-Insyiqaq'
-                },
-                {
-                    key: '85',
-                    surah: 'Al-Buruj'
-                },
-                {
-                    key: '86',
-                    surah: 'At-Tariq'
-                },
-                {
-                    key: '87',
-                    surah: "Al-A'la"
-                },
-                {
-                    key: '88',
-                    surah: 'Al-Ghashiyah'
-                },
-                {
-                    key: '89',
-                    surah: 'Al-Fajr'
-                },
-                {
-                    key: '90',
-                    surah: 'Al-Balad'
-                },
-                {
-                    key: '91',
-                    surah: 'Ash-Shams'
-                },
-                {
-                    key: '92',
-                    surah: 'Al-Lail'
-                },
-                {
-                    key: '93',
-                    surah: 'Ad-Duha'
-                },
-                {
-                    key: '94',
-                    surah: 'Al-Insyirah'
-                },
-                {
-                    key: '95',
-                    surah: 'At-Tin'
-                },
-                {
-                    key: '96',
-                    surah: 'Al-Alaq'
-                },
-                {
-                    key: '97',
-                    surah: 'Al-Qadr'
-                },
-                {
-                    key: '98',
-                    surah: 'Al-Bayyinah'
-                },
-                {
-                    key: '99',
-                    surah: 'Az-Zalzalah'
-                },
-                {
-                    key: '100',
-                    surah: "Al-'Adiyat"
-                },
-                {
-                    key: '101',
-                    surah: "Al-Qari'ah"
-                },
-                {
-                    key: '102',
-                    surah: 'At-Takasur'
-                },
-                {
-                    key: '103',
-                    surah: "Al-'Asr"
-                },
-                {
-                    key: '104',
-                    surah: 'Al-Humazah'
-                },
-                {
-                    key: '105',
-                    surah: 'Al-Fil'
-                },
-                {
-                    key: '106',
-                    surah: 'Quraisy'
-                },
-                {
-                    key: '107',
-                    surah: "Al-Ma'un"
-                },
-                {
-                    key: '108',
-                    surah: 'Al-Kausar'
-                },
-                {
-                    key: '109',
-                    surah: 'Al-Kafirun'
-                },
-                {
-                    key: '110',
-                    surah: 'An-Nasr'
-                },
-                {
-                    key: '111',
-                    surah: 'Al-Lahab'
-                },
-                {
-                    key: '112',
-                    surah: 'Al-Ikhlas'
-                },
-                {
-                    key: '113',
-                    surah: 'Al-Falaq'
-                },
-                {
-                    key: '114',
-                    surah: 'An-Nas'
-                }
-            ]
+                startDate: moment().format('YYYY-MM-DD'),
+                endDate: moment().format('YYYY-MM-DD')
+            }
         }
     },
     created() {
@@ -1331,10 +494,7 @@ export default {
     },
     methods: {
         onFinishTahfidz() {
-            this.loading = false
-            console.log(this.loading)
-            this.loadingTahfidzData = true
-            this.searchTahfidz()
+            this.readTahfidz()
         },
         searchTahfidz() {
             this.axios
@@ -1347,10 +507,9 @@ export default {
                 })
                 .then((res) => {
                     this.tahfidzData = res.data.data
-                    this.loadingTahfidzData = false
+                    console.log(res)
                 })
                 .catch((e) => {
-                    this.loadingTahfidzData = false
                     this.$notification.error({
                         message: 'Kesalahan',
                         description: e.response.data.message
@@ -1358,35 +517,11 @@ export default {
                 })
         },
         onFinishPerilaku() {
-            const tanggal = this.formPerilaku.tanggal
-            let perilaku = Object.values(this.formPerilaku)
-            perilaku.shift()
-            perilaku = perilaku.map((item) => {
-                return {
-                    tanggal: tanggal,
-                    ...item
-                }
-            })
-
-            this.axios
-                .post(this.url('laporan/perilaku/write'), perilaku)
-                .then((res) => {
-                    this.readData()
-                    window.scrollTo(0, 0)
-                    this.$notification.success({
-                        message: 'Berhasil',
-                        description: res.data.message
-                    })
-                })
-                .catch((e) => {
-                    console.log(e)
-                    this.$notification.error({
-                        message: 'Kesalahan',
-                        description: JSON.stringify(e.response.data.errors)
-                    })
-                })
+            this.readPerilaku()
         },
         readTahfidz() {
+            this.filterTahfizh.startDate = this.formTahfidz.startDate
+            this.filterTahfizh.endDate = this.formTahfidz.endDate
             this.axios
                 .get(this.url('user'))
                 .then((res) => {
@@ -1395,13 +530,67 @@ export default {
                     this.axios
                         .get(this.url('laporan/tahfidz/read'), { params })
                         .then((res) => {
-                            console.log(res)
+                            this.tahfidzData = res.data.data.map(
+                                (item, index) => {
+                                    return {
+                                        key: index + 1,
+                                        tanggal: moment(item.tanggal).format(
+                                            'dddd, DD MMMM YYYY'
+                                        ),
+                                        surah: item.surah,
+                                        ayat:
+                                            item.ayat_start +
+                                            ' - ' +
+                                            item.ayat_end
+                                    }
+                                }
+                            )
+
+                            this.showTahfidzData = true
+                        })
+                        .catch((err) => {
+                            if (err.response.status === 422) {
+                                this.$notification.error({
+                                    message: 'Kesalahan',
+                                    description: err.response.data.message
+                                })
+                            }
                         })
                 })
-                .catch((err) => {
-                    console.log(err)
-                })
+                .catch((err) => {})
         },
+        readPerilaku() {
+            this.filterPerilaku.startDate = this.formPerilaku.startDate
+            this.filterPerilaku.endDate = this.formPerilaku.endDate
+            this.axios
+                .get(this.url('user'))
+                .then((res) => {
+                    this.filterPerilaku.user_id = res.data.id
+                    const params = this.filterPerilaku
+
+                    this.axios
+                        .get(this.url('piket/jurnal/guru/ketertiban/'), {
+                            params
+                        })
+                        .then((res) => {
+                            this.perilakuData = res.data.data.map(
+                                (item, index) => {
+                                    return {
+                                        no: index + 1,
+                                        tanggal: moment(item.tanggal).format(
+                                            'dddd, DD MMMM YYYY'
+                                        ),
+                                        keterangan: item.keterangan
+                                    }
+                                }
+                            )
+
+                            console.log(this.perilakuData)
+                        })
+                })
+                .catch((err) => {})
+        },
+
         saveLaporanTahfidz() {
             this.axios
                 .post(
@@ -1491,9 +680,9 @@ export default {
             })
         },
         resetFormTahfidz() {
-            ;(this.formTahfidz.tanggal = null),
-                (this.formTahfidz.surah = 'Al-Fatihah'),
-                (this.formTahfidz.ayat = null)
+            this.formTahfidz.tanggal = null
+            this.formTahfidz.surah = 'Al-Fatihah'
+            this.formTahfidz.ayat = null
             this.formTahfidz.tanggal = moment().format('YYYY-MM-DD')
         },
         tahfizSource() {

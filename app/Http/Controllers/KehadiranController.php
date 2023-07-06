@@ -7,6 +7,7 @@ use App\Models\Siswa;
 use Illuminate\Http\Request;
 use App\Models\Guru;
 use Illuminate\Support\Facades\Validator;
+use Carbon\Carbon;
 
 class KehadiranController extends Controller
 {
@@ -50,8 +51,26 @@ class KehadiranController extends Controller
             }
         }
 
+        if ($request->req === 'by_siswa') {
+            $rekap = [];
+            $numOfTheDay = Carbon::create($request->year, $request->month, 1)->daysInMonth;
+            $monthName = Carbon::create($request->year, $request->month, 1)->locale('id')->monthName;
+
+            for ($i = 1; $i <= $numOfTheDay; $i++) {
+                $rekap[$i] = Siswa::with(['user' => function ($q) {
+                    $q->select('id', 'no_induk', 'name');
+                }])->with(['kehadiran' => function ($query) use ($request, $i) {
+                    $query->where('tanggal', Carbon::create($request->year, $request->month, $i)->format('Y-m-d'));
+                }])->where('user_id', $request->siswa)->join('users', 'users.id', '=', 'siswas.user_id')->orderBy('users.name', 'asc')->get();
+            }
+
+            return response()->json($rekap);
+        }
+
         return response()->json([
             'models' => $data
+
+
         ]);
     }
 

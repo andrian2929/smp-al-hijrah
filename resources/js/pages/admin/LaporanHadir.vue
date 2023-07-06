@@ -267,13 +267,6 @@
                             {{ dateInTable }}
                         </h3>
                     </div>
-
-                    <div style="align-items: center">
-                        <a-button type="primary" html-type="submit">
-                            <template #icon><save-outlined /></template>Simpan
-                            Kehadiran
-                        </a-button>
-                    </div>
                 </a-space>
 
                 <a-table

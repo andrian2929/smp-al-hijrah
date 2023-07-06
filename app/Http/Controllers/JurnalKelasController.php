@@ -43,6 +43,8 @@ class JurnalKelasController extends Controller
                 'id_guru' => 'required|exists:users,id',
                 'id_mapel' => 'required|exists:mata_pelajaran_haris,id',
                 'catatan' => 'required|string',
+                'materi' => 'nullable|string',
+                'tujuan_pembelajaran' => 'nullable|string',
             ],
             [
                 'id_kelas.required' => 'Kelas tidak boleh kosong',
@@ -66,6 +68,8 @@ class JurnalKelasController extends Controller
             'id_guru' => $request->id_guru,
             'id_mapel' => $request->id_mapel,
             'catatan' => $request->catatan,
+            'materi' => $request->materi,
+            'tujuan_pembelajaran' => $request->tujuan_pembelajaran,
         ]);
 
         return response()->json([
@@ -124,6 +128,8 @@ class JurnalKelasController extends Controller
                 'id_guru' => 'required|exists:users,id',
                 'id_mapel' => 'required|exists:mata_pelajaran_haris,id',
                 'catatan' => 'required|string',
+                'materi' => 'nullable|string',
+                'tujuan_pembelajaran' => 'nullable|string',
             ],
             [
                 'id_kelas.required' => 'Kelas tidak boleh kosong',
@@ -132,6 +138,8 @@ class JurnalKelasController extends Controller
                 'id_guru.exists' => 'Guru tidak ditemukan',
                 'catatan.required' => 'Catatan tidak boleh kosong',
                 'catatan.string' => 'Catatan harus berupa string',
+                'materi.string' => 'Materi harus berupa string',
+                'tujuan_pembelajaran.string' => 'Tujuan pembelajaran harus berupa string',
             ]
         );
 
@@ -148,6 +156,8 @@ class JurnalKelasController extends Controller
             'id_guru' => $request->id_guru,
             'id_mapel' => $request->id_mapel,
             'catatan' => $request->catatan,
+            'materi' => $request->materi,
+            'tujuan_pembelajaran' => $request->tujuan_pembelajaran,
         ]);
 
         return response()->json([

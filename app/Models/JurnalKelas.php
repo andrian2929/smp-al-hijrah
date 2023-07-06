@@ -16,6 +16,8 @@ class JurnalKelas extends Model
         'id_guru',
         'id_mapel',
         'catatan',
+        'materi',
+        'tujuan_pembelajaran'
     ];
 
     public function kelas()

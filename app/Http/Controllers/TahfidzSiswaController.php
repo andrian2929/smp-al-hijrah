@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\TahfidzSiswa;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
 
 class TahfidzSiswaController extends Controller
 {
@@ -29,13 +30,27 @@ class TahfidzSiswaController extends Controller
         if ($request->req == 'single_by_date') {
 
             if ($request->has('user_id')) {
-                $request->validate(
-                    [
-                        'startDate' => 'required|date_format:Y-m-d',
-                        'endDate' => 'required|date_format:Y-m-d|after_or_equal:startDate',
-                        'user_id' => 'required|exists:users,id'
-                    ],
-                );
+
+                $validator = Validator::make($request->all(), [
+                    'startDate' => 'required|date_format:Y-m-d',
+                    'endDate' => 'required|date_format:Y-m-d|after_or_equal:startDate',
+                    'user_id' => 'required|exists:users,id'
+                ], [
+                    'startDate.required' => 'Tanggal awal tidak boleh kosong',
+                    'startDate.date_format' => 'Format tanggal awal tidak valid',
+                    'endDate.required' => 'Tanggal akhir tidak boleh kosong',
+                    'endDate.date_format' => 'Format tanggal akhir tidak valid',
+                    'endDate.after_or_equal' => 'Tanggal akhir tidak boleh kurang dari tanggal awal',
+                    'user_id.required' => 'User ID tidak boleh kosong',
+                    'user_id.exists' => 'User ID tidak ditemukan',
+                ]);
+
+                if ($validator->fails()) {
+                    return response()->json([
+                        'message' => $validator->errors()->first()
+                    ], 422);
+                }
+
                 $data = TahfidzSiswa::where('user_id', $request->user_id)->whereBetween('tanggal', [$request->startDate, $request->endDate])->with(['user' => function ($q) {
                     $q->select('id', 'name');
                 }])->orderBy('tanggal', 'desc');

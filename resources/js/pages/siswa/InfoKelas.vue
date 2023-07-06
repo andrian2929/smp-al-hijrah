@@ -24,8 +24,8 @@
                             <a-list-item>
                                 <strong
                                     >Kelas : {{ kelasData.jenjang }} -
-                                    {{ kelasData.section }} </strong
-                                >
+                                    {{ kelasData.section }}
+                                </strong>
                             </a-list-item>
                             <a-list-item>
                                 <strong
@@ -67,7 +67,11 @@
                                 :dataSource="dataSource(hari)"
                                 :columns="columns"
                                 :pagination="false"
-                            />
+                            >
+                                <template
+                                    #bodyCell="{ column, record }"
+                                ></template>
+                            </a-table>
                         </div>
                     </a-skeleton>
                 </a-card>
@@ -82,10 +86,16 @@ export default {
         return {
             columns: [
                 {
+                    title: 'No',
+                    dataIndex: 'key',
+                    key: 'key',
+                    width: 50
+                },
+                {
                     title: 'Waktu',
                     dataIndex: 'waktu',
                     key: 'waktu',
-                    width: 100
+                    width: 150
                 },
                 {
                     title: 'Mata Pelajaran',
@@ -159,11 +169,14 @@ export default {
             let roster = this.kelasData.roster.filter(
                 (item) => item.hari === hari
             )
-            roster.sort((a, b) => a.waktu.localeCompare(b.waktu))
+            roster.sort((a, b) => a.waktu_mulai.localeCompare(b.waktu_mulai))
             return roster.map((item, index) => {
                 return {
                     key: index + 1,
-                    waktu: item.waktu.substring(0, 5),
+                    waktu:
+                        item.waktu_mulai.substring(0, 5) +
+                        '-' +
+                        item.waktu_selesai.substring(0, 5),
                     matapelajaran: item.mapel.name,
                     guru: item.guru.name
                 }
