@@ -68,15 +68,18 @@ Route::post('/kehadiran/write', [KehadiranController::class, 'write'])->name('la
 Route::get('/nilai/read', [NilaiController::class, 'read'])->name('laporan.nilai.read');
 Route::post('/nilai/write', [NilaiController::class, 'write'])->name('laporan.nilai.write');
 
+Route::get('/laporan/tahfidz/rekap', [TahfidzSiswaController::class, 'rekap'])->name('laporan.tahfidz.rekap');
 Route::get('/laporan/tahfidz/read', [TahfidzSiswaController::class, 'read'])->name('laporan.tahfidz.read');
 Route::post('/laporan/tahfidz/write', [TahfidzSiswaController::class, 'write'])->name('laporan.tahfidz.write');
 Route::delete('/laporan/tahfidz/delete/{tahfidz}', [TahfidzSiswaController::class, 'delete'])->name('laporan.tahfidz.delete');
 
+Route::get('/laporan/mutabaah-yaumiyah/rekap', [MutabaahYaumiyahController::class, 'rekap'])->name('laporan.mutabaahyaumiyah.rekap');
 Route::get('/laporan/mutabaah-yaumiyah/read', [MutabaahYaumiyahController::class, 'read'])->name('laporan.mutabaahyaumiyah.read');
 Route::post('/laporan/mutabaah-yaumiyah/write', [MutabaahYaumiyahController::class, 'write'])->name('laporan.mutabaahyaumiyah.write');
 
 Route::get('/laporan/tugas-siswa/mata-pelajaran-hari/{id}', [\App\Http\Controllers\TugasController::class, 'getTugasByMataPelajaranHari'])->name('laporan.tugas-siswa.mata-pelajaran-hari');
 
+Route::get('/laporan/perilaku/rekap', [LaporanPerilakuController::class, 'rekap'])->name('laporan.perilaku.rekap');
 Route::get('/laporan/perilaku/data', [LaporanPerilakuController::class, 'data'])->name('laporan.perilaku.data');
 Route::get('/laporan/perilaku/read', [LaporanPerilakuController::class, 'read'])->name('laporan.perilaku.read');
 Route::post('/laporan/perilaku/write', [LaporanPerilakuController::class, 'write'])->name('laporan.perilaku.write');

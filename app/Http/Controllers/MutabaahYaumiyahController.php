@@ -5,6 +5,12 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\MutabaahYaumiyah;
 use Illuminate\Validation\Rule;
+use \Carbon\Carbon;
+use \Carbon\CarbonPeriod;
+use App\Models\Kelas;
+use App\Model\Siswa;
+use \Mpdf\Mpdf;
+
 
 class MutabaahYaumiyahController extends Controller
 {
@@ -118,5 +124,105 @@ class MutabaahYaumiyahController extends Controller
         return response()->json([
             'message' => 'Data mutabaah yaumiyah berhasil ditambahkan',
         ], 201);
+    }
+
+    public function rekap(Request $request)
+    {
+        $request->validate([
+            'year' => 'required|numeric',
+            'month' => 'required|numeric',
+            'kelas' => 'required|numeric|exists:kelas,id'
+        ]);
+        $date = Carbon::create($request->year, $request->month, 1);
+        $kelas = Kelas::find($request->kelas);
+        $user = $kelas->user()
+            ->orderBy('name')
+            ->get();
+
+        $user->each(function ($item) use ($date) {
+            $item->mutabaah_yaumiyah = $this->getMutaBaahYaumiyahMonthly($item, $date);
+        });
+
+
+        $date = Carbon::create($request->year, $request->month)->translatedFormat('F Y');
+        $this->downloadMutabaahYaumiyahByClass($user, $date, $kelas);
+    }
+
+    private function getMutaBaahYaumiyahMonthly($user, Carbon $date)
+    {
+        $categories = [
+            'Shalat Subuh' => 'shalat_subuh',
+            'Shalat Dzuhur' => 'shalat_dzuhur',
+            'Shalat Ashar' => 'shalat_ashar',
+            'Shalat Maghrib' => 'shalat_maghrib',
+            'Shalat Isya' => 'shalat_isya',
+            'Qiyamul Lail' => 'qiyamul_lail',
+            'Dhuha' => 'dhuha',
+            'Tilawah Quran' => 'tilawah_quran',
+            'Membaca Buku' => 'membaca_buku',
+            'Olahraga' => 'olahraga',
+            'Al Matsurat' => 'al_matsurat',
+            'Shoum Sunnah' => 'shoum_sunnah',
+        ];
+
+        $startDay = $date->clone()
+            ->startOfMonth();
+        $endDay = $date->clone()
+            ->endOfMonth();
+
+        $period = CarbonPeriod::create($startDay, $endDay);
+
+        $mutabaahYaumiyah = [];
+        foreach ($categories as $categoryKey => $categoryValue) {
+            $categorySum = 0;
+            foreach ($period as $date) {
+                $mutabaahyaumiyahData = MutabaahYaumiyah::whereDate('tanggal', $date)
+                    ->where('user_id', $user->id)
+                    ->first();
+
+                $categorySum += $mutabaahyaumiyahData->$categoryValue ?? 0;
+            }
+
+            $mutabaahYaumiyah[$categoryKey] = $categorySum;
+        }
+
+        return $mutabaahYaumiyah;
+    }
+
+
+    private function downloadMutabaahYaumiyahByClass($user, $date, $kelas)
+    {
+        $pdf = new Mpdf([
+            'mode' => 'utf-8',
+            'format' => 'A4-P',
+            'margin_left' => 10,
+            'margin_right' => 10,
+            'margin_top' => 40,
+            'margin_bottom' => 10,
+            'tempDir' => storage_path('tempdir')
+        ]);
+
+        $pdf->SetHTMLHeader(
+            '<table border="0" width="100%" align="center">
+                    <tr>
+                        <td  align="center">
+                             <h2>Rekap Data Mutabaah Yaumiyah</h2>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td  align="center">
+                            <h3>SMP IT Al-Hijrah Medan</h3>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td  align="center">
+                            <p>Jl. Perhubungan, Laut Dendang, Kec. Percut Sei Tuan, Kab. Deli Serdang, Sumatera Utara, 20371</p>
+                        </td>
+                     </tr>
+                </table>
+            '
+        );
+        $pdf->WriteHTML(view('mutabaah-yaumiyah.rekap-mutabaah-yaumiyah-class', compact('user', 'date', 'kelas')));
+        $pdf->Output('rekap-mutabaah-yaumiyah-' . now()->timestamp . '.pdf', 'D');
     }
 }

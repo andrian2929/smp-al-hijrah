@@ -71,4 +71,9 @@ class User extends Authenticatable
     {
         return $this->hasOne(Siswa::class, 'user_id', 'id')->with('kelas');
     }
+
+    public function mutabaahYaumiyah()
+    {
+        return $this->hasMany(MutabaahYaumiyah::class, 'user_id', 'id');
+    }
 }

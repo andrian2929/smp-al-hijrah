@@ -5,7 +5,12 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\ListPerilaku;
 use App\Models\Perilaku;
+use App\Models\Kelas;
+use App\Models\User;
 use Illuminate\Validation\Rule;
+use Carbon\Carbon;
+use Carbon\CarbonPeriod;
+use \Mpdf\Mpdf;
 
 class LaporanPerilakuController extends Controller
 {
@@ -74,7 +79,7 @@ class LaporanPerilakuController extends Controller
                 '*.catatan.string' => 'Catatan harus berupa teks',
             ]);
         }
-        // create or update
+
         foreach ($request->all() as $key => $value) {
             $perilaku = Perilaku::updateOrCreate(
                 [
@@ -92,5 +97,92 @@ class LaporanPerilakuController extends Controller
         return response()->json([
             'message' => 'Berhasil menyimpan data',
         ]);
+    }
+
+    public function rekap(Request $request)
+    {
+        $request->validate([
+            'year' => 'required|numeric',
+            'month' => 'required|numeric',
+            'kelas' => 'required|numeric|exists:kelas,id'
+        ]);
+
+        $date = Carbon::create($request->year, $request->month, 1);
+        $kelas = Kelas::find($request->kelas);
+
+        $users = $kelas->user()
+            ->orderBy('name')
+            ->get();
+
+        foreach ($users as $user) {
+            $user->perilaku = $this->getLaporanPerilakuMonthly($user, $date);
+        }
+
+        $this->downloadLaporanPerilakuByClass($users, $date->translatedFormat('F Y'), $kelas);
+    }
+
+    private function getLaporanPerilakuMonthly(User $user, Carbon $date)
+    {
+        $perilakuCategories = ListPerilaku::all()
+            ->toArray();
+
+        $perilakuData = [];
+        $period = CarbonPeriod::create($date->clone()->startOfMonth(), $date->clone()->endOfMonth());
+        foreach ($perilakuCategories as $category) {
+            $categorySum  = 0;
+            $count = 1;
+            foreach ($period as $date) {
+                $perilaku = Perilaku::where('user_id', $user->id)
+                    ->where('perilaku_id', $category['id'])
+                    ->whereDate('tanggal', $date)
+                    ->first();
+
+
+
+                $categorySum = $categorySum + ($perilaku ? $perilaku->nilai : 0);
+                $count++;
+            }
+            $perilakuData[$category['name']] = $categorySum / $count;
+        }
+
+
+
+        return $perilakuData;
+    }
+
+    private function downloadLaporanPerilakuByClass($user, $date, $kelas)
+    {
+        $pdf = new Mpdf([
+            'mode' => 'utf-8',
+            'format' => 'A4-P',
+            'margin_left' => 10,
+            'margin_right' => 10,
+            'margin_top' => 40,
+            'margin_bottom' => 10,
+            'tempDir' => storage_path('tempdir')
+        ]);
+
+        $pdf->SetHTMLHeader(
+            '<table border="0" width="100%" align="center">
+                    <tr>
+                        <td  align="center">
+                             <h2>Rekap Data  Laporan Perilaku</h2>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td  align="center">
+                            <h3>SMP IT Al-Hijrah Medan</h3>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td  align="center">
+                            <p>Jl. Perhubungan, Laut Dendang, Kec. Percut Sei Tuan, Kab. Deli Serdang, Sumatera Utara, 20371</p>
+                        </td>
+                     </tr>
+                </table>
+            '
+        );
+        $pdf->WriteHTML(view('laporan-perilaku.rekap-laporan-perilaku-class', compact('user', 'date', 'kelas')));
+        $pdf->Output('rekap-laporan-perilaku-' . now()->timestamp . '.pdf', 'D');
     }
 }

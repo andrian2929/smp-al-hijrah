@@ -6,12 +6,7 @@
                 title="Pilih Kriteria"
                 style="width: 100%; margin-bottom: 20px"
             >
-                <a-form
-                    :model="filter"
-                    @finish="onFinishFilter"
-                    @finishFailed="onFinishFailedFilter"
-                    ref="filter"
-                >
+                <a-form :model="filter" @finish="onFinishFilter" ref="filter">
                     <a-space
                         style="
                             display: flex;
@@ -98,7 +93,13 @@
                             style="width: 200px"
                             @search="readData"
                         />
-                        <a-button>
+                        <a-button
+                            @click="
+                                () => {
+                                    showModalDownload = true
+                                }
+                            "
+                        >
                             <template #icon><download-outlined /></template>
                         </a-button>
                     </div>
@@ -160,6 +161,24 @@
             </a-table>
         </a-spin>
     </a-modal>
+
+    <a-modal
+        v-model:visible="showModalDownload"
+        title="Unduh Rekap"
+        @ok="downloadReport"
+    >
+        <a-space direction="vertical">
+            <label>Pilih laporan:</label>
+            <a-select v-model:value="selectedReport">
+                <a-select-option value="tahfidz">Tahfidz</a-select-option>
+                <a-select-option value="mutabaah_yaumiyah"
+                    >Mutabaah Yaumiyah</a-select-option
+                >
+                <a-select-option value="perilaku">Perilaku</a-select-option>
+            </a-select>
+        </a-space>
+    </a-modal>
+
     <a-modal v-model:visible="showModal2" title="Mutaba'ah Ibadah">
         <template #footer>
             <a-button
@@ -376,6 +395,7 @@
 
 <script>
 import { surah, kegiatan, sholat } from '../../module/laporanHarian'
+import FileSaver from 'file-saver'
 import moment from 'moment'
 import 'moment/locale/id'
 import {
@@ -632,6 +652,7 @@ export default {
             showModal3: false,
             showModal4: false,
             showModal5: false,
+            showModalDownload: false,
             DataSourceSiswa: [],
             columns,
             dataSource1: kegiatan,
@@ -652,6 +673,7 @@ export default {
             dataReady: false,
             tanggal: null,
             selectedTahfidz: null,
+            selectedReport: 'tahfidz',
             clickUserid: null,
             loadingFormTahfiz: false,
             formMutabaahYaumiyah: {
@@ -1036,6 +1058,122 @@ export default {
         },
         handleCancel(modal) {
             this[modal] = false
+        },
+        downloadReport() {
+            switch (this.selectedReport) {
+                case 'tahfidz':
+                    this.downloadTahfidzReport()
+                    break
+                case 'mutabaah_yaumiyah':
+                    this.downloadMutabaahYaumiyahReport()
+                    break
+                case 'perilaku':
+                    this.downloadPerilakuReport()
+                    break
+                default:
+                    this.showModalDownload = false
+                    break
+            }
+
+          
+        },
+        downloadTahfidzReport() {
+            const [year, month] = this.filter.tanggal.split('-')
+
+            const params = {
+                req: 'by_class',
+                year: year,
+                month: month,
+                kelas: this.filter.class
+            }
+
+            this.axios
+                .get(this.url('laporan/tahfidz/rekap'), {
+                    params,
+                    responseType: 'blob'
+                })
+                .then((response) => {
+                    const fileName =
+                        response.headers['content-disposition'].split(
+                            'filename='
+                        )[1]
+
+                    FileSaver.saveAs(
+                        new Blob([response.data], {
+                            type: 'application/pdf'
+                        }),
+                        fileName.substring(1, fileName.length - 1)
+                    )
+
+                     this.showModalDownload = false
+                })
+                .catch((err) => {
+                    return false
+                })
+        },
+        downloadMutabaahYaumiyahReport() {
+            const [year, month] = this.filter.tanggal.split('-')
+            const params = {
+                year: year,
+                kelas: this.filter.class,
+                month: month
+            }
+
+            this.axios
+                .get(this.url('laporan/mutabaah-yaumiyah/rekap'), {
+                    params,
+                    responseType: 'blob'
+                })
+                .then((response) => {
+                    const fileName =
+                        response.headers['content-disposition'].split(
+                            'filename='
+                        )[1]
+
+                    FileSaver.saveAs(
+                        new Blob([response.data], {
+                            type: 'application/pdf'
+                        }),
+                        fileName.substring(1, fileName.length - 1)
+                    )
+
+                     this.showModalDownload = false
+                })
+                .catch((err) => {
+                    return false
+                })
+        },
+        downloadPerilakuReport() {
+            const [year, month] = this.filter.tanggal.split('-')
+            const params = {
+                year: year,
+                kelas: this.filter.class,
+                month: month
+            }
+
+            this.axios
+                .get(this.url('laporan/perilaku/rekap'), {
+                    params,
+                    responseType: 'blob'
+                })
+                .then((response) => {
+                    const fileName =
+                        response.headers['content-disposition'].split(
+                            'filename='
+                        )[1]
+
+                    FileSaver.saveAs(
+                        new Blob([response.data], {
+                            type: 'application/pdf'
+                        }),
+                        fileName.substring(1, fileName.length - 1)
+                    )
+
+                     this.showModalDownload = false
+                })
+                .catch((err) => {
+                    return false
+                })
         }
     }
 }

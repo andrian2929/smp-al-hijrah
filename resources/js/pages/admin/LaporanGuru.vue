@@ -117,7 +117,7 @@
                                 style="margin-bottom: 4px; margin-right: 6px"
                                 >Tahfidz</a-button
                             >
-                            <a-button
+                            <!-- <a-button
                                 type="primary"
                                 @click="loadFormMutabaahYaumiyah(record.id)"
                                 style="margin-bottom: 4px; margin-right: 6px"
@@ -127,7 +127,7 @@
                                 type="primary"
                                 @click="loadFormPerilakuData(record.id)"
                                 >Perilaku Harian</a-button
-                            >
+                            > -->
                         </template>
                     </template>
                 </a-table>
