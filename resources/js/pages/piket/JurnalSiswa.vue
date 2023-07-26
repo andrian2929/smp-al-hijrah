@@ -248,9 +248,7 @@ export default {
                     vm.modalVisible.jurnalSiswa = false
                     vm.formJurnalSiswa = {}
                 })
-                .catch((err) => {
-                    console.log(err.response)
-                })
+                .catch((err) => {})
         },
         getKelasData() {
             const vm = this
@@ -293,8 +291,6 @@ export default {
             vm.axios
                 .get(vm.url('kehadiran/read'), { params })
                 .then((response) => {
-                    console.log(response.data.models)
-
                     if (response.data.models[0].kehadiran.length > 0) {
                         vm.formJurnalSiswa.kehadiran =
                             response.data.models[0].kehadiran[0].kehadiran
@@ -316,7 +312,6 @@ export default {
             vm.axios
                 .get(vm.url('piket/jurnal/siswa'))
                 .then((res) => {
-                    console.log(res.data.data)
                     vm.jurnalSiswaDataSources = res.data.data.map(
                         (item, index) => {
                             return {
@@ -334,9 +329,7 @@ export default {
                     )
                 })
 
-                .catch((err) => {
-                    console.log(err)
-                })
+                .catch((err) => {})
         },
         showJurnalSiswa(jurnalSiswaId) {
             const vm = this
@@ -359,9 +352,7 @@ export default {
                         jam: item.jam
                     }
                 })
-                .catch((err) => {
-                    console.log(err)
-                })
+                .catch((err) => {})
         },
         editJurnalSiswa() {
             const vm = this
@@ -398,16 +389,13 @@ export default {
             vm.axios
                 .delete(vm.url('piket/jurnal/siswa/' + jurnalSiswaId))
                 .then((res) => {
-                    console.log(res)
                     this.$notification.success({
                         message: 'Berhasil',
                         description: 'Berhasil menghapus data'
                     })
                     vm.getJurnalSiswa()
                 })
-                .catch((err) => {
-                    console.log(err.response)
-                })
+                .catch((err) => {})
         }
     }
 }

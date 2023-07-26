@@ -153,7 +153,6 @@ export default {
             vm.axios
                 .get(vm.url('guru/read'), { params: params })
                 .then((response) => {
-                    console.log(response)
                     vm.loading = false
                     vm.models = response.data.models
                 })
@@ -184,7 +183,6 @@ export default {
                         response.headers['content-disposition'].split(
                             'filename='
                         )[1]
-                    console.log(fileName)
                     FileSaver.saveAs(
                         new Blob([response.data], {
                             type: 'application/pdf'

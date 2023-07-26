@@ -649,13 +649,11 @@ export default {
                 role: vm.$route.params.role,
                 ...vm.formGeneral
             }
-            console.log(params)
             vm.axios
                 .post(vm.url('user/write'), params)
                 .then((response) => {
                     vm.loading = false
                     if ((response.status = 200)) {
-                        console.log(response.data)
                         vm.$notification.success({
                             message: 'Berhasil',
                             description: 'Data berhasil ditambahkan'
@@ -747,10 +745,10 @@ export default {
                     window.scrollTo(0, 0)
                 })
                 .catch((e) => {
-                    console.log(e)
+                    console.log(JSON.stringify(e.response.data.errors))
                     this.$notification.error({
                         message: e.response.data.message,
-                        description: e.response.data.errors
+                        description: JSON.stringify(e.response.data.errors)
                     })
                 })
         },
@@ -766,8 +764,6 @@ export default {
         handleKelasChange(value) {
             const vm = this
             vm.formGeneral.kelas_id = value
-            console.log(vm.formGeneral.kelas_id)
-            console.log(value)
         },
 
         onFinish() {

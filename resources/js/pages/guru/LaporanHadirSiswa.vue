@@ -453,7 +453,6 @@ export default {
                     model: data
                 })
                 .then((response) => {
-                    console.log(response)
                     this.$message.success(response.data.message)
                     this.readKehadiran()
                 })
@@ -506,8 +505,6 @@ export default {
                             }
                         }
                     })
-
-                    console.log(this.formKehadiran)
                 })
         },
         handleSelectChange(value) {

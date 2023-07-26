@@ -316,7 +316,6 @@ export default {
         },
         checkAndFetch() {
             const vm = this
-            console.log(vm.filter)
             vm.axios
                 .get(
                     vm.url(
@@ -354,12 +353,8 @@ export default {
                             )}`
                         })
                     })
-
-                    console.log(vm.columns)
                 })
-                .catch((e) => {
-                    console.log(e)
-                })
+                .catch((e) => {})
         },
         getMapelByKelasId(kelas_id) {
             const vm = this

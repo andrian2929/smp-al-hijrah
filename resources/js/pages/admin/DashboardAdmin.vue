@@ -42,46 +42,11 @@
                                 </a-card>
                             </a-spin>
                         </a-col>
-                        <a-col :span="8">
-                            <a-spin :spinning="loading">
-                                <a-card
-                                    size="small"
-                                    style="
-                                        background-color: #03c988;
-                                        border-radius: 15px;
-                                        height: 100px;
-                                    "
-                                >
-                                    <h1 style="color: #ffffff; margin: 0">0</h1>
-                                    <h5 style="color: #ffffff; margin: 0">
-                                        Online User
-                                    </h5>
-                                </a-card>
-                            </a-spin>
-                        </a-col>
                     </a-row>
                 </div>
             </a-card>
         </a-col>
     </a-row>
-
-    <div style="padding: 20px">
-        <a-row :gutter="16">
-            <a-col :span="12">
-                <a-card :bordered="false">
-                    <h3>Data Guru</h3>
-                    <pie-chart-outlined style="fontsize: 1000%; align: end" />
-                </a-card>
-            </a-col>
-
-            <a-col :span="12">
-                <a-card :bordered="false">
-                    <h3>Data Siswa</h3>
-                    <pie-chart-outlined style="fontsize: 1000%; align: end" />
-                </a-card>
-            </a-col>
-        </a-row>
-    </div>
 </template>
 
 <script>

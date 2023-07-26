@@ -802,7 +802,6 @@ export default {
                     vm.form = response.data.models
                     this.image = response.data.models.image
                     vm.loading = false
-                    console.log(vm.models)
                 })
                 .catch((error) => {
                     vm.$onAjaxError(error)
@@ -858,7 +857,6 @@ export default {
                     }
                 })
                 .then((response) => {
-                    console.log(response)
                     this.readSingleData(this.$props.userId)
 
                     this.$notification.success({
@@ -905,7 +903,6 @@ export default {
             this.axios
                 .delete(this.url('orangtua/' + id))
                 .then((response) => {
-                    console.log(response)
                     this.$notification.success({
                         message: 'Berhasil',
                         description: 'Berhasil menghapus data orang tua'

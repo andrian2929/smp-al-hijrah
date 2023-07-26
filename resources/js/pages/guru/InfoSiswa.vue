@@ -51,11 +51,11 @@
                                 {{ record.kelas.section }}</span
                             >
                         </template>
-                        <template v-if="column.key == 'is_beasiswa'">
+                        <!-- <template v-if="column.key == 'is_beasiswa'">
                             <span v-if="record.is_beasiswa"
                                 ><check-outlined
                             /></span>
-                        </template>
+                        </template> -->
                         <template v-if="column.key === 'action'">
                             <span>
                                 <a-button
@@ -109,10 +109,10 @@ const columns = [
         title: 'NISN',
         dataIndex: ['nisn']
     },
-    {
-        title: 'Beasiswa',
-        key: 'is_beasiswa'
-    },
+    // {
+    //     title: 'Beasiswa',
+    //     key: 'is_beasiswa'
+    // },
     {
         title: 'Aksi',
         key: 'action'
@@ -167,8 +167,6 @@ export default {
                         item.number = index + 1
                     })
                     vm.models = response.data.models
-
-                    console.log(vm.models)
                 })
                 .catch((e) => vm.$onAjaxError(e))
         },
@@ -176,7 +174,6 @@ export default {
             this.filters.kelas_id = value
         },
         deleteData(_id) {
-            console.log(_id)
             const vm = this
             const params = {
                 req: 'delete',

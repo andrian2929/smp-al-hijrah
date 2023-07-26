@@ -197,10 +197,8 @@ export default {
                 .get(vm.url('kehadiran/read'), { params })
                 .then((response) => {
                     vm.fetching = false
-                    console.log(response.data.models)
                     vm.models = response.data.models
                     vm.models.forEach((kehadiran) => {
-                        console.log(kehadiran)
                         vm.form[`siswa-${kehadiran.id}-`] = {
                             status: kehadiran.kehadiran
                                 ? kehadiran.kehadiran.kehadiran

@@ -172,12 +172,10 @@ export default {
                     responseType: 'blob'
                 })
                 .then((response) => {
-                    console.log(response)
                     const fileName =
                         response.headers['content-disposition'].split(
                             'filename='
                         )[1]
-                    console.log(fileName)
                     FileSaver.saveAs(
                         new Blob([response.data], {
                             type: 'application/pdf'

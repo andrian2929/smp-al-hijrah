@@ -60,11 +60,11 @@
                                 {{ record.kelas.section }}</span
                             >
                         </template>
-                        <template v-if="column.key == 'is_beasiswa'">
+                        <!-- <template v-if="column.key == 'is_beasiswa'">
                             <span v-if="record.is_beasiswa"
                                 ><check-outlined
                             /></span>
-                        </template>
+                        </template> -->
                         <template v-if="column.key === 'action'">
                             <span>
                                 <a-button
@@ -119,10 +119,10 @@ const columns = [
         title: 'NISN',
         dataIndex: ['nisn']
     },
-    {
-        title: 'Beasiswa',
-        key: 'is_beasiswa'
-    },
+    // {
+    //     title: 'Beasiswa',
+    //     key: 'is_beasiswa'
+    // },
     {
         title: 'Aksi',
         key: 'action'
@@ -211,7 +211,6 @@ export default {
                         response.headers['content-disposition'].split(
                             'filename='
                         )[1]
-                    console.log(fileName)
                     FileSaver.saveAs(
                         new Blob([response.data], {
                             type: 'application/pdf'

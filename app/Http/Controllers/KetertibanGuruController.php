@@ -18,11 +18,11 @@ class KetertibanGuruController extends Controller
             });
         })->when($request->startDate && $request->endDate, function ($q) use ($request) {
             return $q->whereBetween('tanggal', [$request->startDate, $request->endDate]);
-        })->orderBy('tanggal', 'desc')->paginate(10);
+        })->orderBy('tanggal', 'desc')->get();
 
         return response()->json([
             'message' => 'success',
-            'data'   => $ketertiban_guru->load('guru')
+            'data'   => $ketertiban_guru->load('guru.user')
         ], 200);
     }
 

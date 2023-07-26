@@ -237,7 +237,6 @@ export default {
                 .get(vm.url('piket/tamu/janji-temu'))
                 .then((res) => {
                     if (res.status === 200) {
-                        console.log(res.data.data)
                         vm.janjiTemuTamuDataSources = res.data.data.map(
                             (item, index) => {
                                 return {
@@ -263,12 +262,10 @@ export default {
                 })
         },
         showJanjiTemu(janjiTemuId) {
-            console.log(janjiTemuId)
             const vm = this
             vm.axios
                 .get(vm.url('piket/tamu/janji-temu/' + janjiTemuId))
                 .then((res) => {
-                    console.log(res)
                     if (res.status === 200) {
                         vm.formJanjiTemu = res.data.data
                         vm.formJanjiTemu.namaTamu = res.data.data.nama_tamu

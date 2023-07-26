@@ -82,75 +82,6 @@
                         />
                     </a-skeleton>
                 </a-card>
-                <a-card style="margintop: 20px; border-radius: 20px">
-                    <h4 style="marginbottom: 20px">Kehadiran :</h4>
-                    <a-row :gutter="[8, 8]">
-                        <a-col :span="6">
-                            <star-filled style="fontsize: 150%; color: green" />
-                        </a-col>
-                        <a-col :span="6">
-                            <strong>12</strong>
-                        </a-col>
-                        <a-col :span="6">
-                            <strong>:</strong>
-                        </a-col>
-                        <a-col :span="6">
-                            <strong>Hadir</strong>
-                        </a-col>
-                        <a-col :span="6">
-                            <star-filled style="fontsize: 150%; color: blue" />
-                        </a-col>
-                        <a-col :span="6">
-                            <strong>2</strong>
-                        </a-col>
-                        <a-col :span="6">
-                            <strong>:</strong>
-                        </a-col>
-                        <a-col :span="6">
-                            <strong>Izin</strong>
-                        </a-col>
-                        <a-col :span="6">
-                            <star-filled
-                                style="fontsize: 150%; color: orange"
-                            />
-                        </a-col>
-                        <a-col :span="6">
-                            <strong>1</strong>
-                        </a-col>
-                        <a-col :span="6">
-                            <strong>:</strong>
-                        </a-col>
-                        <a-col :span="6">
-                            <strong>Mengikuti Kegiatan di Luar</strong>
-                        </a-col>
-                        <a-col :span="6">
-                            <star-filled
-                                style="fontsize: 150%; color: yellow"
-                            />
-                        </a-col>
-                        <a-col :span="6">
-                            <strong>1</strong>
-                        </a-col>
-                        <a-col :span="6">
-                            <strong>:</strong>
-                        </a-col>
-                        <a-col :span="6">
-                            <strong>Sakit</strong>
-                        </a-col>
-                        <a-col :span="6">
-                            <star-filled style="fontsize: 150%; color: red" />
-                        </a-col>
-                        <a-col :span="6">
-                            <strong>0</strong>
-                        </a-col>
-                        <a-col :span="6">
-                            <strong>:</strong>
-                        </a-col>
-                        <a-col :span="6">
-                            <strong>Terlambat</strong>
-                        </a-col>
-                    </a-row>
-                </a-card>
             </a-col>
         </a-row>
     </div>
@@ -233,7 +164,6 @@ export default defineComponent({
                             )
                                 .startOf('day')
                                 .fromNow()
-                            console.log(vm.siswa)
 
                             vm.axios
                                 .get(vm.url('kelas/read'), {
@@ -247,7 +177,6 @@ export default defineComponent({
                                         ...vm.siswa,
                                         roster: response.data.models
                                     }
-                                    console.log(vm.siswa)
                                     vm.loading = false
                                 })
                                 .catch((e) => vm.$onAjaxError(e))

@@ -559,12 +559,9 @@ export default {
                         .then((response) => {
                             vm.loading = false
                             vm.mapels = response.data.models
-                            console.log(vm.mapels)
                         })
                 })
-                .catch((error) => {
-                    console.log(error)
-                })
+                .catch((error) => {})
         },
         addTugas() {
             const vm = this
@@ -643,7 +640,6 @@ export default {
             vm.axios
                 .get(vm.url('siswa/tugas/' + id))
                 .then((response) => {
-                    console.log(response)
                     const tugas = response.data.data
                     vm.formTambahTugas = {
                         id: tugas.id,
@@ -651,8 +647,7 @@ export default {
                         tanggal: tugas.tanggal,
                         jenisTugas: tugas.jenis_tugas
                     }
-                    console.log('andrian')
-                    console.log(vm.formTambahTugas)
+
                     vm.getMapelByIdGuru()
                     vm.formTambahTugas.mataPelajaran = tugas.mata_pelajaran.id
                 })

@@ -503,7 +503,6 @@ export default {
             vm.axios
                 .get(vm.url('guru/read'), { params: { req: 'table' } })
                 .then((res) => {
-                    console.log(res)
                     vm.guru = res.data.models.map((item, index) => {
                         return {
                             id: item.guru.id,
@@ -621,8 +620,6 @@ export default {
                         }
                     }
                 )
-
-                console.log(vm.guruPenggantiDataSources)
             })
         },
         getMapelByIdGuru(id) {
@@ -632,7 +629,6 @@ export default {
                 guru_id: id
             }
             vm.axios.get(vm.url('mapel/read'), { params }).then((res) => {
-                console.log(res.data.models)
                 vm.mataPelajaran = res.data.models.map((item, index) => {
                     return {
                         id: item.id,
@@ -691,7 +687,6 @@ export default {
             const vm = this
             vm.formGuruPengganti = {}
             vm.modalEditMode.guruPengganti = true
-            console.log(id)
             vm.axios
                 .get(vm.url('piket/jurnal/guru/pengganti/' + id))
                 .then((res) => {
@@ -699,7 +694,6 @@ export default {
                         return item.id == res.data.data.id
                     }).user_id
 
-                    console.log(guru_id)
                     vm.getMapelByIdGuru(guru_id)
                     vm.formGuruPengganti = {
                         id: res.data.data.id,
@@ -728,8 +722,6 @@ export default {
                 jam: vm.formGuruPengganti.jam,
                 keterangan: vm.formGuruPengganti.keterangan
             }
-
-            console.log(data)
 
             vm.axios
                 .put(vm.url('piket/jurnal/guru/pengganti/' + data.id), data)

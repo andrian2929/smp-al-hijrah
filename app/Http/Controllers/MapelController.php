@@ -45,7 +45,10 @@ class MapelController extends Controller
             if ($request->kelas_id) {
                 $mapel = $mapel->where('kelas_id', $request->kelas_id);
             }
-            $data = $mapel->get();
+
+            $data = $mapel->get()->unique(function ($item) {
+                return $item['mapel_id'] . $item['kelas_id'];
+            })->values();
         }
 
         if ($request->req == 'get_mapel_by_kelas_id') {

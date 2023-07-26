@@ -61,6 +61,7 @@
         title="Kehadiran Tamu"
         v-model:visible="modalVisible.formKehadiranTamu"
     >
+        <template #footer> </template>
         <a-form
             :model="formKehadiranTamu"
             layout="vertical"
@@ -261,7 +262,6 @@ export default {
                 .get(vm.url('piket/tamu/kehadiran'))
                 .then((res) => {
                     if (res.status == 200) {
-                        console.log(res)
                         vm.kehadiranTamuDataSources = res.data
                         vm.kehadiranTamuDataSources.forEach((item, index) => {
                             item.jam = item.jam.substring(0, 5)
@@ -290,9 +290,7 @@ export default {
                         vm.getKehadiranTamuData()
                     }
                 })
-                .catch((err) => {
-                    if (err.response) console.log(err.response.data.message)
-                })
+                .catch((err) => {})
         }
     }
 }

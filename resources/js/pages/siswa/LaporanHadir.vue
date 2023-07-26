@@ -136,8 +136,6 @@ export default {
                                 }
                                 this.kehadiranData.push(row)
                             }
-
-                            console.log(this.kehadiranData)
                         })
                         .catch((err) => {})
                 })

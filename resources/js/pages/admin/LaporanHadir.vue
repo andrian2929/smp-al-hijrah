@@ -399,12 +399,10 @@ export default {
                     model: data
                 })
                 .then((response) => {
-                    console.log(response)
                     this.$message.success(response.data.message)
                     this.readKehadiran()
                 })
                 .catch((e) => {
-                    console.log('error')
                     this.$message.error(e.response.data.message)
                 })
         },
@@ -463,8 +461,6 @@ export default {
                             }
                         }
                     })
-
-                    console.log(this.formKehadiran)
                 })
         },
         handleSelectChange(value) {

@@ -507,7 +507,6 @@ export default {
                 })
                 .then((res) => {
                     this.tahfidzData = res.data.data
-                    console.log(res)
                 })
                 .catch((e) => {
                     this.$notification.error({
@@ -585,7 +584,6 @@ export default {
                                 }
                             )
 
-                            console.log(this.perilakuData)
                         })
                 })
                 .catch((err) => {})

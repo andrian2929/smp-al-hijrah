@@ -83,16 +83,12 @@ export default {
                     .post(vm.url('login'), params)
                     .then((response) => {
                         if (response.data.success) {
-                            console.log(response.data.token)
                             // Menyimpan data status login ke dalam localStorage
                             localStorage.setItem('loggedIn', 'true')
 
                             // Menyimpan  token ke dalam localStorage
                             localStorage.setItem('token', response.data.token)
 
-                            console.log(
-                                response.data.user.roles[0].display_name
-                            )
                             window.location.href = `/${response.data.user.roles[0].display_name}`
                         }
                     })

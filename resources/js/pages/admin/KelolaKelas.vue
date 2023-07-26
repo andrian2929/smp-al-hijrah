@@ -181,7 +181,6 @@ export default {
                 .get(vm.url('kelas/read'), { params: params })
                 .then((response) => {
                     vm.gurus = response.data.models
-                    console.log(response.data)
                 })
                 .catch((error) => vm.$onAjaxError(error))
         },
@@ -217,7 +216,6 @@ export default {
         },
         handleKelasChange(value) {
             this.filter.class = value
-            console.log(this.filter.class)
             this.readData()
         }
     }

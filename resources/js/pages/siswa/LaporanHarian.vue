@@ -567,7 +567,6 @@ export default {
             this.loadingFormIbadah = true
             this.loadingIbadahData = true
             this.ibadahData = null
-            console.log(this.ibadahData)
 
             this.searchIbadah()
         },
@@ -700,8 +699,6 @@ export default {
 
                     this.loadingPerilakuData = false
 
-                    console.log(this.perilakuData)
-
                     this.dataSourceIbadah = this.perilakuData.filter(
                         (item, index) => {
                             return item.list_perilaku.type === 'ibadah'
@@ -713,8 +710,6 @@ export default {
                             return item.list_perilaku.type === 'akhlak'
                         }
                     )
-
-                    console.log(this.dataSourceAkhlak)
 
                     this.dataSourceAkidah = this.perilakuData.filter(
                         (item, index) => {

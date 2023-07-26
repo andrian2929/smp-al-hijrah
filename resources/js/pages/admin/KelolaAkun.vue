@@ -145,8 +145,6 @@ export default {
                 .get(vm.url('user/read'), { params: params })
                 .then((response) => {
                     vm.models = response.data.models
-                    console.log('andrian')
-                    console.log(response.data.models)
                     vm.loading = false
                 })
                 .catch((e) => vm.$onAjaxError(e))

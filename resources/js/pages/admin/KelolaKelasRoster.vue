@@ -271,7 +271,6 @@ export default {
             vm.axios
                 .post(vm.url('mapel/write'), params)
                 .then((response) => {
-                    console.log(response)
                     vm.readData()
                     vm.form[hari] = {}
                 })

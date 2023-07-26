@@ -218,7 +218,6 @@ export default {
             vm.axios
                 .post(vm.url('mapel/write'), params)
                 .then((response) => {
-                    console.log(response)
                     vm.openNotification(vm.notifMsg, 'success')
                     vm.readData()
                     vm.modalShow = false
@@ -252,7 +251,6 @@ export default {
                 req: 'delete',
                 id: _id
             }
-            console.log(params)
             vm.axios
                 .get(vm.url('mapel/write'), params)
                 .then(() => {

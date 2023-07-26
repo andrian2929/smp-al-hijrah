@@ -753,7 +753,6 @@ export default {
                         })
                     })
 
-                    console.log(this.DataSourceSiswa)
                 })
                 .catch((e) => vm.$onAjaxError(e))
         },
@@ -790,7 +789,6 @@ export default {
                     })
                 })
 
-            console.log(this.formPerilaku)
         },
         loadFormTahfiz(userId) {
             this.showModal1 = true
@@ -812,7 +810,6 @@ export default {
                 .then((response) => {
                     vm.loading = false
                     const data = response.data.models
-                    console.log(data)
                     data[0].laporan_tahfidz.forEach((item, index) => {
                         this.formTahfidz.push({
                             no: index + 1,
@@ -827,14 +824,12 @@ export default {
         },
         loadFormTahfizSingle(tahfidzId) {
             this.selectedTahfidz = tahfidzId
-            console.log(this.formTahfidz)
             if (tahfidzId) {
                 this.formTahfidz.filter((item) => {
                     if (item.id == tahfidzId) {
                         this.formTahfidzSingle = item
                     }
 
-                    console.log(this.formTahfidzSingle)
                 })
             } else {
                 this.formTahfidzSingle = {
@@ -846,7 +841,6 @@ export default {
             }
         },
         onFinishTahfidzSingle() {
-            console.log(this.formTahfidzSingle)
             this.axios
                 .post(this.url('laporan/tahfidz/write'), this.formTahfidzSingle)
                 .then((res) => {
@@ -893,12 +887,10 @@ export default {
             vm.axios
                 .get(vm.url('laporan/mutabaah-yaumiyah/read'), { params })
                 .then((response) => {
-                    console.log(response)
                     vm.loading = false
                     vm.loadingFormMutabaahYaumiyah = false
                     const data = response.data.data
                     if (data) {
-                        console.log(data)
                         this.formMutabaahYaumiyah = {
                             QiyamulLail: data.qiyamul_lail,
                             Dhuha: data.dhuha,
@@ -923,7 +915,6 @@ export default {
             this.clickUserid = userId
             this.loadingFormPerilaku = true
             this.axios.get(this.url('laporan/perilaku/data')).then((res) => {
-                console.log(res)
                 const response = res.data.data
 
                 this.dataSourceIbadah = response.filter((item, index) => {
@@ -983,16 +974,13 @@ export default {
                         this.loadingFormPerilaku = false
                     })
                     .catch((e) => {
-                        console.log(e)
                     })
             })
         },
         deleteTahfidz(id) {
-            console.log(id)
             this.axios
                 .delete(this.url('laporan/tahfidz/delete/' + id))
                 .then((res) => {
-                    console.log(res)
                     this.selectedTahfidz = null
                     this.loadFormTahfiz(this.clickUserid)
                     this.formTahfidzSingle = {
@@ -1022,7 +1010,6 @@ export default {
                     ...this.formMutabaahYaumiyah
                 })
                 .then((res) => {
-                    console.log(res)
                     this.$notification.success({
                         message: 'Berhasil',
                         description: 'Data berhasil disimpan'

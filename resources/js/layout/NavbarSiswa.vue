@@ -190,7 +190,6 @@ export default {
                     this.user_data.image = response.data.image
                     this.user_data.name = response.data.name
                     this.user_data.role = response.data.role[0].name
-                    console.log(response.data)
                 })
                 .catch((error) => {
                     vm.$onAjaxError(error)
