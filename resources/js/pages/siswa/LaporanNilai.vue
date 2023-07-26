@@ -1,5 +1,5 @@
 <template>
-    <h1 style="margin-left: 30px">Penialaian Akademik Siswa</h1>
+    <h1 style="margin-left: 30px">Penilaian Akademik Siswa</h1>
     <a-row type="flex" justify="center">
         <a-col :xs="23">
             <a-card>
