@@ -169,7 +169,7 @@ const router = createRouter({
                 },
                 {
                     path: 'info_siswa/:id',
-                    component: DetailSiswa
+                    component: InfoUserDetail
                 },
                 {
                     path: 'laporan_harian_siswa',

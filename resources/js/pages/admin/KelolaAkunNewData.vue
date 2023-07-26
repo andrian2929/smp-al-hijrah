@@ -30,12 +30,11 @@
                                     {
                                         max: 20,
                                         message: 'Username maksimal 20 karakter'
+                                    },
+                                    {
+                                        pattern: /^[^\s]*$/,
+                                        message: 'Username tidak boleh spasi'
                                     }
-
-                                    // {
-                                    //     pattern: /^[^\s]*$/,
-                                    //     message: 'Username tidak boleh spasi'
-                                    // }
                                 ]"
                             >
                                 <a-input
@@ -48,11 +47,11 @@
                                 label="Email"
                                 name="email"
                                 :rules="[
-                                    // {
-                                    //     type: 'email',
-                                    //     message:
-                                    //         'Email yang anda masukkan tidak valid'
-                                    // },
+                                    {
+                                        type: 'email',
+                                        message:
+                                            'Email yang anda masukkan tidak valid'
+                                    },
                                     {
                                         required: true,
                                         message: 'Masukkan email anda'
@@ -303,11 +302,11 @@
                                     {
                                         max: 10,
                                         message: 'Tinggi maksimal 10 karakter'
+                                    },
+                                    {
+                                        pattern: new RegExp('^[0-9]*$'),
+                                        message: 'Tinggi hanya boleh angka'
                                     }
-                                    // {
-                                    //     pattern: new RegExp('^[0-9]*$'),
-                                    //     message: 'Tinggi hanya boleh angka'
-                                    // }
                                 ]"
                             >
                                 <a-input

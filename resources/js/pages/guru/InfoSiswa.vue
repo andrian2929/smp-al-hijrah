@@ -70,7 +70,7 @@
                                     </template>
                                 </a-button>
                                 <router-link
-                                    :to="`/admin/info_siswa/${record.user_id}`"
+                                    :to="`/guru/info_siswa/${record.user_id}`"
                                 >
                                     <a-button
                                         style="margin-left: 3px"

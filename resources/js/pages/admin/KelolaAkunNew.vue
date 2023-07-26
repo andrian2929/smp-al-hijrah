@@ -42,6 +42,7 @@
                         :multiple="false"
                         :beforeUpload="beforeUpload"
                         :customRequest="prosesInputMasal"
+                        :show-upload-list="false"
                     >
                         <a-button>
                             <upload-outlined></upload-outlined>
@@ -154,9 +155,10 @@ export default {
                 file.type !=
                 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
             ) {
-                this.$message.error(
-                    'File yang diunggah harus berupa file Excel'
-                )
+                this.$notification.warning({
+                    message: 'Terjadi kesalahan',
+                    description: 'File yang diunggah harus berupa file Excel'
+                })
                 return false
             }
         },
@@ -183,11 +185,16 @@ export default {
                         fileName.substring(1, fileName.length - 1)
                     )
                 })
-                .catch((e) => {
-                    $this.notification.error({
-                        message: 'Terjadi kesalahan',
-                        description: e.response.data.message
-                    })
+                .catch(async (e) => {
+                    if (e.response?.status == 422) {
+                        const error = JSON.parse(await e.response.data.text())
+                        this.$notification.error({
+                            message: 'Coba lagi',
+                            description: error.message
+                        })
+                    } else {
+                        this.$onAjaxError(e)
+                    }
                 })
         }
     }

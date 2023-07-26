@@ -8,6 +8,7 @@ use Faker\Factory as Faker;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Str;
 use Mpdf\Mpdf;
 
 
@@ -37,12 +38,13 @@ class InputMasalController extends Controller
                 'email'         => $sheetData[$i]['C'],
                 'asal_sekolah'  => $sheetData[$i]['D'],
                 'kelas_id'      => $sheetData[$i]['E'],
-                'password'      => $faker->word(4),
-                'username'      => $faker->unique()->word(10),
+                'password'      => '12345678',
+                'username'      => $this->generateUsername(),
                 'role'          => 'siswa'
 
             ];
         }
+
 
 
         $validator = Validator::make($data, [
@@ -53,17 +55,17 @@ class InputMasalController extends Controller
             '*.kelas_id'        => 'required|exists:kelas,id',
             '*.username'        => 'required|unique:users'
         ], [
-            '*.nama.required'           => 'Nama tidak boleh kosong',
-            '*.nisn.required'           => 'NISN tidak boleh kosong',
-            '*.email.required'          => 'Email tidak boleh kosong',
-            '*.email.email'             => 'Email tidak valid',
-            '*.email.unique'            => 'Email sudah terdaftar',
-            '*.asal_sekolah.required'   => 'Asal sekolah tidak boleh kosong',
-            '*.asal_sekolah.string'     => 'Asal sekolah tidak valid',
-            '*.kelas_id.required'       => 'Kelas tidak boleh kosong',
-            '*.kelas_id.exists'         => 'Kelas tidak ada dalam database',
-            '*.username.required'       => 'Username tidak boleh kosong',
-            '*.username.unique'         => 'Username sudah terdaftar'
+            '*.nama.required'           => 'Ada nama yang kosong',
+            '*.nisn.required'           => 'Ada NISN yang kosong',
+            '*.email.required'          => 'Ada email yang kosong',
+            '*.email.email'             => 'Ada email yang tidak valid',
+            '*.email.unique'            => 'Ada email yang sudah terdaftar',
+            '*.asal_sekolah.required'   => 'Ada asal sekolah yang kosong',
+            '*.asal_sekolah.string'     => 'Ada asal sekolah yang tidak valid',
+            '*.kelas_id.required'       => 'Ada kelas yang kosong',
+            '*.kelas_id.exists'         => 'Ada kelas yang tidak tedaftar',
+            '*.username.required'       => 'Ada username yang kosong',
+            '*.username.unique'         => 'Ada username yang sudah terdaftar'
         ]);
 
         if ($validator->fails()) {
@@ -81,7 +83,8 @@ class InputMasalController extends Controller
                 'username'      => $value['username'],
                 'no_induk'      => $value['nisn'],
                 'asal_sekolah'  => $value['asal_sekolah'],
-                'role'          => $value['role']
+                'role'          => $value['role'],
+                'image'         => 'default.png'
             ]);
 
             $user->attachRole($value['role']);
@@ -136,5 +139,15 @@ class InputMasalController extends Controller
     {
         header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
         return response()->download(storage_path('app/public/template_excel/template.xlsx'));
+    }
+
+    private function generateUsername()
+    {
+        do {
+            $username = Str::random(10);
+            $user = User::where('username', $username)->exists();
+        } while ($user);
+
+        return $username;
     }
 }
