@@ -3,7 +3,7 @@
         <a-row type="flex" justify="center">
             <a-col :xs="22" :sm="20" :lg="18">
                 <a-card title="SMP Al Hijrah">
-                    Login Page
+                    Halaman Login
                     <a-form
                         name="login"
                         :label-col="{ span: 8 }"
