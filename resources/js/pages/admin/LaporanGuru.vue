@@ -79,7 +79,7 @@
                     </a-space>
                 </a-form>
             </a-card>
-            <a-card v-if="dataReady" title="Daftar Siswa" style="width: 100%">
+            <a-card v-if="dataReady" title="Daftar Guru" style="width: 100%">
                 <a-space
                     direction="horizontal"
                     style="
@@ -622,7 +622,7 @@ const columns = [
         key: 'nip'
     },
     {
-        title: 'Nama Siswa',
+        title: 'Nama Guru',
         dataIndex: 'nama',
         key: 'nama'
     },
