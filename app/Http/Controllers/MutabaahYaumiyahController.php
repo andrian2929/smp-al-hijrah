@@ -8,7 +8,8 @@ use Illuminate\Validation\Rule;
 use \Carbon\Carbon;
 use \Carbon\CarbonPeriod;
 use App\Models\Kelas;
-use App\Model\Siswa;
+use App\Models\Siswa;
+use App\Models\User;
 use \Mpdf\Mpdf;
 
 
@@ -139,19 +140,45 @@ class MutabaahYaumiyahController extends Controller
             ->orderBy('name')
             ->get();
 
-        $user->each(function ($item) use ($date) {
-            $item->mutabaah_yaumiyah = $this->getMutaBaahYaumiyahMonthly($item, $date);
+
+        // $user->each(function ($item) use ($date) {
+        //     $item->mutabaah_yaumiyah = $this->getMutaBaahYaumiyahMonthly($item, $date);
+        // });
+
+
+        foreach ($user as $item) {
+            $this->getMutaBaahYaumiyahMonthly($item, $date);
+        }
+
+
+        // $date = Carbon::create($request->year, $request->month)->translatedFormat('F Y');
+        // $this->downloadMutabaahYaumiyahByClass($user, $date, $kelas);
+    }
+
+
+    public function getMutabaahYaumiyahReport(Request $request, User $user)
+    {
+        $request->validate([
+            'tanggal' => 'sometimes|date_format:Y-m-d'
+        ]);
+
+        $tanggal = Carbon::parse($request->tanggal ?? now()->format('Y-m-d'));
+
+        $mutabaahYaumiyahData = collect($this->getMutaBaahYaumiyahMonthly($user, $tanggal));
+
+        $mutabaahYaumiyah = $mutabaahYaumiyahData->map(function ($item) {
+            return collect($item)->sum();
         });
 
-
-        $date = Carbon::create($request->year, $request->month)->translatedFormat('F Y');
-        $this->downloadMutabaahYaumiyahByClass($user, $date, $kelas);
+        return response()->json([
+            'data' => $mutabaahYaumiyah
+        ]);
     }
 
     private function getMutaBaahYaumiyahMonthly($user, Carbon $date)
     {
         $categories = [
-            'Shalat Subuh' => 'shalat_subuh',
+            'Shalat Subuh'  => 'shalat_subuh',
             'Shalat Dzuhur' => 'shalat_dzuhur',
             'Shalat Ashar' => 'shalat_ashar',
             'Shalat Maghrib' => 'shalat_maghrib',
@@ -173,17 +200,17 @@ class MutabaahYaumiyahController extends Controller
         $period = CarbonPeriod::create($startDay, $endDay);
 
         $mutabaahYaumiyah = [];
-        foreach ($categories as $categoryKey => $categoryValue) {
-            $categorySum = 0;
-            foreach ($period as $date) {
-                $mutabaahyaumiyahData = MutabaahYaumiyah::whereDate('tanggal', $date)
-                    ->where('user_id', $user->id)
-                    ->first();
-
-                $categorySum += $mutabaahyaumiyahData->$categoryValue ?? 0;
+        foreach ($period as $date) {
+            $dailyData = MutabaahYaumiyah::whereDate('tanggal', $date)
+                ->where('user_id', $user->id)
+                ->first();
+            $mutabaahYaumiyahData = [];
+            foreach ($categories as $category => $value) {
+                $mutabaahYaumiyahData[$value] = $dailyData->$value ?? 0;
             }
 
-            $mutabaahYaumiyah[$categoryKey] = $categorySum;
+
+            $mutabaahYaumiyah[$date->day] = $mutabaahYaumiyahData;
         }
 
         return $mutabaahYaumiyah;

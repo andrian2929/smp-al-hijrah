@@ -94,9 +94,6 @@
                         style="width: 200px"
                         @search="readData"
                     />
-                    <a-button>
-                        <template #icon><download-outlined /></template>
-                    </a-button>
                 </a-space>
                 <a-table
                     :columns="columns"
@@ -117,13 +114,13 @@
                                 style="margin-bottom: 4px; margin-right: 6px"
                                 >Tahfidz</a-button
                             >
-                            <!-- <a-button
+                            <a-button
                                 type="primary"
-                                @click="loadFormMutabaahYaumiyah(record.id)"
+                                @click="loadMutabaahYaumiyahReport(record.id)"
                                 style="margin-bottom: 4px; margin-right: 6px"
                                 >Ibadah Harian</a-button
                             >
-                            <a-button
+                            <!-- <a-button
                                 type="primary"
                                 @click="loadFormPerilakuData(record.id)"
                                 >Perilaku Harian</a-button
@@ -234,56 +231,18 @@
     </a-modal>
     <!-- modal bagian ibadah harian -->
     <a-modal
+        width="50%"
         v-model:visible="showModal2"
-        title="Posting Mutaba'ah Ibadah"
-        @ok="saveMutabaahYaumiah"
+        title="Laporan Mutabaah Yaumiyah"
     >
-        <a-table
-            :dataSource="dataSource1"
-            :columns="kolom1"
-            :pagination="false"
-            :loading="loadingFormMutabaahYaumiyah"
-        >
-            <template #bodyCell="{ column, record }">
-                <template v-if="column.key === 'kegiatanibadah'">
-                    <a>
-                        {{ record.kegiatanibadah }}
-                    </a>
-                </template>
-                <template v-else-if="column.key === 'aksi'">
-                    <a-checkbox
-                        v-model:checked="
-                            formMutabaahYaumiyah[
-                                `${record.kegiatanibadah.replace(' ', '')}`
-                            ]
-                        "
-                    ></a-checkbox>
-                </template>
-            </template>
-        </a-table>
-        <a-table
-            :dataSource="dataSource2"
-            :columns="kolom2"
-            :pagination="false"
-            :loading="loadingFormMutabaahYaumiyah"
-        >
-            <template #bodyCell="{ column, record }">
-                <template v-if="column.key === 'shalat'">
-                    <a>
-                        {{ record.shalat }}
-                    </a>
-                </template>
-                <template v-else-if="column.key === 'aksi'">
-                    <a-checkbox
-                        v-model:checked="
-                            formMutabaahYaumiyah[
-                                `${record.shalat.replace(' ', '')}`
-                            ]
-                        "
-                    ></a-checkbox>
-                </template>
-            </template>
-        </a-table>
+        <template #footer></template>
+        <div>
+            <Line
+                v-if="isMutabaahYaumiyahReportLoaded"
+                :data="chartData"
+                :options="chartOptions"
+            />
+        </div>
     </a-modal>
 
     <a-modal
@@ -602,6 +561,33 @@
 </template>
 
 <script>
+import { Bar, Line } from 'vue-chartjs'
+import {
+    Chart as ChartJS,
+    Title,
+    Tooltip,
+    Legend,
+    BarElement,
+    CategoryScale,
+    LinearScale,
+    LineElement,
+    PointElement,
+    LineController,
+    Decimation,
+    Filler
+} from 'chart.js'
+
+ChartJS.register(
+    Title,
+    Tooltip,
+    Legend,
+    BarElement,
+    CategoryScale,
+    LinearScale,
+    LineElement,
+    PointElement,
+    LineController
+)
 import { surah, kegiatan, sholat } from '../../module/laporanHarian'
 import moment from 'moment'
 import 'moment/locale/id'
@@ -825,8 +811,14 @@ const dataSource4 = [
     }
 ]
 export default {
+    components: {
+        Bar,
+        Line
+    },
     data() {
         return {
+            chartData: null,
+            chartOptions: null,
             formTahfidz: {},
             formTahfidzSingle: {
                 surah: 'Al-Fatihah',
@@ -876,7 +868,7 @@ export default {
                 ShalatIsya: false,
                 Tanggal: moment().format('YYYY-MM-DD')
             },
-            loadingFormMutabaahYaumiyah: false,
+            isMutabaahYaumiyahReportLoaded: false,
             dataSourceIbadah: null,
             columnIbadah: this.columnPerilaku('ibadah'),
             dataSourceAkidah: null,
@@ -897,6 +889,7 @@ export default {
     created() {},
     mounted() {
         this.getAllGuru()
+        this.isMutabaahYaumiyahReportLoaded = false
     },
 
     methods: {
@@ -1041,57 +1034,71 @@ export default {
                     })
                 })
         },
-        loadFormMutabaahYaumiyah(userId) {
+        loadMutabaahYaumiyahReport(userId) {
             this.showModal2 = true
             this.loadingFormMutabaahYaumiyah = true
             this.clickUserid = userId
-            this.formMutabaahYaumiyah = {
-                QiyamulLail: false,
-                Dhuha: false,
-                TilawahQuran: false,
-                MembacaBuku: false,
-                Olahraga: false,
-                AlMatsurat: false,
-                ShoumSunnah: false,
-                ShalatSubuh: false,
-                ShalatDzuhur: false,
-                ShalatAshar: false,
-                ShalatMaghrib: false,
-                ShalatIsya: false,
-                Tanggal: this.tanggal
-            }
-            const vm = this
-            vm.loading = true
-            const params = {
-                req: 'get_mutabaahyaumiyah_by_user_id_and_date',
-                user_id: userId,
-                tanggal: this.tanggal
-            }
-            vm.axios
-                .get(vm.url('laporan/mutabaah-yaumiyah/read'), { params })
-                .then((response) => {
-                    vm.loading = false
-                    vm.loadingFormMutabaahYaumiyah = false
-                    const data = response.data.data
-                    if (data) {
-                        this.formMutabaahYaumiyah = {
-                            QiyamulLail: data.qiyamul_lail,
-                            Dhuha: data.dhuha,
-                            TilawahQuran: data.tilawah_quran,
-                            MembacaBuku: data.membaca_buku,
-                            Olahraga: data.olahraga,
-                            AlMatsurat: data.al_matsurat,
-                            ShoumSunnah: data.shoum_sunnah,
-                            ShalatSubuh: data.shalat_subuh,
-                            ShalatDzuhur: data.shalat_dzuhur,
-                            ShalatAshar: data.shalat_ashar,
-                            ShalatMaghrib: data.shalat_maghrib,
-                            ShalatIsya: data.shalat_isya,
-                            Tanggal: data.tanggal
+
+            this.axios
+                .get(
+                    this.url(
+                        'laporan/mutabaah-yaumiyah/rekap/guru/' +
+                            this.clickUserid
+                    ),
+                    {
+                        params: {
+                            tanggal: this.filter.tanggal
                         }
                     }
+                )
+                .then((res) => {
+                    const reportData = res.data.data
+                    const length = Object.keys(reportData).length
+                    const chartLabel = Array.from({ length }, (_, i) => i + 1)
+                    const chartDataSet = [
+                        {
+                            label: 'Laporan Mutabaah Yaumiyayah',
+                            data: Object.values(reportData),
+                            fill: false,
+                            borderColor: 'rgb(75, 192, 192)',
+                            tension: 0.1
+                        }
+                    ]
+
+                    this.chartOptions = {
+                        scales: {
+                            y: {
+                                beginAtZero: true
+                            }
+                        },
+                        responsive: true,
+                        plugins: {
+                            legend: {
+                                position: 'top'
+                            },
+                            title: {
+                                display: true,
+                                text: 'Perfoma Laporan Ibadah Harian Guru'
+                            }
+                        }
+                    }
+
+                    this.chartData = {
+                        labels: chartLabel,
+                        datasets: chartDataSet
+                    }
+
+                    this.isMutabaahYaumiyahReportLoaded = true
                 })
-                .catch((e) => vm.$onAjaxError(e))
+                .catch((err) => {
+                    console.error(err)
+                    this.$notification.error({
+                        message: 'Terjadi kesalahan',
+                        description: 'Silakan coba lagi'
+                    })
+                })
+
+            vm.loading = true
         },
         loadFormPerilakuData(userId) {
             this.showModal3 = true

@@ -181,6 +181,7 @@ export default {
             const vm = this
             const params = {
                 req: 'edit',
+                editPart: 'user_management',
                 ...vm.form
             }
             vm.axios

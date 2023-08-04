@@ -161,11 +161,11 @@ export default {
                         {
                             name: 'Laporan Kehadiran',
                             link: '/siswa/laporan_hadir'
-                        },
-                        {
-                            name: 'Laporan Nilai',
-                            link: '/siswa/laporan_nilai'
                         }
+                        // {
+                        //     name: 'Laporan Nilai',
+                        //     link: '/siswa/laporan_nilai'
+                        // }
                     ]
                 }
             ]

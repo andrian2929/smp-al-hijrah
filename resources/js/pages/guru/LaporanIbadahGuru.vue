@@ -115,14 +115,15 @@
                     >
                         <a-date-picker
                             style="width: 345px"
-                            placeholder="Tanggal Posting"
+                            placeholder="Pilih tanggal"
                             value-format="YYYY-MM-DD"
                             v-model:value="formIbadah.Tanggal"
+                            @change="loadDailyWorshipData"
                         />
                     </a-card>
                     <a-card
-                        :loading="loading"
-                        title="Laporan Mutaba'ah Yaumiah"
+                        v-if="isDailyWorshipDataLoaded"
+                        title="Laporan Ibadah Harian"
                         style="width: 100%"
                     >
                         <a-space
@@ -460,6 +461,7 @@ export default {
             userData: null,
             loading: true,
             tahfidzData: null,
+            isDailyWorshipDataLoaded: false,
             formIbadah: {
                 QiyamulLail: false,
                 Dhuha: false,
@@ -472,8 +474,7 @@ export default {
                 ShalatDzuhur: false,
                 ShalatAshar: false,
                 ShalatMaghrib: false,
-                ShalatIsya: false,
-                Tanggal: moment().format('YYYY-MM-DD')
+                ShalatIsya: false
             },
             formPerilaku: {
                 startDate: moment().format('YYYY-MM-DD'),
@@ -583,12 +584,10 @@ export default {
                                     }
                                 }
                             )
-
                         })
                 })
                 .catch((err) => {})
         },
-
         saveLaporanTahfidz() {
             this.axios
                 .post(
@@ -677,6 +676,42 @@ export default {
                     })
             })
         },
+        loadDailyWorshipData(date) {
+            this.resetFormIbadah()
+            this.axios.get(this.url('user')).then((res) => {
+                const userId = res.data.id
+
+                this.axios
+                    .get(this.url('laporan/mutabaah-yaumiyah/read'), {
+                        params: {
+                            req: 'get_mutabaahyaumiyah_by_user_id_and_date',
+                            user_id: userId,
+                            tanggal: date
+                        }
+                    })
+                    .then((res) => {
+                        const data = res.data.data
+                        this.formIbadah = {
+                            ...this.formIbadah,
+                            QiyamulLail: data?.qiyamul_lail ?? false,
+                            Dhuha: data?.dhuha ?? false,
+                            TilawahQuran: data?.tilawah_quran ?? false,
+                            MembacaBuku: data?.membaca_buku ?? false,
+                            Olahraga: data?.olahraga ?? false,
+                            AlMatsurat: data?.al_matsurat ?? false,
+                            ShoumSunnah: data?.shoum_sunnah ?? false,
+                            ShalatSubuh: data?.shalat_subuh ?? false,
+                            ShalatDzuhur: data?.shalat_dzuhur ?? false,
+                            ShalatAshar: data?.shalat_ashar ?? false,
+                            ShalatMaghrib: data?.shalat_maghrib ?? false,
+                            ShalatIsya: data?.shalat_isya ?? false,
+                            Tanggal: date
+                        }
+
+                        this.isDailyWorshipDataLoaded = true
+                    })
+            })
+        },
         resetFormTahfidz() {
             this.formTahfidz.tanggal = null
             this.formTahfidz.surah = 'Al-Fatihah'
@@ -706,7 +741,6 @@ export default {
             this.formIbadah.ShalatAshar = false
             this.formIbadah.ShalatMaghrib = false
             this.formIbadah.ShalatIsya = false
-            this.formIbadah.Tanggal = moment().format('YYYY-MM-DD')
         },
         saveMutabaahYaumiah() {
             this.formIbadah = { ...this.formIbadah, user_id: this.userData.id }
@@ -720,6 +754,8 @@ export default {
                         message: 'Berhasil',
                         description: res.data.message
                     })
+
+                    this.loadDailyWorshipData(this.formIbadah.Tanggal)
 
                     window.scrollTo(0, 0)
                     this.resetFormIbadah()

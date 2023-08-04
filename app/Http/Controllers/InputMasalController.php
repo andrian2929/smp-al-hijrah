@@ -35,7 +35,7 @@ class InputMasalController extends Controller
             $data[] = [
                 'nama'          => $sheetData[$i]['A'],
                 'nisn'          => $sheetData[$i]['B'],
-                'email'         => $sheetData[$i]['C'],
+                'email'         => $sheetData[$i]['C'] ?? null,
                 'asal_sekolah'  => $sheetData[$i]['D'],
                 'kelas_id'      => $sheetData[$i]['E'],
                 'password'      => '12345678',
@@ -45,19 +45,16 @@ class InputMasalController extends Controller
             ];
         }
 
-
-
         $validator = Validator::make($data, [
             '*.nama'            => 'required',
             '*.nisn'            => 'required',
-            '*.email'           => 'required|email|unique:users',
+            '*.email'           => 'nullable|email|unique:users',
             '*.asal_sekolah'    => 'required|string',
             '*.kelas_id'        => 'required|exists:kelas,id',
             '*.username'        => 'required|unique:users'
         ], [
             '*.nama.required'           => 'Ada nama yang kosong',
             '*.nisn.required'           => 'Ada NISN yang kosong',
-            '*.email.required'          => 'Ada email yang kosong',
             '*.email.email'             => 'Ada email yang tidak valid',
             '*.email.unique'            => 'Ada email yang sudah terdaftar',
             '*.asal_sekolah.required'   => 'Ada asal sekolah yang kosong',

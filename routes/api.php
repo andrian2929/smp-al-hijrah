@@ -73,6 +73,7 @@ Route::get('/laporan/tahfidz/read', [TahfidzSiswaController::class, 'read'])->na
 Route::post('/laporan/tahfidz/write', [TahfidzSiswaController::class, 'write'])->name('laporan.tahfidz.write');
 Route::delete('/laporan/tahfidz/delete/{tahfidz}', [TahfidzSiswaController::class, 'delete'])->name('laporan.tahfidz.delete');
 
+Route::get('/laporan/mutabaah-yaumiyah/rekap/guru/{user}', [MutabaahYaumiyahController::class, 'getMutabaahYaumiyahReport'])->name('laporan.mutabaahyaumiyah.rekap.guru');
 Route::get('/laporan/mutabaah-yaumiyah/rekap', [MutabaahYaumiyahController::class, 'rekap'])->name('laporan.mutabaahyaumiyah.rekap');
 Route::get('/laporan/mutabaah-yaumiyah/read', [MutabaahYaumiyahController::class, 'read'])->name('laporan.mutabaahyaumiyah.read');
 Route::post('/laporan/mutabaah-yaumiyah/write', [MutabaahYaumiyahController::class, 'write'])->name('laporan.mutabaahyaumiyah.write');

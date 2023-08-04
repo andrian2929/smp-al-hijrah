@@ -13,7 +13,7 @@ class CreateLaporanPerilakuTable extends Migration
      */
     public function up()
     {
-        Schema::create('laporan_perilakus', function (Blueprint $table) {
+        Schema::create('laporan_perilaku', function (Blueprint $table) {
             $table->id();
             $table->foreignId('user_id')->constrained('users');
             $table->foreignId('perilaku_id')->constrained('list_perilakus');

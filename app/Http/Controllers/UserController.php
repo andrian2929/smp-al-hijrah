@@ -150,6 +150,17 @@ class UserController extends Controller
                 $user->save();
             }
 
+            if ($request->editPart == 'user_management') {
+                $request->validate([
+                    'username' => 'required|unique:users,username,' . $user->id,
+                    'password' => 'required',
+                ]);
+
+                $user->username = $request->username;
+                $user->password = Hash::make($request->password);
+                $user->save();
+            }
+
 
             return response()->json($user);
         }
