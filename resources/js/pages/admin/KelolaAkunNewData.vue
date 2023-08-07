@@ -518,6 +518,10 @@
                                 name="tanggal_bergabung"
                                 :rules="[
                                     {
+                                        required: true,
+                                        message: 'Tanggal bergabung harus diisi'
+                                    },
+                                    {
                                         max: 50,
                                         message:
                                             'Tanggal bergabung maksimal 50 karakter'

@@ -59,10 +59,7 @@
                                 <strong>Tanggal Bergabung</strong>
                             </a-col>
                             <a-col :span="12">
-                                <span> {{ siswa.created_at }}</span>
-                                <span style="font-size: 12px; display: block">
-                                    <i>{{ siswa.created_at_humanize }}</i>
-                                </span>
+                                <span>{{ humanizeDate }}</span>
                             </a-col>
                         </a-row>
                     </a-skeleton>
@@ -124,9 +121,7 @@ export default defineComponent({
                     key: 'waktu_mulai'
                 }
             ],
-            siswa: {
-                nama: 'Madan'
-            },
+            siswa: null,
             loading: true
         }
     },
@@ -136,6 +131,11 @@ export default defineComponent({
     },
 
     computed: {
+        humanizeDate() {
+            return moment(this.siswa.tanggal_bergabung).format(
+                'dddd, DD MMMM YYYY'
+            )
+        },
         thisDay() {
             return moment().format('dddd')
         }

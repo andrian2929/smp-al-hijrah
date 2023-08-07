@@ -20,9 +20,14 @@
                             models.roles &&
                             models.roles[0].display_name == 'siswa'
                         "
-                        >NIS:</span
-                    ><span v-else>NIP</span>&nbsp;
-                    {{ `  ${models.no_induk}` }}</a-button
+                        >NISN: {{ models.siswa?.nisn }}</span
+                    ><span
+                        v-else-if="
+                            models.roles &&
+                            models.roles[0].display_name == 'guru'
+                        "
+                        >NIP: {{ models.guru?.nip }}
+                    </span></a-button
                 >
                 <h5 style="padding-top: 8px">
                     {{ models.roles && models.roles[0].name }}
@@ -54,7 +59,12 @@
                         <!-- Biografi Card -->
                         <a-col :xs="24" :lg="12">
                             <a-card title="Biografi" style="width: 100%">
-                                <template #extra
+                                <template
+                                    v-if="
+                                        current.role?.[0].display_name ==
+                                        'admin'
+                                    "
+                                    #extra
                                     ><a
                                         @click="
                                             () => {
@@ -101,7 +111,12 @@
                         <!-- Ciri Fisik Card -->
                         <a-col :xs="24" :lg="12">
                             <a-card title="Ciri Fisik" style="width: 100%">
-                                <template #extra
+                                <template
+                                    v-if="
+                                        current.role?.[0].display_name ==
+                                        'admin'
+                                    "
+                                    #extra
                                     ><a
                                         @click="
                                             () => {
@@ -137,7 +152,12 @@
                         <!-- alamat card -->
                         <a-col :xs="24" :lg="12">
                             <a-card title="Alamat" style="width: 100%">
-                                <template #extra
+                                <template
+                                    #extra
+                                    v-if="
+                                        current.role?.[0].display_name ==
+                                        'admin'
+                                    "
                                     ><a
                                         @click="
                                             () => {
@@ -185,7 +205,12 @@
                         <!-- Contact card -->
                         <a-col :xs="24" :lg="12">
                             <a-card title="Kontak" style="width: 100%">
-                                <template #extra
+                                <template
+                                    #extra
+                                    v-if="
+                                        current.role?.[0].display_name ==
+                                        'admin'
+                                    "
                                     ><a
                                         @click="
                                             () => {
@@ -221,7 +246,12 @@
                             "
                         >
                             <a-card title="Wali" style="width: 100%">
-                                <template #extra
+                                <template
+                                    #extra
+                                    v-if="
+                                        current.role?.[0].display_name ==
+                                        'admin'
+                                    "
                                     ><a
                                         @click="
                                             () => {
@@ -279,7 +309,10 @@
 
                                             <template
                                                 v-if="
-                                                    column.dataIndex == 'aksi'
+                                                    column.dataIndex ==
+                                                        'aksi' &&
+                                                    current.role?.[0]
+                                                        .display_name == 'admin'
                                                 "
                                             >
                                                 <a-space>
@@ -753,6 +786,7 @@
 export default {
     props: {
         userId: Number,
+        userData: Object,
         editMode: {
             type: Boolean,
             default: false
@@ -785,7 +819,13 @@ export default {
         }
     },
     mounted() {
+        console.log(this.$props.userData)
         this.readSingleData(this.$props.userId)
+    },
+    computed: {
+        current() {
+            return this.$props.userData
+        }
     },
     methods: {
         readSingleData(_id) {
@@ -831,7 +871,12 @@ export default {
                     }
                     vm.readSingleData(this.$props.userId)
                 })
-                .catch((e) => (vm.validation = vm.$onAjaxError(e)))
+                .catch((e) => {
+                    vm.$notification.error({
+                        message: e.response.data.message,
+                        description: JSON.stringify(e.response.data.errors)
+                    })
+                })
         },
         beforeUpload(file) {
             this.imageNew = file

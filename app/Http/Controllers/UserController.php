@@ -14,8 +14,7 @@ use Illuminate\Support\Str;
 use App\Models\Guru;
 use DateTime;
 use Illuminate\Validation\Rule;
-
-
+use Illuminate\Validation\ValidationException;
 
 class UserController extends Controller
 {
@@ -39,7 +38,7 @@ class UserController extends Controller
             $data = User::findOrFail($request->id);
         } else if ($request->req == "single_full") {
             $data = User::where('id', $request->id)
-                ->with('roles', 'orangtua')
+                ->with('roles', 'orangtua', 'siswa', 'guru')
                 ->firstOrFail();
         }
 
@@ -50,8 +49,6 @@ class UserController extends Controller
 
     public function write(Request $request)
     {
-
-
         if ($request->req == 'edit') {
             $request->validate([
                 'id' => 'required'
@@ -124,7 +121,9 @@ class UserController extends Controller
                     'new_password' => 'required',
                 ]);
                 if (!Hash::check($request->password, $user->password)) {
-                    throw new Exception("Wrong Password");
+                    throw ValidationException::withMessages([
+                        'password' => 'Old password does not match'
+                    ]);
                 }
                 $user->password = Hash::make($request->new_password);
                 $user->save();

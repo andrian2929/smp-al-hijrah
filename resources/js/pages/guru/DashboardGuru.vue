@@ -72,7 +72,6 @@
                         />
                     </a-skeleton>
                 </a-card>
-                
             </a-col>
         </a-row>
     </div>
@@ -133,7 +132,6 @@ export default {
                 'dddd, DD MMMM YYYY'
             )
         },
-
         thisDay() {
             return moment().format('dddd')
         }
@@ -200,7 +198,7 @@ export default {
                 this.scheduleDataSource.map((item, index) => {
                     item.key = index + 1
                     item.waktu_mulai = item.waktu_mulai.substring(0, 5)
-                    item.waktu_selesia = item.waktu_selesai.substring(0, 5)
+                    item.waktu_selesai = item.waktu_selesai.substring(0, 5)
                 })
             })
         }
