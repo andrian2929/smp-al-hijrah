@@ -15,12 +15,15 @@ class CreateLaporanPerilakuTable extends Migration
     {
         Schema::create('laporan_perilaku', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('user_id')->constrained('users');
-            $table->foreignId('perilaku_id')->constrained('list_perilakus');
+            $table->foreignId('user_id');
+            $table->foreignId('perilaku_id');
             $table->integer('nilai');
             $table->string('catatan')->nullable();
             $table->date('tanggal');
             $table->timestamps();
+
+            $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade')->onUpdate('cascade');
+            $table->foreign('perilaku_id')->references('id')->on('list_perilakus')->onDelete('cascade')->onUpdate('cascade');
         });
     }
 

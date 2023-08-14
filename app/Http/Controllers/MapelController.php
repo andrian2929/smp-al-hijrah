@@ -88,6 +88,8 @@ class MapelController extends Controller
             if ($hari)
                 $hari->delete();
             $data->delete();
+
+            return response()->noContent();
         }
         if ($request->req == 'add_mapel_to_roster') {
             $validator = Validator::make($request->all(), [

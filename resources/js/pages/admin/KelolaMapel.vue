@@ -252,8 +252,8 @@ export default {
                 id: _id
             }
             vm.axios
-                .get(vm.url('mapel/write'), params)
-                .then(() => {
+                .post(vm.url('mapel/write'), params)
+                .then((res) => {
                     vm.openNotification(
                         'Mata Pelajaran Berhasil Dihapus',
                         'success'

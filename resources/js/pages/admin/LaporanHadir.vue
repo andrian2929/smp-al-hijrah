@@ -274,7 +274,7 @@
                     :data-source="dataSourceKehadiran"
                     style="margin: 15px"
                     :pagination="true"
-                    :loading="dataSourceKehadiran.length === 0"
+                    :loading="dataSourceKehadiran"
                 >
                     <template #bodyCell="{ column, record }">
                         <template v-if="column.key === 'id'">

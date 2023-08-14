@@ -21,9 +21,9 @@ class CreateJurnalKelasTable extends Migration
             $table->string('catatan');
             $table->timestamps();
 
-            $table->foreign('id_kelas')->references('id')->on('kelas');
-            $table->foreign('id_guru')->references('id')->on('users');
-            $table->foreign('id_mapel')->references('id')->on('mata_pelajaran_haris');
+            $table->foreign('id_kelas')->references('id')->on('kelas')->onDelete('cascade')->onUpdate('cascade');
+            $table->foreign('id_guru')->references('id')->on('users')->onDelete('cascade')->onUpdate('cascade');
+            $table->foreign('id_mapel')->references('id')->on('mata_pelajaran_haris')->onDelete('cascade')->onUpdate('cascade');
         });
     }
 
