@@ -53,9 +53,7 @@ class SiswaController extends Controller
                 return $q->select('id', 'no_induk', 'name');
             })->select('id', 'user_id')->get();
         } else if ($request->req == 'count') {
-            $data = User::with(['roles' => function ($q) {
-                $q->where('display_name', 'siswa');
-            }])->count();
+            $data = User::whereHas('siswa')->count();
         } // get siswa by user id at user table
 
         else if ($request->req == 'get_siswa_by_user_id') {
